@@ -59,6 +59,8 @@ MultiExcelLoader = function(){
 
     if(!Age[3,1]==0.25){
 
+      setwd(orginalWorkingDirectoryPath)
+
       stop("Depth intervals at which ages are calculated is not 0.25!
       Please Change is in the Bacon Model!
       Bacon(core=...,thick=...,d.by = 0.25)")
@@ -105,6 +107,8 @@ MultiExcelLoader = function(){
 
     dir.create(paste(getwd(),.Platform[2],"data",sep=""))
 
+    setwd(orginalWorkingDirectoryPath)
+
     stop("There is no directory with the name data.
             A new directory has been created in the workspace you selected./n
             Please drag and drop the files from the AWI database into the data folder in your working directory.")
@@ -112,6 +116,8 @@ MultiExcelLoader = function(){
   }
 
   if(!length(list.files(pattern = '\\.xlsx$'))>0){
+
+    setwd(orginalWorkingDirectoryPath)
 
     stop("Please drag and drop the files from the AWI database into the data folder in your working directory.")
 
