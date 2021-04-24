@@ -7,14 +7,15 @@
 #'@return Returns the same List but with new added parameters.
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
+#'\cr Comma numbers are rounded up.
 
 Multivar = function(data){
 
   for (i in 1:length(ls(data))){
 
-    Tempdata=data[[i]][[1]]
-    TempdataForCalculation=data[[i]][[1]][,4:dim(data[[i]][[1]])[2]]
-    TempdataForCalculation=round(TempdataForCalculation)                        #WTF why are some diatom Datas doubles?
+    Tempdata=data[[i]][["rawData"]]
+    TempdataForCalculation=data[[i]][["rawData"]][,4:dim(data[[i]][["rawData"]])[2]]
+    TempdataForCalculation=round(TempdataForCalculation)
 
     min=Inf
 

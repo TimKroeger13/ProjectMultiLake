@@ -2,6 +2,7 @@
 
 export(MultiExcelLoader)
 export(Multivar)
+export(RowFilter)
 import(compositions)
 import(readxl)
 import(vegan)
