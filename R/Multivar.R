@@ -13,8 +13,18 @@ Multivar = function(data){
 
   for (i in 1:length(ls(data))){
 
-    Tempdata=data[[i]][["rawData"]]
-    TempdataForCalculation=data[[i]][["rawData"]][,4:dim(data[[i]][["rawData"]])[2]]
+    if(sum(ls(data[[i]])=="FilterdData")>0){
+
+      ListName="FilterdData"
+
+    }else{
+
+      ListName="rawData"
+
+    }
+
+    Tempdata=data[[i]][[ListName]]
+    TempdataForCalculation=data[[i]][[ListName]][,4:dim(data[[i]][[ListName]])[2]]
     TempdataForCalculation=round(TempdataForCalculation)
 
     min=Inf
