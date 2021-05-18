@@ -52,48 +52,62 @@ MultiExcelLoader = function(){
 
   }
 
-  AddAgges = function(depth,AgeTxtName){
+  AddAgges = function(depth,age){
 
-    Ageresult=array(data = NA, dim = length(depth))
-    Age=read.table(AgeTxtName)
-
-    if(!Age[3,1]==0.25){
+    if(!age$compositedepth[2]==0.25){
 
       setwd(orginalWorkingDirectoryPath)
 
-      stop("Depth intervals at which ages are calculated is not 0.25!
-      Please Change is in the Bacon Model!
-      Bacon(core=...,thick=...,d.by = 0.25)")
+      stop("Depth intervals at which ages are calculated is not 0.25!")
+
     }
+
+    Ageresult=array(data = NA, dim = length(depth))
 
     for (i in 1:length(depth)){
 
-      Ageresult[i]=as.numeric(Age[match(depth[i],Age[,1]),5])
+      Ageresult[i]=as.numeric(age$modeloutput_mean[match(depth[i],age$compositedepth)])
 
     }
 
     return(Ageresult)
   }
 
-  SingelExcelLoader = function(Excelname,AgeTxtName){
+  SingelExcelLoader = function(Folder,Excelname,age){
 
-    Diatom=suppressMessages(read_excel(path = paste(getwd(),"/",Excelname,sep=""),sheet = "Diatom"))
-    TempColName=FixExcelRowNames(Diatom[5,])
-    Diatom=Diatom[6:dim(Diatom)[1],]
-    CoreName=toString(DisconnectNameAndDepth(Diatom[1,1])[1])
-    Diatom[,1]=gsub(paste(CoreName," ",sep=""),"",as.matrix(Diatom[,1]))
-    Diatom=suppressWarnings(as.data.frame(matrix(as.numeric(unlist(Diatom)),ncol = dim(Diatom)[2])))
-    TempColName[1]="depth"
-    colnames(Diatom)=TempColName
-    Diatom=cbind(Diatom[,1:3],DeleteNaRows(Diatom[,4:dim(Diatom)[2]]))
+    sheet=c("Diatom")
 
-    if(!is.null(AgeTxtName)){
+    Diatom=try(suppressMessages(read_excel(path = paste(getwd(),"/",Excelname,sep=""),sheet = sheet)),silent = TRUE)
 
-      Diatom[,1]=AddAgges(Diatom[,1],AgeTxtName)
+    if(!class(Diatom)[1] == "try-error"){
 
+      #Diatom Data
+      TempColName=FixExcelRowNames(Diatom[5,])
+      Diatom=Diatom[6:dim(Diatom)[1],]
+      CoreName=toString(DisconnectNameAndDepth(Diatom[1,1])[1])
+      Diatom[,1]=gsub(paste(CoreName," ",sep=""),"",as.matrix(Diatom[,1]))
+      Diatom=suppressWarnings(as.data.frame(matrix(as.numeric(unlist(Diatom)),ncol = dim(Diatom)[2])))
+      TempColName[1]="depth"
+      colnames(Diatom)=TempColName
+      Diatom=cbind(Diatom[,1:3],DeleteNaRows(Diatom[,4:dim(Diatom)[2]]))
+
+      #Ages
+      TempAge=as.data.frame(age)
+      AgeFinder=read.table(textConnection(TempAge[,1]))[,1]==CoreName
+
+      if(!sum(AgeFinder==TRUE)==0){
+
+      TempAge=TempAge[which(AgeFinder),]
+      TempAge=TempAge[order(TempAge$compositedepth,decreasing=F),]
+      Diatom[,1]=AddAgges(Diatom[,1],TempAge)
+
+      Folder[[FilenameKey]][["Diatom"]][["rawData"]]=Diatom
+      Folder[[FilenameKey]][["ages"]]=TempAge
+
+      }
     }
 
-    return(Diatom)
+    return(Folder)
 
   }
 
@@ -115,7 +129,7 @@ MultiExcelLoader = function(){
 
   }
 
-  if(!length(list.files(pattern = '\\.xlsx$'))>0){
+  if(!length(list.files()[grep("data.xlsx",list.files())])>0){
 
     setwd(orginalWorkingDirectoryPath)
 
@@ -127,17 +141,35 @@ MultiExcelLoader = function(){
 
   Folder=list()
 
-  FileNamesXlsx=FileNames[grep(".xlsx",FileNames)]
-  FileNamesTxt=FileNames[grep(".txt",FileNames)]
+  FileNamesXlsx=FileNames[grep("data.xlsx",FileNames)]
+  FileNamesAge=FileNames[grep("ge.xlsx",FileNames)]
 
-  for(i in 1:(length(list.files())/2)){
+  if(identical(FileNamesAge, character(0))){
+
+    setwd(orginalWorkingDirectoryPath)
+
+    stop("No file named age.xlsx found")
+
+  }
+
+  Age=suppressMessages(read_excel(path = paste(getwd(),"/",FileNamesAge,sep=""),sheet = 1))
+
+  if(dim(Age)[2]==1){
+
+    setwd(orginalWorkingDirectoryPath)
+
+    stop("Excel was read in incorrectly.\n
+         Separate the columns and save the file again.")
+
+  }
+
+  for(i in 1:length(list.files()[grep("data.xlsx",list.files())])){
 
     FilenameKey=read.table(textConnection(gsub("_", " ", FileNamesXlsx)))[i,1]
 
     ChoosenFileNamesXlsx=FileNamesXlsx[i]
-    ChoosenFileNamesTxt=FileNamesTxt[grep(FilenameKey,FileNamesTxt)]
 
-    Folder[[FilenameKey]][["rawData"]]=SingelExcelLoader(ChoosenFileNamesXlsx,ChoosenFileNamesTxt)
+    Folder=SingelExcelLoader(Folder,ChoosenFileNamesXlsx,Age)
 
   }
 

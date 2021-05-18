@@ -2,9 +2,10 @@
 
 export(MultiExcelLoader)
 export(Multivar)
-export(RowFilter)
+import(SRS)
 import(compositions)
 import(readxl)
 import(vegan)
+importFrom(stats,prcomp)
 importFrom(utils,read.csv)
 importFrom(utils,read.table)

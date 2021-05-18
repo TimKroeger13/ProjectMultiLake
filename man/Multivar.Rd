@@ -4,10 +4,12 @@
 \alias{Multivar}
 \title{Multivar}
 \usage{
-Multivar(data)
+Multivar(data, method = "bray", standardize = c("", "sqrt"))
 }
 \arguments{
 \item{data}{List of data generates by the MultiExcelLoader function.}
+
+\item{method}{Method for calculation Dissimilarity Indices for Community Ecologists}
 }
 \value{
 Returns the same List but with new added parameters.
