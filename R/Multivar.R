@@ -4,15 +4,16 @@
 #'@param data List of data generates by the MultiExcelLoader function.
 #'@param method Method for calculation Dissimilarity Indices for Community Ecologists.
 #'@param standardize Method for data standardisation. Can be nothing "" ir sqaureroot transformation "sqrt".
+#'@param percentFilterWeight Value how much percent a single species must declare at minimum from the dataset.
 #'@import vegan SRS
-#'@importFrom stats prcomp
+#'@importFrom stats prcomp loess median predict qt quantile
 #'@export
 #'@return Returns the same List but with new added parameters.
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-Multivar = function(data,method="bray",standardize=c("","sqrt")){
+Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0){
 
   DeleteNullCollums <- function(data){
 
@@ -48,18 +49,18 @@ Multivar = function(data,method="bray",standardize=c("","sqrt")){
 
     allCounts=NULL
 
-    for (i in 1:length(ls(data))){
+    for (i in 1:length(ls(data[["Diatom"]]))){
 
-      allCounts=c(allCounts,data[[i]][["Diatom"]][["rawData"]][,2])
+      allCounts=c(allCounts,data[["Diatom"]][[i]][["rawData"]][,2])
 
     }
 
     SRS_Value = round(quantile(allCounts,probs = c(0.05)))
 
-    for (i in 1:length(ls(data))){
+    for (i in 1:length(ls(data[["Diatom"]]))){
 
-      Tempdata=data[[i]][["Diatom"]][["rawData"]]
-      TempdataForCalculation=data[[i]][["Diatom"]][["rawData"]][,4:dim(data[[i]][["Diatom"]][["rawData"]])[2]]
+      Tempdata=data[["Diatom"]][[i]][["rawData"]]
+      TempdataForCalculation=data[["Diatom"]][[i]][["rawData"]][,4:dim(data[["Diatom"]][[i]][["rawData"]])[2]]
       TempdataForCalculation=round(TempdataForCalculation)
 
       CountedValves=NULL
@@ -81,7 +82,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt")){
       colnames(output) = colnames(Tempdata)
       output[,2]=SRS_Value
 
-      data[[names(data)[i]]][["Diatom"]][[paste("SRS_data")]]=output
+      data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("SRS_data")]]=output
 
     }
 
@@ -89,13 +90,88 @@ Multivar = function(data,method="bray",standardize=c("","sqrt")){
 
   }
 
+  FilterPercentData <- function(PercentData,percentFilterWeight){
+
+    TempDataForCalculation=PercentData[,4:dim(PercentData)[2]]
+
+    BetterEqualMedian=TempDataForCalculation
+
+    BetterEqualMedian[]=NA
+
+    for(x in 1:dim(TempDataForCalculation)[1]){
+
+      BetterEqualMedian[x,]=TempDataForCalculation[x,]>=median(TempDataForCalculation[x,][TempDataForCalculation[x,]>0])
+
+    }
+
+    counter=0
+
+    while (dim(TempDataForCalculation)[2]>counter){
+
+      counter=counter+1
+
+      if(sum(BetterEqualMedian[,counter])<dim(BetterEqualMedian)[1]*percentFilterWeight/100){
+
+        TempDataForCalculation=TempDataForCalculation[-counter]
+        BetterEqualMedian=BetterEqualMedian[-counter]
+
+        counter=counter-1
+
+      }
+    }
+
+    output=PercentData[,1:3]
+
+    output=cbind(output,TempDataForCalculation)
+
+    return(output)
+
+  }
+
+
+  StandadizeData <- function(data, standardize, percentFilterWeight){
+
+     for (k in 1:length(ls(data[["Diatom"]]))){
+
+       TempData=data[["Diatom"]][[k]][["rawData"]]
+       TempDataForCalculation=TempData[,4:dim(TempData)[2]]
+
+       PercentData=TempData
+       PercentData[,3:dim(PercentData)[2]]=NA
+
+      for(i in 1:dim(TempData)[1]){
+
+        PercentData[i,4:dim(PercentData)[2]]=TempDataForCalculation[i,]/sum(TempDataForCalculation[i,],na.rm = T)*100
+
+      }
+
+       PercentData = FilterPercentData(PercentData = PercentData,percentFilterWeight = percentFilterWeight) #Filter Collums
+
+      if(standardize[1]=="sqrt"){
+
+        PercentData[,4:dim(PercentData)[2]] =  sqrt(PercentData[,4:dim(PercentData)[2]])
+
+      }
+
+       data[["Diatom"]][[names(data[["Diatom"]])[[k]]]][[paste("StandadizedData")]]=PercentData
+
+       #Printer
+       cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+           k,"/",length(ls(data[["Diatom"]])),sep="")
+
+    }
+
+    return(data)
+  }
+
+  data=StandadizeData(data, standardize, percentFilterWeight)
   data=SrsFilter(data)
-  ListName="SRS_data"
 
-  for (i in 1:length(ls(data))){
+  #Uses SRS Data
+  for (i in 1:length(ls(data[["Diatom"]]))){
 
-    Tempdata=data[[i]][["Diatom"]][[ListName]]
-    TempdataForCalculation=data[[i]][["Diatom"]][[ListName]][,4:dim(data[[i]][["Diatom"]][[ListName]])[2]]
+    Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
+    TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
     TempdataForCalculation=round(TempdataForCalculation)
     SqrtTempdataForCalculation=sqrt(TempdataForCalculation)
 
@@ -113,14 +189,14 @@ Multivar = function(data,method="bray",standardize=c("","sqrt")){
     invsimpson=cbind(invsimpson)
     row.names(invsimpson)=Tempdata[,1]
 
-    data[[names(data)[i]]][["Diatom"]][["richness"]]=richness
-    data[[names(data)[i]]][["Diatom"]][["shannon"]]=shannon
-    data[[names(data)[i]]][["Diatom"]][["invsimpson"]]=invsimpson
+    data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("richness")]]=richness
+    data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("shannon")]]=shannon
+    data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("invsimpson")]]=invsimpson
 
     for (r in c("richness","shannon","invsimpson")){
 
-      y=as.numeric(row.names(data[[i]][["Diatom"]][[r]]))
-      x=data[[i]][["Diatom"]][[r]]
+      y=as.numeric(row.names(data[["Diatom"]][[i]][[r]]))
+      x=data[["Diatom"]][[i]][[r]]
 
       loessValues=predict(loess(x ~ y, span=0.5), se=T,newdata = as.numeric(y))
 
@@ -131,12 +207,12 @@ Multivar = function(data,method="bray",standardize=c("","sqrt")){
       LoessOut=cbind(LoessMean,LoessConfUp,LoessConfDown)
       row.names(LoessOut)=Tempdata[,1]
 
-      data[[names(data)[i]]][["Diatom"]][[paste("Loess_",r,sep = "")]]=LoessOut
+      data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("Loess_",r,sep = "")]]=LoessOut
 
     }
 
 
-
+    #data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("SRS_data")]]=output
 
 '
     #PCA
@@ -152,24 +228,24 @@ Multivar = function(data,method="bray",standardize=c("","sqrt")){
     row.names(PCA2)=as.character(Tempdata[,1])
     row.names(PCA3)=as.character(Tempdata[,1])
 
-    data[[names(data)[i]]][["Diatom"]][["PCA_1_SiteScores"]]=PCA1
-    data[[names(data)[i]]][["Diatom"]][["PCA_2_SiteScores"]]=PCA2
-    data[[names(data)[i]]][["Diatom"]][["PCA_3_SiteScores"]]=PCA3
+    data[[names(data)[["Diatom"]][i]]][["PCA_1_SiteScores"]]=PCA1
+    data[[names(data)[["Diatom"]][i]]][["PCA_2_SiteScores"]]=PCA2
+    data[[names(data)[["Diatom"]][i]]][["PCA_3_SiteScores"]]=PCA3
 
     PCA.var = PCA$sdev^2
     PCA.ve = PCA.var/sum(PCA.var) # Variance
 
     vari1=matrix(c(PCA.ve[1],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
     colnames(vari1)="PCA_1_Variance"
-    data[[names(data)[i]]][["Diatom"]][["PCA_1_Variance"]]=vari1
+    data[[names(data)[["Diatom"]][i]]][["PCA_1_Variance"]]=vari1
 
     vari2=matrix(c(PCA.ve[2],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
     colnames(vari2)="PCA_2_Variance"
-    data[[names(data)[i]]][["Diatom"]][["PCA_2_Variance"]]=vari2
+    data[[names(data)[["Diatom"]][i]]][["PCA_2_Variance"]]=vari2
 
     vari3=matrix(c(PCA.ve[3],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
     colnames(vari3)="PCA_3_Variance"
-    data[[names(data)[i]]][["Diatom"]][["PCA_3_Variance"]]=vari3
+    data[[names(data)[["Diatom"]][i]]][["PCA_3_Variance"]]=vari3
 
     #MDS
 
@@ -191,31 +267,32 @@ Multivar = function(data,method="bray",standardize=c("","sqrt")){
     MDS1=matrix(MDS1,ncol = 1)
     row.names(MDS1)=as.character(Tempdata[,1])
     colnames(MDS1)="MDS_1_SiteScores"
-    data[[names(data)[i]]][["Diatom"]][["MDS_1_SiteScores"]]=MDS1
+    data[[names(data)[["Diatom"]][i]]][["MDS_1_SiteScores"]]=MDS1
 
     MDS2=matrix(MDS2,ncol = 1)
     row.names(MDS2)=as.character(Tempdata[,1])
     colnames(MDS2)="MDS_2_SiteScores"
-    data[[names(data)[i]]][["Diatom"]][["MDS_2_SiteScores"]]=MDS2
+    data[[names(data)[["Diatom"]][i]]][["MDS_2_SiteScores"]]=MDS2
 
     MDS3=matrix(MDS3,ncol = 1)
     row.names(MDS3)=as.character(Tempdata[,1])
     colnames(MDS3)="MDS_3_SiteScores"
-    data[[names(data)[i]]][["Diatom"]][["MDS_3_SiteScores"]]=MDS3
+    data[[names(data)[["Diatom"]][i]]][["MDS_3_SiteScores"]]=MDS3
 
 
     vari1=matrix(c(round(fit$eig*100/sum(fit$eig),1)[1],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
     colnames(vari1)="MDS_1_Variance"
-    data[[names(data)[i]]][["Diatom"]][["MDS_1_Variance"]]=vari1
+    data[[names(data)[["Diatom"]][i]]][["MDS_1_Variance"]]=vari1
 
     vari2=matrix(c(round(fit$eig*100/sum(fit$eig),1)[2],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
     colnames(vari2)="MDS_2_Variance"
-    data[[names(data)[i]]][["Diatom"]][["MDS_2_Variance"]]=vari2
+    data[[names(data)[["Diatom"]][i]]][["MDS_2_Variance"]]=vari2
 
     vari3=matrix(c(round(fit$eig*100/sum(fit$eig),1)[3],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
     colnames(vari3)="MDS_3_Variance"
-    data[[names(data)[i]]][["Diatom"]][["MDS_3_Variance"]]=vari3
+    data[[names(data)[["Diatom"]][i]]][["MDS_3_Variance"]]=vari3
 '
+
 
 
 

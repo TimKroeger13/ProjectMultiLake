@@ -4,12 +4,21 @@
 \alias{Multivar}
 \title{Multivar}
 \usage{
-Multivar(data, method = "bray", standardize = c("", "sqrt"))
+Multivar(
+  data,
+  method = "bray",
+  standardize = c("", "sqrt"),
+  percentFilterWeight = 0
+)
 }
 \arguments{
 \item{data}{List of data generates by the MultiExcelLoader function.}
 
-\item{method}{Method for calculation Dissimilarity Indices for Community Ecologists}
+\item{method}{Method for calculation Dissimilarity Indices for Community Ecologists.}
+
+\item{standardize}{Method for data standardisation. Can be nothing "" ir sqaureroot transformation "sqrt".}
+
+\item{percentFilterWeight}{Value how much percent a single species must declare at minimum from the dataset.}
 }
 \value{
 Returns the same List but with new added parameters.

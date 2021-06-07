@@ -73,7 +73,7 @@ MultiExcelLoader = function(){
     return(Ageresult)
   }
 
-  SingelExcelLoader = function(Folder,Excelname,age){
+  SingelExcelLoader = function(Folder,Excelname,age,FilenameKey){
 
     sheet=c("Diatom")
 
@@ -88,7 +88,7 @@ MultiExcelLoader = function(){
       Diatom[,1]=gsub(paste(CoreName," ",sep=""),"",as.matrix(Diatom[,1]))
       Diatom=suppressWarnings(as.data.frame(matrix(as.numeric(unlist(Diatom)),ncol = dim(Diatom)[2])))
       TempColName[1]="depth"
-      colnames(Diatom)=TempColName
+      colnames(Diatom)=enc2native(TempColName)
       Diatom=cbind(Diatom[,1:3],DeleteNaRows(Diatom[,4:dim(Diatom)[2]]))
 
       #Ages
@@ -101,8 +101,8 @@ MultiExcelLoader = function(){
       TempAge=TempAge[order(TempAge$compositedepth,decreasing=F),]
       Diatom[,1]=AddAgges(Diatom[,1],TempAge)
 
-      Folder[[FilenameKey]][["Diatom"]][["rawData"]]=Diatom
-      Folder[[FilenameKey]][["ages"]]=TempAge
+      Folder[["Diatom"]][[FilenameKey]][["rawData"]]=Diatom
+      Folder[["ages"]][[FilenameKey]]=TempAge
 
       }
     }
@@ -169,7 +169,11 @@ MultiExcelLoader = function(){
 
     ChoosenFileNamesXlsx=FileNamesXlsx[i]
 
-    Folder=SingelExcelLoader(Folder,ChoosenFileNamesXlsx,Age)
+    Folder=SingelExcelLoader(Folder,ChoosenFileNamesXlsx,Age,FilenameKey)
+
+    #Printer
+    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        i,"/",length(list.files()[grep("data.xlsx",list.files())]),sep="")
 
   }
 
