@@ -25,12 +25,6 @@ MultiExcelLoader = function(){
 
   }
 
-  FixExcelRowNames = function(NameRow){
-
-    return(gsub("\r","",gsub("\n","",as.character(NameRow),ignore.case = T),ignore.case = T))
-
-  }
-
   DeleteNaRows = function(DataFrame){
 
     i=0
