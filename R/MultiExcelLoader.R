@@ -69,34 +69,58 @@ MultiExcelLoader = function(){
 
   SingelExcelLoader = function(Folder,Excelname,age,FilenameKey){
 
+    #MetaData
+
+    sheet=c("DatasetDescription")
+
+    DatasetDescription=try(suppressMessages(read_excel(path = paste(getwd(),"/",Excelname,sep=""),sheet = sheet)),silent = TRUE)
+
+    if(!class(DatasetDescription)[1] == "try-error"){
+
+      DatasetDescription=DatasetDescription[4:28,2:3]
+
+      DatasetDescription_matrix=matrix(as.character(unlist(DatasetDescription)),ncol =2)
+
+      Folder[["Description"]][[FilenameKey]]=DatasetDescription_matrix
+
+    }
+
+    #Ages
+
+    TempAge=as.data.frame(age)
+    AgeFinder=read.table(textConnection(TempAge[,1]))[,1]==Folder[["Description"]][[FilenameKey]][1,2]
+
+    if(!sum(AgeFinder==TRUE)==0){
+
+      TempAge=TempAge[which(AgeFinder),]
+      TempAge=TempAge[order(TempAge$compositedepth,decreasing=F),]
+      Folder[["ages"]][[FilenameKey]]=TempAge
+
+    }
+
     sheet=c("Diatom")
 
     Diatom=try(suppressMessages(read_excel(path = paste(getwd(),"/",Excelname,sep=""),sheet = sheet)),silent = TRUE)
 
     if(!class(Diatom)[1] == "try-error"){
 
-      #Diatom Data
-      TempColName=FixExcelRowNames(Diatom[5,])
-      Diatom=Diatom[6:dim(Diatom)[1],]
-      CoreName=toString(DisconnectNameAndDepth(Diatom[1,1])[1])
-      Diatom[,1]=gsub(paste(CoreName," ",sep=""),"",as.matrix(Diatom[,1]))
-      Diatom=suppressWarnings(as.data.frame(matrix(as.numeric(unlist(Diatom)),ncol = dim(Diatom)[2])))
-      TempColName[1]="depth"
-      colnames(Diatom)=enc2native(TempColName)
-      Diatom=cbind(Diatom[,1:3],DeleteNaRows(Diatom[,4:dim(Diatom)[2]]))
-
-      #Ages
-      TempAge=as.data.frame(age)
-      AgeFinder=read.table(textConnection(TempAge[,1]))[,1]==CoreName
+      AgeFinder=read.table(textConnection(TempAge[,1]))[,1]==Folder[["Description"]][[FilenameKey]][1,2]
 
       if(!sum(AgeFinder==TRUE)==0){
 
-      TempAge=TempAge[which(AgeFinder),]
-      TempAge=TempAge[order(TempAge$compositedepth,decreasing=F),]
-      Diatom[,1]=AddAgges(Diatom[,1],TempAge)
+        #Diatom Data
+        TempColName=FixExcelRowNames(Diatom[5,])
+        Diatom=Diatom[6:dim(Diatom)[1],]
+        CoreName=toString(DisconnectNameAndDepth(Diatom[1,1])[1])
+        Diatom[,1]=gsub(paste(CoreName," ",sep=""),"",as.matrix(Diatom[,1]))
+        Diatom=suppressWarnings(as.data.frame(matrix(as.numeric(unlist(Diatom)),ncol = dim(Diatom)[2])))
+        TempColName[1]="depth"
+        colnames(Diatom)=enc2native(TempColName)
+        Diatom=cbind(Diatom[,1:3],DeleteNaRows(Diatom[,4:dim(Diatom)[2]]))
 
-      Folder[["Diatom"]][[FilenameKey]][["rawData"]]=Diatom
-      Folder[["ages"]][[FilenameKey]]=TempAge
+        Diatom[,1]=AddAgges(Diatom[,1],Folder[["ages"]][[Folder[["Description"]][[FilenameKey]][1,2]]])
+
+        Folder[["Diatom"]][[FilenameKey]][["rawData"]]=Diatom
 
       }
     }
@@ -146,9 +170,9 @@ MultiExcelLoader = function(){
 
   }
 
-  Age=suppressMessages(read_excel(path = paste(getwd(),"/",FileNamesAge,sep=""),sheet = 1))
+  age=suppressMessages(read_excel(path = paste(getwd(),"/",FileNamesAge,sep=""),sheet = 1))
 
-  if(dim(Age)[2]==1){
+  if(dim(age)[2]==1){
 
     setwd(orginalWorkingDirectoryPath)
 
@@ -161,9 +185,9 @@ MultiExcelLoader = function(){
 
     FilenameKey=read.table(textConnection(gsub("_", " ", FileNamesXlsx)))[i,1]
 
-    ChoosenFileNamesXlsx=FileNamesXlsx[i]
+    Excelname=FileNamesXlsx[i]
 
-    Folder=SingelExcelLoader(Folder,ChoosenFileNamesXlsx,Age,FilenameKey)
+    Folder=SingelExcelLoader(Folder,Excelname,age,FilenameKey)
 
     #Printer
     cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",

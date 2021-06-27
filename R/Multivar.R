@@ -5,15 +5,22 @@
 #'@param method Method for calculation Dissimilarity Indices for Community Ecologists.
 #'@param standardize Method for data standardisation. Can be nothing "" ir sqaureroot transformation "sqrt".
 #'@param percentFilterWeight Value how much percent a single species must declare at minimum from the dataset.
+#'@param allLoessSpans span value for all Loess calculations made by Multivar.
 #'@import vegan SRS
-#'@importFrom stats prcomp loess median predict qt quantile
+#'@importFrom stats prcomp loess median predict qt quantile approx
 #'@export
 #'@return Returns the same List but with new added parameters.
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0){
+Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.5){
+
+  DeleteRowWithoutTimestamp <- function(data){
+
+    return(data[!is.na(data[,1]),])
+
+  }
 
   DeleteNullCollums <- function(data){
 
@@ -71,18 +78,18 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
       }
 
-      Tempdata=Tempdata[CountedValves>=SRS_Value,]
-      TempdataForCalculation=TempdataForCalculation[CountedValves>=SRS_Value,]
+      Tempdata = Tempdata[CountedValves >= SRS_Value,]
+      TempdataForCalculation = TempdataForCalculation[CountedValves >= SRS_Value,]
 
-      TempTurn <- data.frame(t(TempdataForCalculation))
-      TempTurn=SRS(TempTurn, Cmin=SRS_Value, set_seed = TRUE, seed = 1)
-      SRSTempdataForCalculation <- data.frame(t(TempTurn))
+      TempTurn = data.frame(t(TempdataForCalculation))
+      TempTurn = SRS(TempTurn, Cmin = SRS_Value, set_seed = TRUE, seed = 1)
+      SRSTempdataForCalculation = data.frame(t(TempTurn))
 
-      output=cbind(Tempdata[,1:3],SRSTempdataForCalculation)
+      output = cbind(Tempdata[,1:3],SRSTempdataForCalculation)
       colnames(output) = colnames(Tempdata)
-      output[,2]=SRS_Value
+      output[,2] = SRS_Value
 
-      data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("SRS_data")]]=output
+      data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("SRS_data")]] = output
 
     }
 
@@ -128,20 +135,19 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   }
 
-
   StandadizeData <- function(data, standardize, percentFilterWeight){
 
      for (k in 1:length(ls(data[["Diatom"]]))){
 
-       TempData=data[["Diatom"]][[k]][["rawData"]]
-       TempDataForCalculation=TempData[,4:dim(TempData)[2]]
+       Tempdata=data[["Diatom"]][[k]][["rawData"]]
+       TempdataForCalculation=Tempdata[,4:dim(Tempdata)[2]]
 
-       PercentData=TempData
-       PercentData[,3:dim(PercentData)[2]]=NA
+       PercentData=Tempdata
+       PercentData[,4:dim(PercentData)[2]]=NA
 
-      for(i in 1:dim(TempData)[1]){
+      for(i in 1:dim(Tempdata)[1]){
 
-        PercentData[i,4:dim(PercentData)[2]]=TempDataForCalculation[i,]/sum(TempDataForCalculation[i,],na.rm = T)*100
+        PercentData[i,4:dim(PercentData)[2]]=TempdataForCalculation[i,]/sum(TempdataForCalculation[i,],na.rm = T)*100
 
       }
 
@@ -167,7 +173,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
   data=StandadizeData(data, standardize, percentFilterWeight)
   data=SrsFilter(data)
 
-  #Uses SRS Data
+  #Main Loop
   for (i in 1:length(ls(data[["Diatom"]]))){
 
     Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
@@ -179,10 +185,6 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
     richness = rarefy(TempdataForCalculation, sample = sum(TempdataForCalculation[1,]), se=T)
     shannon = diversity(TempdataForCalculation, index = "shannon")
     invsimpson = diversity(TempdataForCalculation, index = "invsimpson")
-
-
-
-
 
     richness=cbind(richness[1,])
     colnames(richness)=c("richness")
@@ -197,19 +199,17 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
     data[["Diatom"]][[i]][[paste("invsimpson")]]=invsimpson
 
 
-
-
-
+    # Loess Predictor
     for (r in c("richness","shannon","invsimpson")){
 
       y=as.numeric(row.names(data[["Diatom"]][[i]][[r]]))
       x=data[["Diatom"]][[i]][[r]]
 
-      loessValues=predict(loess(x ~ y, span=0.5), se=T,newdata = as.numeric(y)) #Critical Span value
+      loessValues=predict(loess(x ~ y, span=allLoessSpans), se=T,newdata = as.numeric(y)) #Critical Span value
 
       LoessMean = loessValues$fit
-      LoessConfUp = loessValues$fit + qt(1-(0.05/2),loessValues$df)*loessValues$se
-      LoessConfDown = loessValues$fit - qt(1-(0.05/2),loessValues$df)*loessValues$se
+      LoessConfUp = loessValues$fit + qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
+      LoessConfDown = loessValues$fit - qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
 
       LoessOut=cbind(LoessMean,LoessConfUp,LoessConfDown)
       row.names(LoessOut)=Tempdata[,1]
@@ -218,75 +218,52 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     }
 
-
-    #data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("SRS_data")]]=output
-
-'
-    #PCA
-
-    FiltertSRSTempdataForCalculation=DeleteNullCollums(SRSTempdataForCalculation)
-
-    PCA=prcomp(sqrt(FiltertSRSTempdataForCalculation), center = TRUE, scale = F)
-
-    PCA1=scores(PCA,choices = 1,display=c("sites"))
-    PCA2=scores(PCA,choices = 2,display=c("sites"))
-    PCA3=scores(PCA,choices = 3,display=c("sites"))
-    row.names(PCA1)=as.character(Tempdata[,1])
-    row.names(PCA2)=as.character(Tempdata[,1])
-    row.names(PCA3)=as.character(Tempdata[,1])
-
-    data[[names(data)[["Diatom"]][i]]][["PCA_1_SiteScores"]]=PCA1
-    data[[names(data)[["Diatom"]][i]]][["PCA_2_SiteScores"]]=PCA2
-    data[[names(data)[["Diatom"]][i]]][["PCA_3_SiteScores"]]=PCA3
-
-    PCA.var = PCA$sdev^2
-    PCA.ve = PCA.var/sum(PCA.var) # Variance
-
-    vari1=matrix(c(PCA.ve[1],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
-    colnames(vari1)="PCA_1_Variance"
-    data[[names(data)[["Diatom"]][i]]][["PCA_1_Variance"]]=vari1
-
-    vari2=matrix(c(PCA.ve[2],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
-    colnames(vari2)="PCA_2_Variance"
-    data[[names(data)[["Diatom"]][i]]][["PCA_2_Variance"]]=vari2
-
-    vari3=matrix(c(PCA.ve[3],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
-    colnames(vari3)="PCA_3_Variance"
-    data[[names(data)[["Diatom"]][i]]][["PCA_3_Variance"]]=vari3
-
     #MDS
 
-    TempTurn=SRSTempdataForCalculation
-    TempTurn=DeleteNullCollums(TempTurn)
+    MDSData=data[["Diatom"]][[i]][["StandadizedData"]]
 
-    dissimilarityData=dissimilarityIndex(TempTurn,method)
+    MDSData=DeleteRowWithoutTimestamp(MDSData)
 
-    fit <- cmdscale(dissimilarityData, eig = T, k = 3)
+    MDSAges=MDSData[,1]
+    MDSData=MDSData[,4:dim(MDSData)[2]]
+    MDSData=DeleteNullCollums(MDSData)
 
+    dissimilarityData=dissimilarityIndex(MDSData,method)
 
+    monoMDSData=monoMDS(dissimilarityData, k=3)
 
+    ExternalCalibrator = data[["GlobalInsolation"]]
 
+    ExternalCalibrator = approx(y = as.numeric(ExternalCalibrator),
+           x = as.numeric(row.names(ExternalCalibrator)),
+           xout = MDSAges, method = "linear")
 
-    MDS1=fit$points[, 1]
-    MDS2=fit$points[, 2]
-    MDS3=fit$points[, 3]
+    MDSrotation = MDSrotate(monoMDSData, vec = ExternalCalibrator$y)
+
+    MDS1=MDSrotation$points[, 1]
+    MDS2=MDSrotation$points[, 2]
+    MDS3=MDSrotation$points[, 3]
 
     MDS1=matrix(MDS1,ncol = 1)
-    row.names(MDS1)=as.character(Tempdata[,1])
+    row.names(MDS1)=as.character(MDSAges)
     colnames(MDS1)="MDS_1_SiteScores"
-    data[[names(data)[["Diatom"]][i]]][["MDS_1_SiteScores"]]=MDS1
+    data[["Diatom"]][[i]][["MDS_1_SiteScores"]]=MDS1
 
     MDS2=matrix(MDS2,ncol = 1)
-    row.names(MDS2)=as.character(Tempdata[,1])
+    row.names(MDS2)=as.character(MDSAges)
     colnames(MDS2)="MDS_2_SiteScores"
-    data[[names(data)[["Diatom"]][i]]][["MDS_2_SiteScores"]]=MDS2
+    data[["Diatom"]][[i]][["MDS_2_SiteScores"]]=MDS2
 
     MDS3=matrix(MDS3,ncol = 1)
-    row.names(MDS3)=as.character(Tempdata[,1])
+    row.names(MDS3)=as.character(MDSAges)
     colnames(MDS3)="MDS_3_SiteScores"
-    data[[names(data)[["Diatom"]][i]]][["MDS_3_SiteScores"]]=MDS3
+    data[["Diatom"]][[i]][["MDS_3_SiteScores"]]=MDS3
 
 
+
+
+
+'
     vari1=matrix(c(round(fit$eig*100/sum(fit$eig),1)[1],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
     colnames(vari1)="MDS_1_Variance"
     data[[names(data)[["Diatom"]][i]]][["MDS_1_Variance"]]=vari1
@@ -299,7 +276,6 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
     colnames(vari3)="MDS_3_Variance"
     data[[names(data)[["Diatom"]][i]]][["MDS_3_Variance"]]=vari3
 '
-
 
 
 

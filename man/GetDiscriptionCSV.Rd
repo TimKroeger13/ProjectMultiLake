@@ -4,7 +4,12 @@
 \alias{GetDiscriptionCSV}
 \title{GetDiscriptionCSV}
 \usage{
-GetDiscriptionCSV()
+GetDiscriptionCSV(data, saveAsCSV = FALSE)
+}
+\arguments{
+\item{data}{List of data generates by the MultiExcelLoader function.}
+
+\item{saveAsCSV}{Bool indicating if the data should be exported a CSV in the used working directory.}
 }
 \value{
 Save CSV in workspace.
