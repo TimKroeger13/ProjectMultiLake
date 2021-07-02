@@ -261,6 +261,7 @@ MultiExcelLoader = function(){
 
   FileNamesXlsx=FileNames[grep("data.xlsx",FileNames)]
   FileNamesAge=FileNames[grep("ge.xlsx",FileNames)]
+  FileNamesInsolation=FileNames[grep("insolation.txt",FileNames)]
 
   if(identical(FileNamesAge, character(0))){
 
@@ -280,6 +281,21 @@ MultiExcelLoader = function(){
          Separate the columns and save the file again.")
 
   }
+
+  #Insolation
+
+  if(identical(FileNamesInsolation, character(0))){
+
+    setwd(orginalWorkingDirectoryPath)
+
+    stop("No file named insolation.txt found")
+
+  }
+
+  InsolationCurve=read.table(FileNamesInsolation,sep=";",header = T)
+  InsolationCurve=matrix(InsolationCurve[,7],ncol = 1)
+  rownames(InsolationCurve)=1:dim(InsolationCurve)[1]*1000
+  Folder[["GlobalInsolation"]]=InsolationCurve
 
   for(i in 1:length(list.files()[grep("data.xlsx",list.files())])){
 
