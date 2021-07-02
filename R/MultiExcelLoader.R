@@ -13,6 +13,8 @@
 
 MultiExcelLoader = function(){
 
+  holoceneBorder = 11700
+
   FixExcelRowNames = function(NameRow){
 
     return(gsub("\r","",gsub("\n","",as.character(NameRow),ignore.case = T),ignore.case = T))
@@ -79,9 +81,43 @@ MultiExcelLoader = function(){
 
       DatasetDescription=DatasetDescription[4:28,2:3]
 
+      DatasetDescription = DatasetDescription[cbind(!is.na(DatasetDescription[,2]),!is.na(DatasetDescription[,2]))]
+
       DatasetDescription_matrix=matrix(as.character(unlist(DatasetDescription)),ncol =2)
 
-      Folder[["Description"]][[FilenameKey]]=DatasetDescription_matrix
+      DatasetDescriptionElemts = c("Date measurements in the core",
+                                   "Data has a complete age tabel",
+                                   "Diatom data is available",
+                                   "Number of Meassured Diatoms <11700",
+                                   "Number of Meassured Diatoms >=11700",
+                                   "Total Carbon is available",
+                                   "Total Organic Carbon is availiable")
+
+      DatasetDescriptionFile = matrix(0, nrow = dim(DatasetDescription_matrix)[1]+length(DatasetDescriptionElemts),ncol =2)
+
+      DatasetDescriptionFile[1:dim(DatasetDescription_matrix)[1],1:dim(DatasetDescription_matrix)[2]]=DatasetDescription
+
+      DatasetDescriptionFile[(dim(DatasetDescription_matrix)[1]+1):(dim(DatasetDescriptionFile)[1]),1]=DatasetDescriptionElemts
+
+      Folder[["Description"]][[FilenameKey]]=DatasetDescriptionFile
+
+    }
+
+    #Date
+
+    sheet=c("Age")
+
+    AgeDate=try(suppressMessages(read_excel(path = paste(getwd(),"/",Excelname,sep=""),sheet = sheet)),silent = TRUE)
+
+    if(!class(AgeDate)[1] == "try-error"){
+
+      AgeDate=AgeDate[7:dim(AgeDate)[1],]
+      AgeDate=suppressWarnings(as.data.frame(matrix(as.numeric(unlist(AgeDate)),ncol = dim(AgeDate)[2])))
+
+      #DataDiscription
+
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Date measurements in the core"),2]=
+        dim(AgeDate)[1]
 
     }
 
@@ -98,6 +134,8 @@ MultiExcelLoader = function(){
 
     }
 
+    #Diatom
+
     sheet=c("Diatom")
 
     Diatom=try(suppressMessages(read_excel(path = paste(getwd(),"/",Excelname,sep=""),sheet = sheet)),silent = TRUE)
@@ -105,6 +143,10 @@ MultiExcelLoader = function(){
     if(!class(Diatom)[1] == "try-error"){
 
       AgeFinder=read.table(textConnection(TempAge[,1]))[,1]==Folder[["Description"]][[FilenameKey]][1,2]
+
+      #Discription
+
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Diatom data is available"),2]=TRUE
 
       if(!sum(AgeFinder==TRUE)==0){
 
@@ -122,7 +164,65 @@ MultiExcelLoader = function(){
 
         Folder[["Diatom"]][[FilenameKey]][["rawData"]]=Diatom
 
+        #Discription
+
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Number of Meassured Diatoms <11700"),2]=
+          as.character(sum(Diatom[,1]<holoceneBorder))
+
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Number of Meassured Diatoms >=11700"),2]=
+          as.character(sum(Diatom[,1]>=holoceneBorder))
+
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Data has a complete age tabel"),2]=TRUE
+
+      }else{
+
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Data has a complete age tabel"),2]=FALSE
+
       }
+    }else{
+
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Data has a complete age tabel"),2]=FALSE
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Diatom data is available"),2]=FALSE
+
+    }
+
+    #Carbon
+
+    sheet=c("Organic")
+
+    Carbon=try(suppressMessages(read_excel(path = paste(getwd(),"/",Excelname,sep=""),sheet = sheet)),silent = TRUE)
+
+    if(!class(Carbon)[1] == "try-error"){
+
+      TempColName=FixExcelRowNames(Carbon[6,])
+      Carbon=Carbon[7:dim(Carbon)[1],]
+      CoreName=toString(DisconnectNameAndDepth(Carbon[1,1])[1])
+      Carbon[,1]=gsub(paste(CoreName," ",sep=""),"",as.matrix(Carbon[,1]))
+      Carbon=suppressWarnings(as.data.frame(matrix(as.numeric(unlist(Carbon)),ncol = dim(Carbon)[2])))
+      TempColName[1]="depth"
+      colnames(Carbon)=enc2native(TempColName)
+      #Carbon[,1]=AddAgges(Carbon[,1],Folder[["ages"]][[Folder[["Description"]][[FilenameKey]][1,2]]]) <- Use later when ages can be used
+
+      #DataDiscription
+
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Carbon is available"),2]
+
+
+      if(sum(!is.na(Carbon[,which(colnames(Carbon)=="Total Carbon (TC, %)")]))>0){
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Carbon is available"),2]=TRUE
+        }else{ Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Carbon is available"),2]=FALSE }
+
+      if(sum(!is.na(Carbon[,which(colnames(Carbon)=="Total Organic Carbon (TOC, %)")]))>0){
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Organic Carbon is availiable"),2]=TRUE
+      }else{ Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Organic Carbon is availiable"),2]=FALSE }
+
+    }else{
+
+      #DataDiscription
+
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Carbon is available"),2]=FALSE
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Organic Carbon is availiable"),2]=FALSE
+
     }
 
     return(Folder)

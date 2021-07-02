@@ -230,7 +230,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     dissimilarityData=dissimilarityIndex(MDSData,method)
 
-    monoMDSData=monoMDS(dissimilarityData, k=3)
+    monoMDSData=metaMDS(dissimilarityData, k=3)
 
     ExternalCalibrator = data[["GlobalInsolation"]]
 
@@ -246,18 +246,21 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     MDS1=matrix(MDS1,ncol = 1)
     row.names(MDS1)=as.character(MDSAges)
-    colnames(MDS1)="MDS_1_SiteScores"
-    data[["Diatom"]][[i]][["MDS_1_SiteScores"]]=MDS1
+    colnames(MDS1)="nMDS_Dim1"
+    data[["Diatom"]][[i]][["nMDS"]][["Dim1"]]=MDS1
 
     MDS2=matrix(MDS2,ncol = 1)
     row.names(MDS2)=as.character(MDSAges)
-    colnames(MDS2)="MDS_2_SiteScores"
-    data[["Diatom"]][[i]][["MDS_2_SiteScores"]]=MDS2
+    colnames(MDS2)="nMDS_Dim2"
+    data[["Diatom"]][[i]][["nMDS"]][["Dim2"]]=MDS2
 
     MDS3=matrix(MDS3,ncol = 1)
     row.names(MDS3)=as.character(MDSAges)
-    colnames(MDS3)="MDS_3_SiteScores"
-    data[["Diatom"]][[i]][["MDS_3_SiteScores"]]=MDS3
+    colnames(MDS3)="nMDS_Dim3"
+    data[["Diatom"]][[i]][["nMDS"]][["Dim3"]]=MDS3
+
+
+
 
 
 
