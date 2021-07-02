@@ -91,6 +91,9 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
       data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("SRS_data")]] = output
 
+      cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          i,"/",length(ls(data[["Diatom"]]))," Rasampel Taxa Data",sep="")
+
     }
 
     return(data)
@@ -163,7 +166,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
        #Printer
        cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-           k,"/",length(ls(data[["Diatom"]])),sep="")
+           k,"/",length(ls(data[["Diatom"]]))," Standadize Diatom Data",sep="")
 
     }
 
@@ -230,7 +233,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     dissimilarityData=dissimilarityIndex(MDSData,method)
 
-    monoMDSData=metaMDS(dissimilarityData, k=3)
+    monoMDSData=metaMDS(dissimilarityData, k=3, autotransform = FALSE)
 
     ExternalCalibrator = data[["GlobalInsolation"]]
 
