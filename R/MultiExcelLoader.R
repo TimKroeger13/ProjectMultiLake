@@ -85,35 +85,13 @@ MultiExcelLoader = function(){
 
       DatasetDescription_matrix=matrix(as.character(unlist(DatasetDescription)),ncol =2)
 
-      DatasetDescription_matrix[,1]=c("CoreID",
-                                      "Project_expedition",
-                                      "sampling_year_CE",
-                                      "PI_first_name",
-                                      "PI_last_name",
-                                      "Email",
-                                      "ORCID",
-                                      "Latitude_decdeg",
-                                      "Longitude_decdeg",
-                                      "Water_Depth_m",
-                                      "Core_Length_m",
-                                      "Drilling_Device",
-                                      "LakeID",
-                                      "Site_Name",
-                                      "Country",
-                                      "Catchment_Area_km2",
-                                      "Lake_Extent_km2",
-                                      "Lake_Depth_m" ,
-                                      "Vegetation_Zone",
-                                      "Climate_Zone",
-                                      "Lake_Type")
-
-      DatasetDescriptionElemts = c("14C_available",
-                                   "agemodel_available",
-                                   "Diatoms_available",
-                                   "Diatom_samples_before_11700",
-                                   "Diatom_samples_after_11700",
-                                   "TC_available",
-                                   "TOC_available")
+      DatasetDescriptionElemts = c("Date measurements in the core",
+                                   "Data has a complete age tabel",
+                                   "Diatom data is available",
+                                   "Number of Meassured Diatoms <11700",
+                                   "Number of Meassured Diatoms >=11700",
+                                   "Total Carbon is available",
+                                   "Total Organic Carbon is availiable")
 
       DatasetDescriptionFile = matrix(0, nrow = dim(DatasetDescription_matrix)[1]+length(DatasetDescriptionElemts),ncol =2)
 
@@ -138,7 +116,7 @@ MultiExcelLoader = function(){
 
       #DataDiscription
 
-      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="14C_available"),2]=
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Date measurements in the core"),2]=
         dim(AgeDate)[1]
 
     }
@@ -168,7 +146,7 @@ MultiExcelLoader = function(){
 
       #Discription
 
-      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Diatoms_available"),2]=TRUE
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Diatom data is available"),2]=TRUE
 
       if(!sum(AgeFinder==TRUE)==0){
 
@@ -188,23 +166,23 @@ MultiExcelLoader = function(){
 
         #Discription
 
-        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Diatom_samples_before_11700"),2]=
-          as.character(sum(Diatom[,1]<holoceneBorder,na.rm = T))
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Number of Meassured Diatoms <11700"),2]=
+          as.character(sum(Diatom[,1]<holoceneBorder))
 
-        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Diatom_samples_after_11700"),2]=
-          as.character(sum(Diatom[,1]>=holoceneBorder,na.rm = T))
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Number of Meassured Diatoms >=11700"),2]=
+          as.character(sum(Diatom[,1]>=holoceneBorder))
 
-        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="agemodel_available"),2]=TRUE
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Data has a complete age tabel"),2]=TRUE
 
       }else{
 
-        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="agemodel_available"),2]=FALSE
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Data has a complete age tabel"),2]=FALSE
 
       }
     }else{
 
-      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="agemodel_available"),2]=FALSE
-      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Diatoms_available"),2]=FALSE
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Data has a complete age tabel"),2]=FALSE
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Diatom data is available"),2]=FALSE
 
     }
 
@@ -227,23 +205,23 @@ MultiExcelLoader = function(){
 
       #DataDiscription
 
-      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TC_available"),2]
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Carbon is available"),2]
 
 
       if(sum(!is.na(Carbon[,which(colnames(Carbon)=="Total Carbon (TC, %)")]))>0){
-        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TC_available"),2]=TRUE
-        }else{ Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TC_available"),2]=FALSE }
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Carbon is available"),2]=TRUE
+        }else{ Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Carbon is available"),2]=FALSE }
 
       if(sum(!is.na(Carbon[,which(colnames(Carbon)=="Total Organic Carbon (TOC, %)")]))>0){
-        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TOC_available"),2]=TRUE
-      }else{ Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TOC_available"),2]=FALSE }
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Organic Carbon is availiable"),2]=TRUE
+      }else{ Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Organic Carbon is availiable"),2]=FALSE }
 
     }else{
 
       #DataDiscription
 
-      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TC_available"),2]=FALSE
-      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TOC_available"),2]=FALSE
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Carbon is available"),2]=FALSE
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Total Organic Carbon is availiable"),2]=FALSE
 
     }
 
@@ -297,10 +275,10 @@ MultiExcelLoader = function(){
 
   if(dim(age)[2]==1){
 
-    colnames=unlist(strsplit(colnames(age),","))
-    AmountofCollums=as.numeric(lengths(regmatches(age[1,1],gregexpr(",", age[1,1]))))+1
-    age=data.frame(matrix(unlist(strsplit(unlist(age), ',')), ncol = AmountofCollums, byrow = TRUE))
-    colnames(age)=colnames
+    setwd(orginalWorkingDirectoryPath)
+
+    stop("Excel was read in incorrectly.\n
+         Separate the columns and save the file again.")
 
   }
 
@@ -315,9 +293,9 @@ MultiExcelLoader = function(){
   }
 
   InsolationCurve=read.table(FileNamesInsolation,sep=";",header = T)
-  InsolationCurveValue=matrix(InsolationCurve[,7],ncol = 1)
-  rownames(InsolationCurveValue)=InsolationCurve[,1]*1000
-  Folder[["GlobalInsolation"]]=InsolationCurveValue
+  InsolationCurve=matrix(InsolationCurve[,7],ncol = 1)
+  rownames(InsolationCurve)=1:dim(InsolationCurve)[1]*1000
+  Folder[["GlobalInsolation"]]=InsolationCurve
 
   for(i in 1:length(list.files()[grep("data.xlsx",list.files())])){
 
@@ -329,7 +307,7 @@ MultiExcelLoader = function(){
 
     #Printer
     cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-        i,"/",length(list.files()[grep("data.xlsx",list.files())])," Loading Excels from ",getwd(),sep="")
+        i,"/",length(list.files()[grep("data.xlsx",list.files())]),sep="")
 
   }
 
