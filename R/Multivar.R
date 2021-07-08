@@ -233,7 +233,8 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     dissimilarityData=dissimilarityIndex(MDSData,method)
 
-    monoMDSData=metaMDS(dissimilarityData, k=3, autotransform = FALSE)
+    monoMDSData=metaMDS(dissimilarityData, k=2, autotransform = FALSE)
+
 
     ExternalCalibrator = data[["GlobalInsolation"]]
 
@@ -243,47 +244,52 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     MDSrotation = MDSrotate(monoMDSData, vec = ExternalCalibrator$y)
 
+
+    #MDSrotation=monoMDSData #<--------------------------------------------------- Just for Testing delte laster!
+
     MDS1=MDSrotation$points[, 1]
     MDS2=MDSrotation$points[, 2]
-    MDS3=MDSrotation$points[, 3]
 
     MDS1=matrix(MDS1,ncol = 1)
     row.names(MDS1)=as.character(MDSAges)
     colnames(MDS1)="nMDS_Dim1"
     data[["Diatom"]][[i]][["nMDS"]][["Dim1"]]=MDS1
 
+
     MDS2=matrix(MDS2,ncol = 1)
     row.names(MDS2)=as.character(MDSAges)
     colnames(MDS2)="nMDS_Dim2"
     data[["Diatom"]][[i]][["nMDS"]][["Dim2"]]=MDS2
 
-    MDS3=matrix(MDS3,ncol = 1)
-    row.names(MDS3)=as.character(MDSAges)
-    colnames(MDS3)="nMDS_Dim3"
-    data[["Diatom"]][[i]][["nMDS"]][["Dim3"]]=MDS3
+    #Stress
+    data[["Diatom"]][[i]][["nMDS"]][["Stress"]]=MDSrotation$stress
 
 
+    #DCA
+    dca=suppressWarnings(decorana(data[["Diatom"]][[i]]$rawData[,4:dim(data[["Diatom"]][[i]]$rawData)[2]]))
+
+    data[["Diatom"]][[i]][["DCA_Gradient_Length"]]=round(max(dca$rproj[,1:4]),digits = 3)
+
+    #Beta diversity Turn Over
+
+    Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
+    TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
+    TempdataForCalculation=round(TempdataForCalculation)
 
 
+    dim(TempdataForCalculation)
 
+    BetaDiversity=matrix(NA,ncol = 1,nrow = dim(TempdataForCalculation)[1]-1)
+    rownames(BetaDiversity)=Tempdata[1:dim(Tempdata)[1]-1,1]
+    colnames(BetaDiversity)="Hierarchical beta diversity"
 
+    for(k in (dim(TempdataForCalculation)[1]):2){
 
+      BetaDiversity[k-1]=vegdist(TempdataForCalculation[(k-1):k,],method = "bray")
 
-'
-    vari1=matrix(c(round(fit$eig*100/sum(fit$eig),1)[1],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
-    colnames(vari1)="MDS_1_Variance"
-    data[[names(data)[["Diatom"]][i]]][["MDS_1_Variance"]]=vari1
+    }
 
-    vari2=matrix(c(round(fit$eig*100/sum(fit$eig),1)[2],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
-    colnames(vari2)="MDS_2_Variance"
-    data[[names(data)[["Diatom"]][i]]][["MDS_2_Variance"]]=vari2
-
-    vari3=matrix(c(round(fit$eig*100/sum(fit$eig),1)[3],rep(NA,length(Tempdata[,1])-1)),ncol = 1)
-    colnames(vari3)="MDS_3_Variance"
-    data[[names(data)[["Diatom"]][i]]][["MDS_3_Variance"]]=vari3
-'
-
-
+    data[["Diatom"]][[i]][["BetaDiversity"]]=BetaDiversity
 
   }
 

@@ -107,7 +107,7 @@ MultiExcelLoader = function(){
                                       "Climate_Zone",
                                       "Lake_Type")
 
-      DatasetDescriptionElemts = c("14C_available",
+      DatasetDescriptionElemts = c("dating_points",
                                    "agemodel_available",
                                    "Diatoms_available",
                                    "Diatom_samples_before_11700",
