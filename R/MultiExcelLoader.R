@@ -81,7 +81,7 @@ MultiExcelLoader = function(){
 
       DatasetDescription=DatasetDescription[4:28,2:3]
 
-      DatasetDescription = DatasetDescription[cbind(!is.na(DatasetDescription[,2]),!is.na(DatasetDescription[,2]))]
+      DatasetDescription = DatasetDescription[cbind(!DatasetDescription[,1]=="-------------------------------------------",!DatasetDescription[,1]=="-------------------------------------------")]
 
       DatasetDescription_matrix=matrix(as.character(unlist(DatasetDescription)),ncol =2)
 
