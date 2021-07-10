@@ -113,7 +113,9 @@ MultiExcelLoader = function(){
                                    "Diatom_samples_before_11700",
                                    "Diatom_samples_after_11700",
                                    "TC_available",
-                                   "TOC_available")
+                                   "TOC_available",
+                                   "LOI_availible",
+                                   "Br_availiable")
 
       DatasetDescriptionFile = matrix(0, nrow = dim(DatasetDescription_matrix)[1]+length(DatasetDescriptionElemts),ncol =2)
 
@@ -216,25 +218,39 @@ MultiExcelLoader = function(){
 
     if(!class(Carbon)[1] == "try-error"){
 
-      TempColName=FixExcelRowNames(Carbon[6,])
-      Carbon=Carbon[7:dim(Carbon)[1],]
-      CoreName=toString(DisconnectNameAndDepth(Carbon[1,1])[1])
-      Carbon[,1]=gsub(paste(CoreName," ",sep=""),"",as.matrix(Carbon[,1]))
-      Carbon=suppressWarnings(as.data.frame(matrix(as.numeric(unlist(Carbon)),ncol = dim(Carbon)[2])))
-      TempColName[1]="depth"
-      colnames(Carbon)=enc2native(TempColName)
-      #Carbon[,1]=AddAgges(Carbon[,1],Folder[["ages"]][[Folder[["Description"]][[FilenameKey]][1,2]]]) <- Use later when ages can be used
+      AgeFinder=read.table(textConnection(TempAge[,1]))[,1]==Folder[["Description"]][[FilenameKey]][1,2]
 
-      #DataDiscription
+      if(!sum(AgeFinder==TRUE)==0){
 
-      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TC_available"),2]
+        TempColName=FixExcelRowNames(Carbon[6,])
+        Carbon=Carbon[7:dim(Carbon)[1],]
+        CoreName=toString(DisconnectNameAndDepth(Carbon[1,1])[1])
+        Carbon[,1]=gsub(paste(CoreName," ",sep=""),"",as.matrix(Carbon[,1]))
+        Carbon=suppressWarnings(as.data.frame(matrix(as.numeric(unlist(Carbon)),ncol = dim(Carbon)[2])))
+        TempColName[1]="depth"
+        colnames(Carbon)=enc2native(TempColName)
+        Carbon[,1]=AddAgges(Carbon[,1],Folder[["ages"]][[Folder[["Description"]][[FilenameKey]][1,2]]])
+
+        #AddBr
+
+        Carbon=cbind(Carbon,matrix(NA,ncol = 1, nrow = dim(Carbon)[1]))
+        colnames(Carbon)=c("depth","Nitrogen","TC","TOC","LOI","d13c","WaterContent","Br")
+
+        Folder[["Carbon"]][[FilenameKey]][["rawData"]]=Carbon
+
+      }
 
 
-      if(sum(!is.na(Carbon[,which(colnames(Carbon)=="Total Carbon (TC, %)")]))>0){
+      if(sum(!is.na(Carbon[,which(colnames(Carbon)=="LOI")]))>0){
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="LOI_availible"),2]=TRUE
+      }else{ Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="LOI_availible"),2]=FALSE }
+
+
+      if(sum(!is.na(Carbon[,which(colnames(Carbon)=="TC")]))>0){
         Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TC_available"),2]=TRUE
         }else{ Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TC_available"),2]=FALSE }
 
-      if(sum(!is.na(Carbon[,which(colnames(Carbon)=="Total Organic Carbon (TOC, %)")]))>0){
+      if(sum(!is.na(Carbon[,which(colnames(Carbon)=="TOC")]))>0){
         Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TOC_available"),2]=TRUE
       }else{ Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TOC_available"),2]=FALSE }
 
@@ -242,8 +258,53 @@ MultiExcelLoader = function(){
 
       #DataDiscription
 
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="LOI_availible"),2]=FALSE
       Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TC_available"),2]=FALSE
       Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="TOC_available"),2]=FALSE
+
+    }
+
+    #Element
+
+    sheet=c("Element")
+
+    Element=try(suppressMessages(read_excel(path = paste(getwd(),"/",Excelname,sep=""),sheet = sheet)),silent = TRUE)
+
+    if(!class(Element)[1] == "try-error"){
+
+      AgeFinder=read.table(textConnection(TempAge[,1]))[,1]==Folder[["Description"]][[FilenameKey]][1,2]
+
+      if(!is.null(Folder[["Carbon"]][[FilenameKey]][["rawData"]])){
+
+        if(!sum(AgeFinder==TRUE)==0){
+
+          TempColName=FixExcelRowNames(Element[5,])
+          Element=Element[6:dim(Element)[1],]
+          CoreName=toString(DisconnectNameAndDepth(Element[1,1])[1])
+          Element[,1]=gsub(paste(CoreName," ",sep=""),"",as.matrix(Element[,1]))
+          Element=suppressWarnings(as.data.frame(matrix(as.numeric(unlist(Element)),ncol = dim(Element)[2])))
+          TempColName[1]="depth"
+          colnames(Element)=enc2native(TempColName)
+          Element[,1]=AddAgges(Element[,1],Folder[["ages"]][[Folder[["Description"]][[FilenameKey]][1,2]]])
+
+          #Add Brom
+
+          Element$Br_Area
+
+          Folder[["Element"]][[FilenameKey]][["rawData"]] = Element
+
+        }
+      }
+
+      if(sum(!is.na(Element[,which(colnames(Element)=="Br_Area")]))>0){
+        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Br_availiable"),2]=TRUE
+      }else{ Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Br_availiable"),2]=FALSE }
+
+    }else{
+
+      #DataDiscription
+
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Br_availiable"),2]=FALSE
 
     }
 
