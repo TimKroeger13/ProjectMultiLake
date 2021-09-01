@@ -110,8 +110,15 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     for(x in 1:dim(TempDataForCalculation)[1]){
 
+      if(sum(TempDataForCalculation[x,]>0)==0){
+
+        BetterEqualMedian[x,]=FALSE
+
+      }else{
+
       BetterEqualMedian[x,]=TempDataForCalculation[x,]>=median(TempDataForCalculation[x,][TempDataForCalculation[x,]>0])
 
+      }
     }
 
     counter=0
@@ -150,8 +157,15 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
       for(i in 1:dim(Tempdata)[1]){
 
+        if(sum(TempdataForCalculation[i,],na.rm = T)==0){
+
+          PercentData[i,4:dim(PercentData)[2]]=0
+
+        }else{
+
         PercentData[i,4:dim(PercentData)[2]]=TempdataForCalculation[i,]/sum(TempdataForCalculation[i,],na.rm = T)*100
 
+        }
       }
 
        PercentData = FilterPercentData(PercentData = PercentData,percentFilterWeight = percentFilterWeight) #Filter Collums
@@ -176,50 +190,12 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
   data=StandadizeData(data, standardize, percentFilterWeight)
   data=SrsFilter(data)
 
+
+
+
+
   #Main Loop
   for (i in 1:length(ls(data[["Diatom"]]))){
-
-    Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
-    TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
-    TempdataForCalculation=round(TempdataForCalculation)
-
-    #Richness
-
-    richness = rarefy(TempdataForCalculation, sample = sum(TempdataForCalculation[1,]), se=T)
-    shannon = diversity(TempdataForCalculation, index = "shannon")
-    invsimpson = diversity(TempdataForCalculation, index = "invsimpson")
-
-    richness=cbind(richness[1,])
-    colnames(richness)=c("richness")
-    row.names(richness)=Tempdata[,1]
-    shannon=cbind(shannon)
-    row.names(shannon)=Tempdata[,1]
-    invsimpson=cbind(invsimpson)
-    row.names(invsimpson)=Tempdata[,1]
-
-    data[["Diatom"]][[i]][[paste("richness")]]=richness
-    data[["Diatom"]][[i]][[paste("shannon")]]=shannon
-    data[["Diatom"]][[i]][[paste("invsimpson")]]=invsimpson
-
-
-    # Loess Predictor
-    for (r in c("richness","shannon","invsimpson")){
-
-      y=as.numeric(row.names(data[["Diatom"]][[i]][[r]]))
-      x=data[["Diatom"]][[i]][[r]]
-
-      loessValues=predict(loess(x ~ y, span=allLoessSpans), se=T,newdata = as.numeric(y)) #Critical Span value
-
-      LoessMean = loessValues$fit
-      LoessConfUp = loessValues$fit + qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
-      LoessConfDown = loessValues$fit - qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
-
-      LoessOut=cbind(LoessMean,LoessConfUp,LoessConfDown)
-      row.names(LoessOut)=Tempdata[,1]
-
-      data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("Loess_",r,sep = "")]]=LoessOut
-
-    }
 
     #MDS
 
@@ -239,8 +215,8 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
     ExternalCalibrator = data[["GlobalInsolation"]]
 
     ExternalCalibrator = approx(y = as.numeric(ExternalCalibrator),
-           x = as.numeric(row.names(ExternalCalibrator)),
-           xout = MDSAges, method = "linear")
+                                x = as.numeric(row.names(ExternalCalibrator)),
+                                xout = MDSAges, method = "linear")
 
     MDSrotation = MDSrotate(monoMDSData, vec = ExternalCalibrator$y)
 
@@ -264,13 +240,58 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
     #Stress
     data[["Diatom"]][[i]][["nMDS"]][["Stress"]]=MDSrotation$stress
 
+  }
+
+
+  #Main Loop
+  for (i in 1:length(ls(data[["Diatom"]]))){
+
+    Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
+    TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
+    TempdataForCalculation=round(TempdataForCalculation)
+
+    #Richness
+
+    richness = rarefy(TempdataForCalculation, sample = sum(TempdataForCalculation[1,]), se=T)
+    shannon = diversity(TempdataForCalculation, index = "shannon")
+    invsimpson = diversity(TempdataForCalculation, index = "invsimpson")
+
+    richness=cbind(richness[1,])
+    colnames(richness)=c("richness")
+    row.names(richness)=Tempdata[,1]
+    shannon=cbind(shannon)
+    row.names(shannon)=Tempdata[,1]
+    invsimpson=cbind(invsimpson)
+    row.names(invsimpson)=Tempdata[,1]
+
+    data[["Diatom"]][[i]][["Species_richness"]][[paste("richness")]]=richness
+    data[["Diatom"]][[i]][["Species_richness"]][[paste("shannon")]]=shannon
+    data[["Diatom"]][[i]][["Species_richness"]][[paste("invsimpson")]]=invsimpson
+
+
+    # Loess Predictor
+    for (r in c("richness","shannon","invsimpson")){
+
+      y=as.numeric(row.names(data[["Diatom"]][[i]][["Species_richness"]][[r]]))
+      x=data[["Diatom"]][[i]][["Species_richness"]][[r]]
+
+      loessValues=predict(loess(x ~ y, span=allLoessSpans), se=T,newdata = as.numeric(y)) #Critical Span value
+
+      LoessMean = loessValues$fit
+      LoessConfUp = loessValues$fit + qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
+      LoessConfDown = loessValues$fit - qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
+
+      LoessOut=cbind(LoessMean,LoessConfUp,LoessConfDown)
+      row.names(LoessOut)=Tempdata[,1]
+
+      data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][["Species_richness"]][[paste("Loess_",r,sep = "")]]=LoessOut
+
+    }
 
     #DCA
     dca=suppressWarnings(decorana(data[["Diatom"]][[i]]$rawData[,4:dim(data[["Diatom"]][[i]]$rawData)[2]]))
 
     data[["Diatom"]][[i]][["DCA_Gradient_Length"]]=round(max(dca$rproj[,1:4]),digits = 3)
-
-
 
 
     #Beta diversity Turn Over
@@ -325,12 +346,9 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     }
 
-
-
-
-
-
-
+    #Printer
+    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        i,"/",length(ls(data[["Diatom"]]))," Multivar",sep="")
 
 
   }

@@ -107,8 +107,7 @@ MultiExcelLoader = function(){
                                       "Climate_Zone",
                                       "Lake_Type")
 
-      DatasetDescriptionElemts = c("dating_points",
-                                   "agemodel_available",
+      DatasetDescriptionElemts = c("agemodel_available",
                                    "Diatoms_available",
                                    "Diatom_samples_before_11700",
                                    "Diatom_samples_after_11700",
@@ -158,6 +157,20 @@ MultiExcelLoader = function(){
 
     }
 
+    #Discription
+
+    AgeFinder=read.table(textConnection(TempAge[,1]))[,1]==Folder[["Description"]][[FilenameKey]][1,2]
+
+    if(!sum(AgeFinder==TRUE)==0){
+
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="agemodel_available"),2]=TRUE
+
+    }else{
+
+      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="agemodel_available"),2]=FALSE
+
+    }
+
     #Diatom
 
     sheet=c("Diatom")
@@ -186,6 +199,8 @@ MultiExcelLoader = function(){
 
         Diatom[,1]=AddAgges(Diatom[,1],Folder[["ages"]][[Folder[["Description"]][[FilenameKey]][1,2]]])
 
+        Diatom[is.na(Diatom)]=0 #<--------------------------------------------------------------------------------------------- Fix just for NA ins Diatom data
+
         Folder[["Diatom"]][[FilenameKey]][["rawData"]]=Diatom
 
         #Discription
@@ -196,16 +211,9 @@ MultiExcelLoader = function(){
         Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Diatom_samples_after_11700"),2]=
           as.character(sum(Diatom[,1]>=holoceneBorder,na.rm = T))
 
-        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="agemodel_available"),2]=TRUE
-
-      }else{
-
-        Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="agemodel_available"),2]=FALSE
-
       }
     }else{
 
-      Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="agemodel_available"),2]=FALSE
       Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="Diatoms_available"),2]=FALSE
 
     }
@@ -343,7 +351,7 @@ MultiExcelLoader = function(){
   Folder=list()
 
   FileNamesXlsx=FileNames[grep("data.xlsx",FileNames)]
-  FileNamesAge=FileNames[grep("ge.xlsx",FileNames)]
+  FileNamesAge=FileNames[grep("Age",FileNames)]
   FileNamesInsolation=FileNames[grep("insolation.txt",FileNames)]
 
   if(identical(FileNamesAge, character(0))){
@@ -351,17 +359,6 @@ MultiExcelLoader = function(){
     setwd(orginalWorkingDirectoryPath)
 
     stop("No file named age.xlsx found")
-
-  }
-
-  age=suppressMessages(read_excel(path = paste(getwd(),"/",FileNamesAge,sep=""),sheet = 1))
-
-  if(dim(age)[2]==1){
-
-    colnames=unlist(strsplit(colnames(age),","))
-    AmountofCollums=as.numeric(lengths(regmatches(age[1,1],gregexpr(",", age[1,1]))))+1
-    age=data.frame(matrix(unlist(strsplit(unlist(age), ',')), ncol = AmountofCollums, byrow = TRUE))
-    colnames(age)=colnames
 
   }
 
@@ -379,6 +376,36 @@ MultiExcelLoader = function(){
   InsolationCurveValue=matrix(InsolationCurve[,7],ncol = 1)
   rownames(InsolationCurveValue)=InsolationCurve[,1]*1000
   Folder[["GlobalInsolation"]]=InsolationCurveValue
+
+  age=read.csv(file = paste(getwd(),"/",FileNamesAge,sep=""))
+
+  if(dim(age)[2]==1){
+
+    colnames=unlist(strsplit(colnames(age),","))
+    AmountofCollums=as.numeric(lengths(regmatches(age[1,1],gregexpr(",", age[1,1]))))+1
+    age=data.frame(matrix(unlist(strsplit(unlist(age), ',')), ncol = AmountofCollums, byrow = TRUE))
+    colnames(age)=colnames
+
+  }else{
+
+    RawFixedAges = strsplit(age[,1]," ")
+    FixedAges = NULL
+
+    for (p in 1:dim(age)[1]){
+
+      FixedAges = c(FixedAges,RawFixedAges[[p]][1])
+
+      if(p %% 1000 == 0){
+
+        cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+            p,"/",dim(age)[1]," Fixing age Names ",sep="")
+
+      }
+    }
+
+    age[,1]=FixedAges
+
+  }
 
   for(i in 1:length(list.files()[grep("data.xlsx",list.files())])){
 
