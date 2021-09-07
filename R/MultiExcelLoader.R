@@ -48,6 +48,75 @@ MultiExcelLoader = function(){
 
   }
 
+  DeleteNullRows = function(DataFrame){
+
+    i=0
+
+    while (i<dim(DataFrame)[1]) {
+
+      i=i+1
+
+      if(sum(DataFrame[i,3:dim(DataFrame)[2]])==0){
+
+        DataFrame=DataFrame[-i,]
+
+        i=i-1
+
+      }
+    }
+
+    return(DataFrame)
+
+  }
+
+  DeleteUnclearDepth = function(DataFrame){
+
+    i=0
+
+    while (i<dim(DataFrame)[1]) {
+
+      i=i+1
+
+      if(is.na(DataFrame[i,1])){
+
+        DataFrame=DataFrame[-i,]
+
+        i=i-1
+
+      }
+    }
+
+    return(DataFrame)
+
+  }
+
+
+  RoundDepth = function(roundData){
+
+    for (i in 1:length(roundData)){
+
+      if(roundData[i]!=0){
+
+        if(roundData[i] %% 0.25 !=0){
+
+          if(roundData[i] %% 0.25<0.125){
+
+            roundData[i]=roundData[i] - roundData[i] %% 0.25
+
+          }else{
+
+            roundData[i]=roundData[i] + (0.25-roundData[i] %% 0.25)
+
+          }
+        }
+      }
+    }
+
+    return(roundData)
+
+  }
+
+
   AddAgges = function(depth,age){
 
     if(!age$compositedepth[2]==0.25){
@@ -197,9 +266,15 @@ MultiExcelLoader = function(){
         colnames(Diatom)=enc2native(TempColName)
         Diatom=cbind(Diatom[,1:3],DeleteNaRows(Diatom[,4:dim(Diatom)[2]]))
 
+        Diatom=DeleteUnclearDepth(Diatom)
+
+        Diatom[,1]=RoundDepth(Diatom[,1])
+
         Diatom[,1]=AddAgges(Diatom[,1],Folder[["ages"]][[Folder[["Description"]][[FilenameKey]][1,2]]])
 
         Diatom[is.na(Diatom)]=0 #<--------------------------------------------------------------------------------------------- Fix just for NA ins Diatom data
+
+        Diatom=DeleteNullRows(Diatom)
 
         Folder[["Diatom"]][[FilenameKey]][["rawData"]]=Diatom
 

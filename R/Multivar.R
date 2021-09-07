@@ -14,7 +14,7 @@
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.5){
+Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.8){
 
   DeleteRowWithoutTimestamp <- function(data){
 
@@ -43,6 +43,34 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
     return(data)
 
   }
+
+  DeleteNulRows <- function(data,age){
+
+    i=0
+
+    while (!i==dim(data)[1]){
+
+      i=i+1
+
+      if(sum(data[i,])==0){
+
+        data=data[-i,]
+        age=age[-i]
+
+        i=i-1
+
+      }
+
+    }
+
+    output=list()
+    output$data=data
+    output$age=age
+
+    return(output)
+
+  }
+
 
   dissimilarityIndex <- function(data,method){
 
@@ -196,6 +224,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   #Main Loop
   for (i in 1:length(ls(data[["Diatom"]]))){
+  #for (i in 1:10){
 
     #MDS
 
@@ -206,11 +235,15 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
     MDSAges=MDSData[,1]
     MDSData=MDSData[,4:dim(MDSData)[2]]
     MDSData=DeleteNullCollums(MDSData)
+    RowDeletedData=DeleteNulRows(MDSData,MDSAges)
+
+    MDSAges=RowDeletedData$age
+    MDSData=RowDeletedData$data
+
 
     dissimilarityData=dissimilarityIndex(MDSData,method)
 
-    monoMDSData=metaMDS(dissimilarityData, k=2, autotransform = FALSE)
-
+    monoMDSData=suppressWarnings(metaMDS(dissimilarityData, k=2, autotransform = FALSE))
 
     ExternalCalibrator = data[["GlobalInsolation"]]
 
@@ -245,6 +278,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   #Main Loop
   for (i in 1:length(ls(data[["Diatom"]]))){
+  #for (i in 1:4){
 
     Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
     TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
