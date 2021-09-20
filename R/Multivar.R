@@ -387,6 +387,9 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   }
 
+  cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "Done",sep="")
+
   return(data)
 
 }

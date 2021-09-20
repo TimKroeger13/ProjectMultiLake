@@ -39,7 +39,9 @@ SaveOutput = function(data){
 
     row.names(OutPutDiscriptionMatrix)=data[["Description"]][[1]][,1]
 
-      write.table(OutPutDiscriptionMatrix,file = paste(getwd(),"/","Metadata",".csv",sep=""),
+    turnedOutPutDiscriptionMatrix=OutPutDiscriptionMatrix
+
+      write.table(turnedOutPutDiscriptionMatrix,file = paste(getwd(),"/","Metadata",".csv",sep=""),
                   append = FALSE,na = "", sep = "; ", row.names = T, col.names = F,quote = F)
 
   }

@@ -428,16 +428,15 @@ MultiExcelLoader = function(){
   FileNamesXlsx=FileNames[grep("data.xlsx",FileNames)]
   FileNamesAge=FileNames[grep("Age",FileNames)]
   FileNamesInsolation=FileNames[grep("insolation.txt",FileNames)]
+  FileNamesClima=FileNames[grep("HAD3MCB-M",FileNames)]
 
   if(identical(FileNamesAge, character(0))){
 
     setwd(orginalWorkingDirectoryPath)
 
-    stop("No file named age.xlsx found")
+    stop("No file named age.csv found")
 
   }
-
-  #Insolation
 
   if(identical(FileNamesInsolation, character(0))){
 
@@ -447,10 +446,23 @@ MultiExcelLoader = function(){
 
   }
 
+  if(identical(FileNamesClima, character(0))){
+
+    setwd(orginalWorkingDirectoryPath)
+
+    stop("No Climate filenames found (Program was looking after '...HAD3MCB-M...)'")
+
+  }
+
+
+  #Insolation
+
   InsolationCurve=read.table(FileNamesInsolation,sep=";",header = T)
   InsolationCurveValue=matrix(InsolationCurve[,7],ncol = 1)
   rownames(InsolationCurveValue)=InsolationCurve[,1]*1000
   Folder[["GlobalInsolation"]]=InsolationCurveValue
+
+  #Age
 
   age=read.csv(file = paste(getwd(),"/",FileNamesAge,sep=""))
 
@@ -482,6 +494,60 @@ MultiExcelLoader = function(){
 
   }
 
+
+  #Climate
+
+  for (i in 1:length(FileNamesClima)){
+
+    ClimateName = FileNamesClima[i]
+
+    Clima = read.table(ClimateName)
+
+    Clima[Clima==-999] = NA
+
+    #GetAges (Based on Heidruns Email)
+
+    ClimaValueStart = 1950
+    ClimaValueIntervalls = 200
+
+    ClimaValueEnd = ClimaValueStart - (ClimaValueIntervalls/2)
+    ClimaValueStart =  ClimaValueEnd - ClimaValueIntervalls*(dim(Clima)[2]-2)
+
+    colnames(Clima) = c("names",(1950-seq(from = ClimaValueStart, to = ClimaValueEnd, by = ClimaValueIntervalls)))
+    CilmaAges = (1950-seq(from = ClimaValueStart, to = ClimaValueEnd, by = ClimaValueIntervalls))
+
+    #GetAnuel
+
+    ClimaMonth = NA
+
+#annual summer winter
+
+    if(length(try(grep("annual",ClimateName)))>0){
+
+      ClimaMonth="annual"
+
+    }else if (length(try(grep("summer",ClimateName)))>0){
+
+      ClimaMonth="summer"
+
+    }else if (length(try(grep("winter",ClimateName)))>0){
+
+      ClimaMonth="winter"
+
+    }
+
+    for (k in 1:dim(Clima)[1]){
+
+      ClimaVektor = Clima[k,2:dim(Clima)[2]]
+
+      if (!sum(!is.na(ClimaVektor))==0){
+
+        Folder[["Clima"]][[ClimaMonth]][[Clima[k,1]]]=ClimaVektor
+
+      }
+    }
+  }
+
   for(i in 1:length(list.files()[grep("data.xlsx",list.files())])){
 
     FilenameKey=read.table(textConnection(gsub("_", " ", FileNamesXlsx)))[i,1]
@@ -497,6 +563,9 @@ MultiExcelLoader = function(){
   }
 
   setwd(orginalWorkingDirectoryPath)
+
+  cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "Done",sep="")
 
   return(Folder)
 

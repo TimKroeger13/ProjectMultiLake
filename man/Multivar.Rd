@@ -9,7 +9,7 @@ Multivar(
   method = "bray",
   standardize = c("", "sqrt"),
   percentFilterWeight = 0,
-  allLoessSpans = 0.5
+  allLoessSpans = 0.8
 )
 }
 \arguments{
