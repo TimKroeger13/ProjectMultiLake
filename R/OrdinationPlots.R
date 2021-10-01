@@ -344,11 +344,12 @@ Ordination = function(data){
 
   nameLoess="Loess_invsimpson"
   nameNormal="invsimpson"
+  minlegth = 10
 
   PlotsVariantsLoess = c("Normal","Loess")
   PlotsVariantsTransform = c("Non Transformed","Transformed")
 
-  span=0.8
+  span=0.6
 
   for (VariantsLoess in PlotsVariantsLoess){
     for (VariantsTransform in PlotsVariantsTransform){
@@ -370,27 +371,29 @@ Ordination = function(data){
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
+              if(length(Values)>=minlegth){
 
-              valueNames = as.numeric(rownames(Values))
-              Values = as.numeric(Values)
-              Values = matrix(Values, ncol = 1)
-              rownames(Values) = valueNames
+                valueNames = as.numeric(rownames(Values))
+                Values = as.numeric(Values)
+                Values = matrix(Values, ncol = 1)
+                rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,20000)
 
-              if(!is.null(Values)){
+                if(!is.null(Values)){
 
-                if(max(Values[,2])>Xmax){
-                  Xmax=max(Values[,2])
-                }
-                if(min(Values[,2])<Xmin){
-                  Xmin=min(Values[,2])
-                }
-                if(max(Values[,1])>Ymax){
-                  Ymax=max(Values[,1])
-                }
-                if(min(Values[,1])<Ymin){
-                  Ymin=min(Values[,1])
+                  if(max(Values[,2])>Xmax){
+                    Xmax=max(Values[,2])
+                  }
+                  if(min(Values[,2])<Xmin){
+                    Xmin=min(Values[,2])
+                  }
+                  if(max(Values[,1])>Ymax){
+                    Ymax=max(Values[,1])
+                  }
+                  if(min(Values[,1])<Ymin){
+                    Ymin=min(Values[,1])
+                  }
                 }
               }
             }
@@ -412,23 +415,25 @@ Ordination = function(data){
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
+              if(length(Values)>=minlegth){
 
-              Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,20000)
 
-              if(!is.null(Values)){
+                if(!is.null(Values)){
 
-                points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                  points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
 
-                if(VariantsLoess == "Loess"){
+                  if(VariantsLoess == "Loess"){
 
-                  #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
-                  Values = cbind(Values[,1],ValuesLoess$fitted)
+                    #Loess
+                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                    Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                  }
+
+                  lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
 
                 }
-
-                lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
-
               }
             }
           }
@@ -443,34 +448,36 @@ Ordination = function(data){
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
+              if(length(Values)>=minlegth){
 
-              Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,20000)
 
-              if(!is.null(Values)){
+                if(!is.null(Values)){
 
-                if(VariantsLoess == "Loess"){
+                  if(VariantsLoess == "Loess"){
 
-                  #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
-                  Values = cbind(Values[,1],ValuesLoess$fitted)
+                    #Loess
+                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                    Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                  }
+
+                  distance = 120
+
+                  if(i>=10){distance = 200}
+
+                  text(Values[dim(Values)[1],1]+distance,
+                       Values[dim(Values)[1],2],
+                       label=i,
+                       col="white",
+                       cex=1.2)
+
+                  text(Values[dim(Values)[1],1]+distance,
+                       Values[dim(Values)[1],2],
+                       label=i,
+                       col=Allcolor[i])
 
                 }
-
-                distance = 120
-
-                if(i>=10){distance = 200}
-
-                text(Values[dim(Values)[1],1]+distance,
-                     Values[dim(Values)[1],2],
-                     label=i,
-                     col="white",
-                     cex=1.2)
-
-                text(Values[dim(Values)[1],1]+distance,
-                     Values[dim(Values)[1],2],
-                     label=i,
-                     col=Allcolor[i])
-
               }
             }
           }
@@ -493,29 +500,31 @@ Ordination = function(data){
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
+              if(length(Values)>=minlegth){
 
-              valueNames = as.numeric(rownames(Values))
-              Values = as.numeric(Values)
-              Values = matrix(Values, ncol = 1)
-              rownames(Values) = valueNames
+                valueNames = as.numeric(rownames(Values))
+                Values = as.numeric(Values)
+                Values = matrix(Values, ncol = 1)
+                rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,20000)
 
-              if(!is.null(Values)){
+                if(!is.null(Values)){
 
-                Values[,2] = scale(Values[,2],center = T, scale = T)
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                if(max(Values[,2])>Xmax){
-                  Xmax=max(Values[,2])
-                }
-                if(min(Values[,2])<Xmin){
-                  Xmin=min(Values[,2])
-                }
-                if(max(Values[,1])>Ymax){
-                  Ymax=max(Values[,1])
-                }
-                if(min(Values[,1])<Ymin){
-                  Ymin=min(Values[,1])
+                  if(max(Values[,2])>Xmax){
+                    Xmax=max(Values[,2])
+                  }
+                  if(min(Values[,2])<Xmin){
+                    Xmin=min(Values[,2])
+                  }
+                  if(max(Values[,1])>Ymax){
+                    Ymax=max(Values[,1])
+                  }
+                  if(min(Values[,1])<Ymin){
+                    Ymin=min(Values[,1])
+                  }
                 }
               }
             }
@@ -537,25 +546,27 @@ Ordination = function(data){
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
+              if(length(Values)>=minlegth){
 
-              Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,20000)
 
-              if(!is.null(Values)){
+                if(!is.null(Values)){
 
-                Values[,2] = scale(Values[,2],center = T, scale = T)
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                  points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
 
-                if(VariantsLoess == "Loess"){
+                  if(VariantsLoess == "Loess"){
 
-                  #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
-                  Values = cbind(Values[,1],ValuesLoess$fitted)
+                    #Loess
+                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                    Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                  }
+
+                  lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
 
                 }
-
-                lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
-
               }
             }
           }
@@ -570,36 +581,38 @@ Ordination = function(data){
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
+              if(length(Values)>=minlegth){
 
-              Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,20000)
 
-              if(!is.null(Values)){
+                if(!is.null(Values)){
 
-                Values[,2] = scale(Values[,2],center = T, scale = T)
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                if(VariantsLoess == "Loess"){
+                  if(VariantsLoess == "Loess"){
 
-                  #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
-                  Values = cbind(Values[,1],ValuesLoess$fitted)
+                    #Loess
+                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                    Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                  }
+
+                  distance = 120
+
+                  if(i>=10){distance = 200}
+
+                  text(Values[dim(Values)[1],1]+distance,
+                       Values[dim(Values)[1],2],
+                       label=i,
+                       col="white",
+                       cex=1.2)
+
+                  text(Values[dim(Values)[1],1]+distance,
+                       Values[dim(Values)[1],2],
+                       label=i,
+                       col=Allcolor[i])
 
                 }
-
-                distance = 120
-
-                if(i>=10){distance = 200}
-
-                text(Values[dim(Values)[1],1]+distance,
-                     Values[dim(Values)[1],2],
-                     label=i,
-                     col="white",
-                     cex=1.2)
-
-                text(Values[dim(Values)[1],1]+distance,
-                     Values[dim(Values)[1],2],
-                     label=i,
-                     col=Allcolor[i])
-
               }
             }
           }
