@@ -5,6 +5,7 @@
 #'@importFrom grDevices rainbow
 #'@importFrom graphics lines points text legend
 #'@importFrom stats na.omit
+#'@importFrom grDevices dev.off pdf
 #'@export
 #'@return nothing.
 #'@author Tim Kroeger
