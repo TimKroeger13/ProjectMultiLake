@@ -19,7 +19,7 @@ Multivar(
 
 \item{standardize}{Method for data standardisation. Can be nothing "" ir sqaureroot transformation "sqrt".}
 
-\item{percentFilterWeight}{Value how much percent a single species must declare at minimum from the dataset.}
+\item{percentFilterWeight}{Value how much percent a single species must relevant at minimum from the dataset.}
 
 \item{allLoessSpans}{span value for all Loess calculations made by Multivar.}
 }

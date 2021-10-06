@@ -4,7 +4,7 @@
 #'@param data List of data generates by the MultiExcelLoader function.
 #'@param method Method for calculation Dissimilarity Indices for Community Ecologists.
 #'@param standardize Method for data standardisation. Can be nothing "" ir sqaureroot transformation "sqrt".
-#'@param percentFilterWeight Value how much percent a single species must declare at minimum from the dataset.
+#'@param percentFilterWeight Value how much percent a single species must relevant at minimum from the dataset.
 #'@param allLoessSpans span value for all Loess calculations made by Multivar.
 #'@import vegan SRS
 #'@importFrom stats prcomp loess median predict qt quantile approx

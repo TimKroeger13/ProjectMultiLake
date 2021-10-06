@@ -409,7 +409,7 @@ MultiExcelLoader = function(){
 
     stop("There is no directory with the name data.
             A new directory has been created in the workspace you selected./n
-            Please drag and drop the files from the AWI database into the data folder in your working directory.")
+            Please drag and drop the files from the AWI database into the data folder in your working directory or use the funktion ImportDatabase.")
 
   }
 
