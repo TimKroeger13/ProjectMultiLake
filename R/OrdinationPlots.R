@@ -13,6 +13,8 @@
 
 Ordination = function(data){
 
+  #new
+
   orginalWorkingDirectoryPath=getwd()
 
   getwdTry <-  try(setwd(paste(getwd(),.Platform[2],"Output",sep="")),silent = TRUE)
