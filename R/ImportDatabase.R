@@ -49,13 +49,26 @@ ImportDatabase = function(directory=NULL){
 
   if(is.null(directory)){
 
+    getwdTry <-  try(setwd("smb://smb.isipd.dmawi.de/projects/p_arclakes/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets",sep=""),
+                     silent = TRUE)
+
+    if(!class(getwdTry) == "try-error"){
+
+      directory = "smb://smb.isipd.dmawi.de/projects/p_arclakes"
+
+    }
+  }
+
+  if(is.null(directory)){
+
     setwd(orginalWorkingDirectoryPath)
 
     stop("\n\nPlease connect to the AWI VPN and the AWI Server")
 
   }
 
-  setwd(paste(toupper(directory),":/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",sep=""))
+  #setwd(paste(toupper(directory),":/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",sep=""))
+  setwd(paste(toupper(directory),"/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",sep=""))
 
   FilesToCopy = list.files()
 
@@ -112,7 +125,8 @@ ImportDatabase = function(directory=NULL){
 
   #Extra Data
 
-  setwd(paste(toupper(directory),":/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",sep=""))
+  #setwd(paste(toupper(directory),":/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",sep=""))
+  setwd(paste(toupper(directory),"/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",sep=""))
 
   FilesToCopy = list.files()
 
