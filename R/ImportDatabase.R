@@ -49,7 +49,7 @@ ImportDatabase = function(directory=NULL){
 
   if(is.null(directory)){
 
-    getwdTry <-  try(setwd("/Volumes/projects/p_arclakes/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx",sep=""),
+    getwdTry <-  try(setwd(paste("/Volumes/projects/p_arclakes/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx",sep="")),
                      silent = TRUE)
 
     if(!class(getwdTry) == "try-error"){
@@ -101,14 +101,14 @@ ImportDatabase = function(directory=NULL){
 
     if(overwrite){
 
-    FilesUpdated=FilesUpdated+1
+      FilesUpdated=FilesUpdated+1
 
-    file.copy(from = paste(directory,"/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",CurrentFilenName,sep=""),
-              to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
-              recursive = F,
-              overwrite = TRUE,
-              copy.mode = TRUE,
-              copy.date = TRUE)
+      file.copy(from = paste(directory,"/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",CurrentFilenName,sep=""),
+                to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
+                recursive = F,
+                overwrite = TRUE,
+                copy.mode = TRUE,
+                copy.date = TRUE)
 
     }
 
