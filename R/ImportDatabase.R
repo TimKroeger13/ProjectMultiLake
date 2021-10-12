@@ -41,7 +41,7 @@ ImportDatabase = function(directory=NULL){
 
       if(!class(getwdTry) == "try-error"){
 
-        directory = PossibleDirectory
+        directory = paste(toupper(PossibleDirectory),":",sep = "")
 
       }
     }
@@ -49,12 +49,12 @@ ImportDatabase = function(directory=NULL){
 
   if(is.null(directory)){
 
-    getwdTry <-  try(setwd("smb://smb.isipd.dmawi.de/projects/p_arclakes/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets",sep=""),
+    getwdTry <-  try(setwd("/Volumes/projects/p_arclakes/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx",sep=""),
                      silent = TRUE)
 
     if(!class(getwdTry) == "try-error"){
 
-      directory = "smb://smb.isipd.dmawi.de/projects/p_arclakes"
+      directory = "/Volumes/projects/p_arclakes"
 
     }
   }
@@ -67,8 +67,7 @@ ImportDatabase = function(directory=NULL){
 
   }
 
-  #setwd(paste(toupper(directory),":/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",sep=""))
-  setwd(paste(toupper(directory),"/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",sep=""))
+  setwd(paste(directory,"/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",sep=""))
 
   FilesToCopy = list.files()
 
@@ -90,7 +89,7 @@ ImportDatabase = function(directory=NULL){
 
     if(file.exists(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))){
 
-      NewDataInfo =  file.info(paste(toupper(directory),":/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",CurrentFilenName,sep=""))$mtime
+      NewDataInfo =  file.info(paste(directory,"/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",CurrentFilenName,sep=""))$mtime
       OldDataInfo = file.info(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))$mtime
 
       if(NewDataInfo == OldDataInfo){
@@ -104,7 +103,7 @@ ImportDatabase = function(directory=NULL){
 
     FilesUpdated=FilesUpdated+1
 
-    file.copy(from = paste(toupper(directory),":/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",CurrentFilenName,sep=""),
+    file.copy(from = paste(directory,"/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",CurrentFilenName,sep=""),
               to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
               recursive = F,
               overwrite = TRUE,
@@ -125,8 +124,7 @@ ImportDatabase = function(directory=NULL){
 
   #Extra Data
 
-  #setwd(paste(toupper(directory),":/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",sep=""))
-  setwd(paste(toupper(directory),"/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",sep=""))
+  setwd(paste(directory,"/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",sep=""))
 
   FilesToCopy = list.files()
 
@@ -148,7 +146,7 @@ ImportDatabase = function(directory=NULL){
 
     if(file.exists(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))){
 
-      NewDataInfo =  file.info(paste(toupper(directory),":/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",CurrentFilenName,sep=""))$mtime
+      NewDataInfo =  file.info(paste(directory,"/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",CurrentFilenName,sep=""))$mtime
       OldDataInfo = file.info(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))$mtime
 
       if(NewDataInfo == OldDataInfo){
@@ -162,7 +160,7 @@ ImportDatabase = function(directory=NULL){
 
       FilesUpdated=FilesUpdated+1
 
-      file.copy(from = paste(toupper(directory),":/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",CurrentFilenName,sep=""),
+      file.copy(from = paste(directory,"/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",CurrentFilenName,sep=""),
                 to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
                 recursive = F,
                 overwrite = TRUE,
