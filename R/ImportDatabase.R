@@ -110,6 +110,11 @@ ImportDatabase = function(directory=NULL){
                 copy.mode = TRUE,
                 copy.date = TRUE)
 
+      if(length(grep("Age_",CurrentFilenName))>0){
+
+        suppressWarnings(file.remove(paste(orginalWorkingDirectoryPath,.Platform[2],"data/","FixedAge.csv",sep="")))
+
+      }
     }
 
     #Printer
@@ -124,7 +129,7 @@ ImportDatabase = function(directory=NULL){
 
   #Extra Data
 
-  setwd(paste(directory,"/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",sep=""))
+  setwd(paste(directory,"/ArcLakesDB/LAKEMETADATA/",sep=""))
 
   FilesToCopy = list.files()
 
@@ -146,7 +151,7 @@ ImportDatabase = function(directory=NULL){
 
     if(file.exists(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))){
 
-      NewDataInfo =  file.info(paste(directory,"/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",CurrentFilenName,sep=""))$mtime
+      NewDataInfo =  file.info(paste(directory,"/ArcLakesDB/LAKEMETADATA/",CurrentFilenName,sep=""))$mtime
       OldDataInfo = file.info(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))$mtime
 
       if(NewDataInfo == OldDataInfo){
@@ -160,7 +165,7 @@ ImportDatabase = function(directory=NULL){
 
       FilesUpdated=FilesUpdated+1
 
-      file.copy(from = paste(directory,"/ArcLakesDB/WORKING_GROUP_TRANSFER/Tim Kroeger/MultivarData/",CurrentFilenName,sep=""),
+      file.copy(from = paste(directory,"/ArcLakesDB/LAKEMETADATA/",CurrentFilenName,sep=""),
                 to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
                 recursive = F,
                 overwrite = TRUE,

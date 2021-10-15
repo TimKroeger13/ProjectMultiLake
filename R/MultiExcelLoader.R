@@ -428,9 +428,11 @@ MultiExcelLoader = function(){
   Folder=list()
 
   FileNamesXlsx=FileNames[grep("data.xlsx",FileNames)]
-  FileNamesAge=FileNames[grep("Age",FileNames)]
+  FileNamesAge=FileNames[grep("Age_",FileNames)]
+  FileNamesFixAge=FileNames[grep("FixedAge",FileNames)]
   FileNamesInsolation=FileNames[grep("insolation.txt",FileNames)]
   FileNamesClima=FileNames[grep("HAD3MCB-M",FileNames)]
+  FileNamesMeta=FileNames[grep("LakeData_Alex",FileNames)]
 
   if(identical(FileNamesAge, character(0))){
 
@@ -456,6 +458,13 @@ MultiExcelLoader = function(){
 
   }
 
+  if(identical(FileNamesMeta, character(0))){
+
+    setwd(orginalWorkingDirectoryPath)
+
+    stop("No file named LakeData_Alex.xlsx found")
+
+  }
 
   #Insolation
 
@@ -466,36 +475,46 @@ MultiExcelLoader = function(){
 
   #Age
 
-  age=read.csv(file = paste(getwd(),"/",FileNamesAge,sep=""))
+  if(identical(FileNamesFixAge, character(0))){
 
-  if(dim(age)[2]==1){
+    age=read.csv(file = paste(getwd(),"/",FileNamesAge,sep=""))
 
-    colnames=unlist(strsplit(colnames(age),","))
-    AmountofCollums=as.numeric(lengths(regmatches(age[1,1],gregexpr(",", age[1,1]))))+1
-    age=data.frame(matrix(unlist(strsplit(unlist(age), ',')), ncol = AmountofCollums, byrow = TRUE))
-    colnames(age)=colnames
+    if(dim(age)[2]==1){
 
-  }else{
+      colnames=unlist(strsplit(colnames(age),","))
+      AmountofCollums=as.numeric(lengths(regmatches(age[1,1],gregexpr(",", age[1,1]))))+1
+      age=data.frame(matrix(unlist(strsplit(unlist(age), ',')), ncol = AmountofCollums, byrow = TRUE))
+      colnames(age)=colnames
 
-    RawFixedAges = strsplit(age[,1]," ")
-    FixedAges = NULL
+    }else{
 
-    for (p in 1:dim(age)[1]){
+      RawFixedAges = strsplit(age[,1]," ")
+      FixedAges = NULL
 
-      FixedAges = c(FixedAges,RawFixedAges[[p]][1])
+      for (p in 1:dim(age)[1]){
 
-      if(p %% 1000 == 0){
+        FixedAges = c(FixedAges,RawFixedAges[[p]][1])
 
-        cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-            p,"/",dim(age)[1]," Fixing age Names ",sep="")
+        if(p %% 1000 == 0){
 
+          cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+              p,"/",dim(age)[1]," Fixing age Names ",sep="")
+
+        }
       }
+
+      age[,1]=FixedAges
+
+      write.table(age,file = paste(getwd(),"/","FixedAge",".csv",sep=""),
+                  append = FALSE,na = "", sep = "; ", row.names = F, col.names = T,quote = F)
+
     }
 
-    age[,1]=FixedAges
+  }else{ #FixAges
+
+    age=read.csv(file = paste(getwd(),"/",FileNamesFixAge,sep=""),sep = ";")
 
   }
-
 
   #Climate
 
@@ -549,6 +568,14 @@ MultiExcelLoader = function(){
       }
     }
   }
+
+  #Alex MetaData
+
+  LakeData = try(suppressMessages(read_excel(path = paste(getwd(),"/",FileNamesMeta,sep=""),sheet = 1)),silent = TRUE)
+  Headder = colnames(LakeData)
+  LakeData=suppressWarnings(as.data.frame(matrix(as.character(unlist(LakeData)),ncol = dim(LakeData)[2])))
+  colnames(LakeData) = Headder
+  Folder[["LakeData"]]=LakeData
 
   for(i in 1:length(list.files()[grep("data.xlsx",list.files())])){
 
