@@ -13,8 +13,6 @@
 
 MultiExcelLoader = function(){
 
-  #new
-
   holoceneBorder = 11700
 
   FixExcelRowNames = function(NameRow){
@@ -121,7 +119,7 @@ MultiExcelLoader = function(){
 
   AddAgges = function(depth,age){
 
-    if(!age$compositedepth[2]==0.25){
+    if(!(age$compositedepth[2]==0.25 || age$compositedepth[1]==0.25)){
 
       setwd(orginalWorkingDirectoryPath)
 

@@ -11,6 +11,10 @@
 
 ImportDatabase = function(directory=NULL){
 
+  MacPath = "/Volumes/projects/p_arclakes"
+  PathDatabase = "/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/"
+  PathMetadata = "/ArcLakesDB/LAKEDATA/00-METADATA/"
+
   FilesUpdated = 0
 
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
@@ -36,7 +40,7 @@ ImportDatabase = function(directory=NULL){
 
     for (PossibleDirectory in letters){
 
-      getwdTry <-  try(setwd(paste(toupper(PossibleDirectory),":/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",sep="")),
+      getwdTry <-  try(setwd(paste(toupper(PossibleDirectory),":",PathDatabase,sep="")),
                        silent = TRUE)
 
       if(!class(getwdTry) == "try-error"){
@@ -49,12 +53,12 @@ ImportDatabase = function(directory=NULL){
 
   if(is.null(directory)){
 
-    getwdTry <-  try(setwd(paste("/Volumes/projects/p_arclakes/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx",sep="")),
+    getwdTry <-  try(setwd(MacPath),
                      silent = TRUE)
 
     if(!class(getwdTry) == "try-error"){
 
-      directory = "/Volumes/projects/p_arclakes"
+      directory = MacPath
 
     }
   }
@@ -67,7 +71,7 @@ ImportDatabase = function(directory=NULL){
 
   }
 
-  setwd(paste(directory,"/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",sep=""))
+  setwd(paste(directory,PathDatabase,sep=""))
 
   FilesToCopy = list.files()
 
@@ -89,7 +93,7 @@ ImportDatabase = function(directory=NULL){
 
     if(file.exists(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))){
 
-      NewDataInfo =  file.info(paste(directory,"/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",CurrentFilenName,sep=""))$mtime
+      NewDataInfo =  file.info(paste(directory,PathDatabase,CurrentFilenName,sep=""))$mtime
       OldDataInfo = file.info(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))$mtime
 
       if(NewDataInfo == OldDataInfo){
@@ -103,7 +107,7 @@ ImportDatabase = function(directory=NULL){
 
       FilesUpdated=FilesUpdated+1
 
-      file.copy(from = paste(directory,"/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/",CurrentFilenName,sep=""),
+      file.copy(from = paste(directory,PathDatabase,CurrentFilenName,sep=""),
                 to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
                 recursive = F,
                 overwrite = TRUE,
@@ -129,7 +133,7 @@ ImportDatabase = function(directory=NULL){
 
   #Extra Data
 
-  setwd(paste(directory,"/ArcLakesDB/LAKEMETADATA/",sep=""))
+  setwd(paste(directory,PathMetadata,sep=""))
 
   FilesToCopy = list.files()
 
@@ -151,7 +155,7 @@ ImportDatabase = function(directory=NULL){
 
     if(file.exists(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))){
 
-      NewDataInfo =  file.info(paste(directory,"/ArcLakesDB/LAKEMETADATA/",CurrentFilenName,sep=""))$mtime
+      NewDataInfo =  file.info(paste(directory,PathMetadata,CurrentFilenName,sep=""))$mtime
       OldDataInfo = file.info(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))$mtime
 
       if(NewDataInfo == OldDataInfo){
@@ -165,7 +169,7 @@ ImportDatabase = function(directory=NULL){
 
       FilesUpdated=FilesUpdated+1
 
-      file.copy(from = paste(directory,"/ArcLakesDB/LAKEMETADATA/",CurrentFilenName,sep=""),
+      file.copy(from = paste(directory,PathMetadata,CurrentFilenName,sep=""),
                 to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
                 recursive = F,
                 overwrite = TRUE,
