@@ -15,7 +15,7 @@ ImportDatabase = function(directory=NULL){
   PathDatabase = "/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/"
   PathMetadata = "/ArcLakesDB/LAKEDATA/00-METADATA/"
 
-  FilesUpdated = 0
+  FilesUpdated = -1
 
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
       "Please Wait for statup",sep="")

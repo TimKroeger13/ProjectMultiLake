@@ -4,10 +4,14 @@
 \alias{Ordination}
 \title{Ordination}
 \usage{
-Ordination(data)
+Ordination(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 0.9)
 }
 \arguments{
 \item{data}{List of data generates by the Multivar function.}
+
+\item{minimumRowsAfterCutOutMaxAge}{minimum rows count after filtering.}
+
+\item{allspan}{The span for all loess functions.}
 }
 \value{
 nothing.

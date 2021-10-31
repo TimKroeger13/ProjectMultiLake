@@ -9,7 +9,8 @@ Multivar(
   method = "bray",
   standardize = c("", "sqrt"),
   percentFilterWeight = 0,
-  allLoessSpans = 0.8
+  allLoessSpans = 0.8,
+  minimumRowsAfterFiltering = 0
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ Multivar(
 \item{percentFilterWeight}{Value how much percent a single species must relevant at minimum from the dataset.}
 
 \item{allLoessSpans}{span value for all Loess calculations made by Multivar.}
+
+\item{minimumRowsAfterFiltering}{minimum rows after filtering that must be}
 }
 \value{
 Returns the same List but with new added parameters.

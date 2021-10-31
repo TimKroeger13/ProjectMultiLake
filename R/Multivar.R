@@ -6,6 +6,7 @@
 #'@param standardize Method for data standardisation. Can be nothing "" ir sqaureroot transformation "sqrt".
 #'@param percentFilterWeight Value how much percent a single species must relevant at minimum from the dataset.
 #'@param allLoessSpans span value for all Loess calculations made by Multivar.
+#'@param minimumRowsAfterFiltering minimum rows after filtering that must be
 #'@import vegan SRS
 #'@importFrom stats prcomp loess median predict qt quantile approx
 #'@export
@@ -14,7 +15,7 @@
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.8){
+Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.8,minimumRowsAfterFiltering = 0){
 
   DeleteRowWithoutTimestamp <- function(data){
 
@@ -71,10 +72,35 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   }
 
-
   dissimilarityIndex <- function(data,method){
 
     data=vegdist(data,method=method,na.rm = T)
+
+    return(data)
+
+  }
+
+  filterDataForMinimumRows = function(data,areas=c("Carbon","Element","Diatom")){
+
+    for (i in areas){
+
+      listNumber = 0
+
+      for (k in 1:length(ls(data[[i]]))){
+
+        listNumber = listNumber+1
+
+        Tempdata = data[[i]][[listNumber]][["rawData"]]
+
+        if(dim(Tempdata)[1]<=minimumRowsAfterFiltering){
+
+          data[[i]]=data[[i]][-listNumber]
+
+          listNumber=listNumber-1
+
+        }
+      }
+    }
 
     return(data)
 
@@ -117,7 +143,11 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
       colnames(output) = colnames(Tempdata)
       output[,2] = SRS_Value
 
-      data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("SRS_data")]] = output
+      if(dim(output)[1]>=minimumRowsAfterFiltering){
+
+        data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("SRS_data")]] = output
+
+      }
 
       cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
           i,"/",length(ls(data[["Diatom"]]))," Rasampel Taxa Data",sep="")
@@ -144,7 +174,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
       }else{
 
-      BetterEqualMedian[x,]=TempDataForCalculation[x,]>=median(TempDataForCalculation[x,][TempDataForCalculation[x,]>0])
+        BetterEqualMedian[x,]=TempDataForCalculation[x,]>=median(TempDataForCalculation[x,][TempDataForCalculation[x,]>0])
 
       }
     }
@@ -175,13 +205,13 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   StandadizeData <- function(data, standardize, percentFilterWeight){
 
-     for (k in 1:length(ls(data[["Diatom"]]))){
+    for (k in 1:length(ls(data[["Diatom"]]))){
 
-       Tempdata=data[["Diatom"]][[k]][["rawData"]]
-       TempdataForCalculation=Tempdata[,4:dim(Tempdata)[2]]
+      Tempdata=data[["Diatom"]][[k]][["rawData"]]
+      TempdataForCalculation=Tempdata[,4:dim(Tempdata)[2]]
 
-       PercentData=Tempdata
-       PercentData[,4:dim(PercentData)[2]]=NA
+      PercentData=Tempdata
+      PercentData[,4:dim(PercentData)[2]]=NA
 
       for(i in 1:dim(Tempdata)[1]){
 
@@ -191,12 +221,12 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
         }else{
 
-        PercentData[i,4:dim(PercentData)[2]]=TempdataForCalculation[i,]/sum(TempdataForCalculation[i,],na.rm = T)*100
+          PercentData[i,4:dim(PercentData)[2]]=TempdataForCalculation[i,]/sum(TempdataForCalculation[i,],na.rm = T)*100
 
         }
       }
 
-       PercentData = FilterPercentData(PercentData = PercentData,percentFilterWeight = percentFilterWeight) #Filter Collums
+      PercentData = FilterPercentData(PercentData = PercentData,percentFilterWeight = percentFilterWeight) #Filter Collums
 
       if(standardize[1]=="sqrt"){
 
@@ -204,27 +234,26 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
       }
 
-       data[["Diatom"]][[names(data[["Diatom"]])[[k]]]][[paste("StandadizedData")]]=PercentData
+      data[["Diatom"]][[names(data[["Diatom"]])[[k]]]][[paste("StandadizedData")]]=PercentData
 
-       #Printer
-       cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-           k,"/",length(ls(data[["Diatom"]]))," Standadize Diatom Data",sep="")
+      #Printer
+      cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          k,"/",length(ls(data[["Diatom"]]))," Standadize Diatom Data",sep="")
 
     }
 
     return(data)
   }
 
+  data = filterDataForMinimumRows(data)
+
   data=StandadizeData(data, standardize, percentFilterWeight)
-  data=SrsFilter(data)
-
-
-
-
+  #data=SrsFilter(data)
+  data = SrsFilter(data)
 
   #Main Loop
   for (i in 1:length(ls(data[["Diatom"]]))){
-  #for (i in 1:10){
+    #for (i in 1:10){
 
     #MDS
 
@@ -278,112 +307,65 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   #Main Loop
   for (i in 1:length(ls(data[["Diatom"]]))){
-  #for (i in 1:4){
+    #for (i in 1:4){
 
     Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
-    TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
-    TempdataForCalculation=round(TempdataForCalculation)
 
-    #Richness
+    TempdataForCalculation=try(data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]],silent = T)
 
-    richness = rarefy(TempdataForCalculation, sample = sum(TempdataForCalculation[1,]), se=T)
-    shannon = diversity(TempdataForCalculation, index = "shannon")
-    invsimpson = diversity(TempdataForCalculation, index = "invsimpson")
+    if(!class(TempdataForCalculation)[1] == "try-error"){
 
-    richness=cbind(richness[1,])
-    colnames(richness)=c("richness")
-    row.names(richness)=Tempdata[,1]
-    shannon=cbind(shannon)
-    row.names(shannon)=Tempdata[,1]
-    invsimpson=cbind(invsimpson)
-    row.names(invsimpson)=Tempdata[,1]
-
-    data[["Diatom"]][[i]][["Species_richness"]][[paste("richness")]]=richness
-    data[["Diatom"]][[i]][["Species_richness"]][[paste("shannon")]]=shannon
-    data[["Diatom"]][[i]][["Species_richness"]][[paste("invsimpson")]]=invsimpson
-
-
-    # Loess Predictor
-    for (r in c("richness","shannon","invsimpson")){
-
-      y=as.numeric(row.names(data[["Diatom"]][[i]][["Species_richness"]][[r]]))
-      x=data[["Diatom"]][[i]][["Species_richness"]][[r]]
-
-      loessValues=predict(loess(x ~ y, span=allLoessSpans), se=T,newdata = as.numeric(y)) #Critical Span value
-
-      LoessMean = loessValues$fit
-      LoessConfUp = loessValues$fit + qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
-      LoessConfDown = loessValues$fit - qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
-
-      LoessOut=cbind(LoessMean,LoessConfUp,LoessConfDown)
-      row.names(LoessOut)=Tempdata[,1]
-
-      data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][["Species_richness"]][[paste("Loess_",r,sep = "")]]=LoessOut
-
-    }
-
-    #DCA
-    dca=suppressWarnings(decorana(data[["Diatom"]][[i]]$rawData[,4:dim(data[["Diatom"]][[i]]$rawData)[2]]))
-
-    data[["Diatom"]][[i]][["DCA_Gradient_Length"]]=round(max(dca$rproj[,1:4]),digits = 3)
-
-
-    #Beta diversity Turn Over
-
-    Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
-    TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
-    TempdataForCalculation=round(TempdataForCalculation)
-
-    BetaDiversity=matrix(NA,ncol = 1,nrow = dim(TempdataForCalculation)[1]-1)
-    rownames(BetaDiversity)=Tempdata[1:(dim(Tempdata)[1]-1),1]
-    colnames(BetaDiversity)="Hierarchical beta diversity"
-
-    for(k in (dim(TempdataForCalculation)[1]):2){
-
-      BetaDiversity[k-1]=vegdist(TempdataForCalculation[(k-1):k,],method = "bray")
-
-    }
-
-    data[["Diatom"]][[i]][["BetaDiversity"]][["OffsetBy_1"]]=BetaDiversity
-
-    for(x in 2:3){
-
-      #Multipel Beta diversity Turn Over
-
-      Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
       TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
       TempdataForCalculation=round(TempdataForCalculation)
 
-      SectionIntervall = x
+      #Richness
 
-      BetaDiversity=matrix(NA,ncol = 1,nrow = dim(TempdataForCalculation)[1]-SectionIntervall)
-      rownames(BetaDiversity)=Tempdata[1:(dim(Tempdata)[1]-SectionIntervall),1]
-      colnames(BetaDiversity)="Hierarchical beta diversity"
+      richness = rarefy(TempdataForCalculation, sample = sum(TempdataForCalculation[1,]), se=T)
+      shannon = diversity(TempdataForCalculation, index = "shannon")
+      invsimpson = diversity(TempdataForCalculation, index = "invsimpson")
 
-      comparisonIntervall=matrix(NA, nrow = 1, ncol = dim(TempdataForCalculation)[2])
+      richness=cbind(richness[1,])
+      colnames(richness)=c("richness")
+      row.names(richness)=Tempdata[,1]
+      shannon=cbind(shannon)
+      row.names(shannon)=Tempdata[,1]
+      invsimpson=cbind(invsimpson)
+      row.names(invsimpson)=Tempdata[,1]
 
-      for(k in dim(TempdataForCalculation)[1]:SectionIntervall){
+      data[["Diatom"]][[i]][["Species_richness"]][[paste("richness")]]=richness
+      data[["Diatom"]][[i]][["Species_richness"]][[paste("shannon")]]=shannon
+      data[["Diatom"]][[i]][["Species_richness"]][[paste("invsimpson")]]=invsimpson
 
-        for (z in 1:dim(TempdataForCalculation)[2]){
 
-          comparisonIntervall[z]=mean(TempdataForCalculation[(k-SectionIntervall+1):k,z])
+      # Loess Predictor
+      for (r in c("richness","shannon","invsimpson")){
 
-        }
+        y=as.numeric(row.names(data[["Diatom"]][[i]][["Species_richness"]][[r]]))
+        x=data[["Diatom"]][[i]][["Species_richness"]][[r]]
 
-        colnames(comparisonIntervall)=colnames(TempdataForCalculation)
+        loessValues=predict(loess(x ~ y, span=allLoessSpans), se=T,newdata = as.numeric(y)) #Critical Span value
 
-        BetaDiversity[k-SectionIntervall]=vegdist(rbind(TempdataForCalculation[k-SectionIntervall,],comparisonIntervall),method = "bray")
+        LoessMean = loessValues$fit
+        LoessConfUp = loessValues$fit + qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
+        LoessConfDown = loessValues$fit - qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
+
+        LoessOut=cbind(LoessMean,LoessConfUp,LoessConfDown)
+        row.names(LoessOut)=Tempdata[,1]
+
+        data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][["Species_richness"]][[paste("Loess_",r,sep = "")]]=LoessOut
 
       }
 
-      data[["Diatom"]][[i]][["BetaDiversity"]][[paste("OffsetBy_",SectionIntervall,sep="")]]=BetaDiversity
+      #DCA
+      dca=suppressWarnings(decorana(data[["Diatom"]][[i]]$rawData[,4:dim(data[["Diatom"]][[i]]$rawData)[2]]))
+
+      data[["Diatom"]][[i]][["DCA_Gradient_Length"]]=round(max(dca$rproj[,1:4]),digits = 3)
 
     }
 
     #Printer
     cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-        i,"/",length(ls(data[["Diatom"]]))," Multivar",sep="")
-
+        i,"/",length(ls(data[["Diatom"]]))," calculating species richness",sep="")
 
   }
 

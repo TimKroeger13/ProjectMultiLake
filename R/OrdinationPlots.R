@@ -2,6 +2,8 @@
 #'@description
 #'Plots Ordinations Plots.
 #'@param data List of data generates by the Multivar function.
+#'@param minimumRowsAfterCutOutMaxAge minimum rows count after filtering.
+#'@param allspan The span for all loess functions.
 #'@importFrom grDevices rainbow
 #'@importFrom graphics lines points text legend
 #'@importFrom stats na.omit
@@ -11,7 +13,7 @@
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 
-Ordination = function(data){
+Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 0.9){
 
   #new
 
@@ -31,7 +33,7 @@ Ordination = function(data){
 
     FittingAges = as.numeric(row.names(DataVector))<Cutage
 
-    if(sum(FittingAges)>0){
+    if(sum(FittingAges)>minimumRowsAfterCutOutMaxAge){
 
       DataVector=cbind(as.numeric(row.names(DataVector))[FittingAges],DataVector[FittingAges])
 
@@ -152,7 +154,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=0.5)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -181,7 +183,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=0.5)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -279,7 +281,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=0.5)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -310,7 +312,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=0.5)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -352,12 +354,15 @@ Ordination = function(data){
   PlotsVariantsLoess = c("Normal","Loess")
   PlotsVariantsTransform = c("Non Transformed","Transformed")
 
-  span=0.6
-
   for (VariantsLoess in PlotsVariantsLoess){
     for (VariantsTransform in PlotsVariantsTransform){
 
       if(VariantsTransform == "Non Transformed"){
+
+        Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+
+        if(!is.null(Values)){
+
         pdf(paste("N2_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
         #Plot Limits
@@ -429,7 +434,7 @@ Ordination = function(data){
                   if(VariantsLoess == "Loess"){
 
                     #Loess
-                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                     Values = cbind(Values[,1],ValuesLoess$fitted)
 
                   }
@@ -460,7 +465,7 @@ Ordination = function(data){
                   if(VariantsLoess == "Loess"){
 
                     #Loess
-                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                     Values = cbind(Values[,1],ValuesLoess$fitted)
 
                   }
@@ -486,9 +491,15 @@ Ordination = function(data){
           }
         }
         dev.off()
+        }
       }
 
       if(VariantsTransform == "Transformed"){
+
+        Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+
+        if(!is.null(Values)){
+
         pdf(paste("N2_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
         Xmax=0
@@ -534,6 +545,8 @@ Ordination = function(data){
           }
         }
 
+
+
         plot(NA,
              ylim=c(Xmin,Xmax),
              xlim=c(Ymax,Ymin),
@@ -562,7 +575,7 @@ Ordination = function(data){
                   if(VariantsLoess == "Loess"){
 
                     #Loess
-                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                     Values = cbind(Values[,1],ValuesLoess$fitted)
 
                   }
@@ -595,7 +608,7 @@ Ordination = function(data){
                   if(VariantsLoess == "Loess"){
 
                     #Loess
-                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                     Values = cbind(Values[,1],ValuesLoess$fitted)
 
                   }
@@ -621,6 +634,7 @@ Ordination = function(data){
           }
         }
         dev.off()
+        }
       }
 
 
@@ -635,8 +649,6 @@ Ordination = function(data){
 
   PlotsVariantsLoess = c("Normal","Loess")
   PlotsVariantsTransform = c("Non Transformed","Transformed")
-
-  span=0.1
 
   for (VariantsLoess in PlotsVariantsLoess){
     for (VariantsTransform in PlotsVariantsTransform){
@@ -715,7 +727,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -749,7 +761,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -854,7 +866,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -891,7 +903,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -933,8 +945,6 @@ Ordination = function(data){
 
   PlotsVariantsLoess = c("Normal","Loess")
   PlotsVariantsTransform = c("Non Transformed","Transformed")
-
-  span=0.3
 
   for (VariantsLoess in PlotsVariantsLoess){
     for (VariantsTransform in PlotsVariantsTransform){
@@ -1023,7 +1033,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -1062,7 +1072,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -1175,7 +1185,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
@@ -1216,7 +1226,7 @@ Ordination = function(data){
                 if(VariantsLoess == "Loess"){
 
                   #Loess
-                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=span)
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
                   Values = cbind(Values[,1],ValuesLoess$fitted)
 
                 }
