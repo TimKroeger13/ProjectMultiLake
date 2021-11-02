@@ -1325,17 +1325,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
 
   plot(NA,
        ylim=c(Ymin,Ymax),
-       xlim=c(Xmin,Xmax),
+       xlim=c(Xmax,Xmin),
        ylab="Value",
        xlab="Age",
        main=paste("RoC",sep="")
   )
 
-
   #lines(RocMatrix[,1],RocMatrix[,2], col= "blue")
-
   #points(RocMatrix[,1],RocMatrix[,2], pch = 19, cex = 0.1, col= "black")
-
 
   for (i in 1:(dim(RocMatrix)[1]-1)){
 
@@ -1343,12 +1340,60 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
 
   }
 
-  lines(RocMatrix[,1],RocMatrix[,3], col= "grey",lty=3,lwd=2)
-  lines(RocMatrix[,1],RocMatrix[,4], col= "grey",lty=3,lwd=2)
+  lines(RocMatrix[,1],RocMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(RocMatrix[,1],RocMatrix[,4], col= "black",lty=3,lwd=2)
 
   dev.off()
 
+  ################################################################################
+  ################################### Evenness ###################################
+  ################################################################################
 
+  pdf("Evenness.pdf",width=15,height=10)
+
+  EvennessMatrix = data$EvennessMatrix
+
+  #Cut Data after x years
+  CutValue = 20000
+
+  EvennessMatrix=EvennessMatrix[EvennessMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  Xmin = min(EvennessMatrix[,1])
+  Xmax = max(EvennessMatrix[,1])
+  Ymin = min(EvennessMatrix[,3])
+  Ymax = max(EvennessMatrix[,4])
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(EvennessMatrix)[1])
+  P_color[] = "red"
+  P_color[EvennessMatrix[,5]<P_value] = "green"
+  P_color[EvennessMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmin,Xmax),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Evenness ",CutValue,sep="")
+  )
+
+  #lines(EvennessMatrix[,1],EvennessMatrix[,2], col= "blue")
+  #points(EvennessMatrix[,1],EvennessMatrix[,2], pch = 19, cex = 0.1, col= "black")
+
+  for (i in 1:(dim(EvennessMatrix)[1]-1)){
+
+    lines(EvennessMatrix[i:(i+1),1],EvennessMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(EvennessMatrix[,1],EvennessMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(EvennessMatrix[,1],EvennessMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
 
 
 

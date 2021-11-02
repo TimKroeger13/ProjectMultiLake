@@ -373,6 +373,10 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   data = RateOfChangeAsyncTabel(data = data, intervallBy = 100)
 
+  data = evenness(data = data, intervallBy = 100, allLoessSpans = allLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+
+  data = EvennessAsyncTabel(data = data, intervallBy = 100)
+
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
       "Done",sep="")
 
