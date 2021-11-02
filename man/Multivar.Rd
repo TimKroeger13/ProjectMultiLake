@@ -24,7 +24,7 @@ Multivar(
 
 \item{allLoessSpans}{span value for all Loess calculations made by Multivar.}
 
-\item{minimumRowsAfterFiltering}{minimum rows after filtering that must be}
+\item{minimumRowsAfterFiltering}{Value for the minimum rows after filtering.}
 }
 \value{
 Returns the same List but with new added parameters.

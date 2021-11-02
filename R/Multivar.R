@@ -6,7 +6,7 @@
 #'@param standardize Method for data standardisation. Can be nothing "" ir sqaureroot transformation "sqrt".
 #'@param percentFilterWeight Value how much percent a single species must relevant at minimum from the dataset.
 #'@param allLoessSpans span value for all Loess calculations made by Multivar.
-#'@param minimumRowsAfterFiltering minimum rows after filtering that must be
+#'@param minimumRowsAfterFiltering Value for the minimum rows after filtering.
 #'@import vegan SRS
 #'@importFrom stats prcomp loess median predict qt quantile approx
 #'@export
@@ -368,6 +368,10 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
         i,"/",length(ls(data[["Diatom"]]))," calculating species richness",sep="")
 
   }
+
+  data = rateofChange(data = data, intervallBy = 100, allLoessSpans = allLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method)
+
+  data = RateOfChangeAsyncTabel(data = data, intervallBy = 100)
 
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
       "Done",sep="")

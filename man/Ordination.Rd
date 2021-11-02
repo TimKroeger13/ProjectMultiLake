@@ -4,7 +4,7 @@
 \alias{Ordination}
 \title{Ordination}
 \usage{
-Ordination(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 0.9)
+Ordination(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1)
 }
 \arguments{
 \item{data}{List of data generates by the Multivar function.}

@@ -13,7 +13,7 @@
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 
-Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 0.9){
+Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
 
   #new
 
@@ -1293,6 +1293,65 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 0.9){
   legend(x = "right", legend = paste((SplitValue2+1):SplitValue3,"-",AllDiatomsNamesPart3), col = Allcolor[(SplitValue2+1):SplitValue3], lty = 1, lwd = 3, text.width=0.3, cex = thickness, bty="n") # bty="n"
 
   dev.off()
+
+
+  ################################################################################
+  ###################################### RoC #####################################
+  ################################################################################
+
+  pdf("RoC.pdf",width=15,height=10)
+
+  RocMatrix = data$RocMatrix
+
+  #Cut Data after x years
+  CutValue = 20000
+
+  RocMatrix=RocMatrix[RocMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  Xmin = min(RocMatrix[,1])
+  Xmax = max(RocMatrix[,1])
+  Ymin = min(RocMatrix[,3])
+  Ymax = max(RocMatrix[,4])
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(RocMatrix)[1])
+  P_color[] = "red"
+  P_color[RocMatrix[,5]<P_value] = "green"
+  P_color[RocMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmin,Xmax),
+       ylab="Value",
+       xlab="Age",
+       main=paste("RoC",sep="")
+  )
+
+
+  #lines(RocMatrix[,1],RocMatrix[,2], col= "blue")
+
+  #points(RocMatrix[,1],RocMatrix[,2], pch = 19, cex = 0.1, col= "black")
+
+
+  for (i in 1:(dim(RocMatrix)[1]-1)){
+
+    lines(RocMatrix[i:(i+1),1],RocMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(RocMatrix[,1],RocMatrix[,3], col= "grey",lty=3,lwd=2)
+  lines(RocMatrix[,1],RocMatrix[,4], col= "grey",lty=3,lwd=2)
+
+  dev.off()
+
+
+
+
+
 
 
   setwd(orginalWorkingDirectoryPath)
