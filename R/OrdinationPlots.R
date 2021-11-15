@@ -4,8 +4,9 @@
 #'@param data List of data generates by the Multivar function.
 #'@param minimumRowsAfterCutOutMaxAge minimum rows count after filtering.
 #'@param allspan The span for all loess functions.
+#'@param MaxAge The max Age where to cut the Data.
 #'@importFrom grDevices rainbow
-#'@importFrom graphics lines points text legend
+#'@importFrom graphics lines points text legend barplot par
 #'@importFrom stats na.omit
 #'@importFrom grDevices dev.off pdf
 #'@export
@@ -13,7 +14,7 @@
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 
-Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
+Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxAge = 20000){
 
   #new
 
@@ -31,11 +32,28 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
 
   CutOutMaxAge = function(DataVector, Cutage){
 
-    FittingAges = as.numeric(row.names(DataVector))<Cutage
+    FittingAges = as.numeric(row.names(DataVector))<=Cutage
 
     if(sum(FittingAges)>minimumRowsAfterCutOutMaxAge){
 
       DataVector=cbind(as.numeric(row.names(DataVector))[FittingAges],DataVector[FittingAges])
+
+      return(DataVector)
+
+    }else{
+
+      return(NULL)
+
+    }
+  }
+
+  CutOutMaxAgeForInterpolatedData = function(DataVector, Cutage){
+
+    FittingAges = as.numeric(DataVector[,1])<=Cutage
+
+    if(sum(FittingAges)>=2){
+
+      DataVector=cbind(DataVector[FittingAges,1],DataVector[FittingAges,2])
 
       return(DataVector)
 
@@ -108,7 +126,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -145,7 +163,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -176,7 +194,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -231,7 +249,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -270,7 +288,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -303,7 +321,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -386,7 +404,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
                 Values = matrix(Values, ncol = 1)
                 rownames(Values) = valueNames
 
-                Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,MaxAge)
 
                 if(!is.null(Values)){
 
@@ -425,7 +443,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
             if(dim(Values)[1]>0){
               if(length(Values)>=minlegth){
 
-                Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,MaxAge)
 
                 if(!is.null(Values)){
 
@@ -458,7 +476,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
             if(dim(Values)[1]>0){
               if(length(Values)>=minlegth){
 
-                Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,MaxAge)
 
                 if(!is.null(Values)){
 
@@ -521,7 +539,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
                 Values = matrix(Values, ncol = 1)
                 rownames(Values) = valueNames
 
-                Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,MaxAge)
 
                 if(!is.null(Values)){
 
@@ -564,7 +582,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
             if(dim(Values)[1]>0){
               if(length(Values)>=minlegth){
 
-                Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,MaxAge)
 
                 if(!is.null(Values)){
 
@@ -599,7 +617,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
             if(dim(Values)[1]>0){
               if(length(Values)>=minlegth){
 
-                Values = CutOutMaxAge(Values,20000)
+                Values = CutOutMaxAge(Values,MaxAge)
 
                 if(!is.null(Values)){
 
@@ -676,7 +694,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -718,7 +736,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -754,7 +772,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -810,7 +828,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -855,7 +873,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -894,7 +912,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -977,7 +995,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -1024,7 +1042,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -1065,7 +1083,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -1125,7 +1143,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -1174,7 +1192,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -1217,7 +1235,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,20000)
+              Values = CutOutMaxAge(Values,MaxAge)
 
               if(!is.null(Values)){
 
@@ -1304,7 +1322,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
   RocMatrix = data$RocMatrix
 
   #Cut Data after x years
-  CutValue = 20000
+  CutValue = MaxAge
 
   RocMatrix=RocMatrix[RocMatrix[,1]<=CutValue,]
 
@@ -1328,7 +1346,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
        xlim=c(Xmax,Xmin),
        ylab="Value",
        xlab="Age",
-       main=paste("RoC",sep="")
+       main=paste("RoC Mean",sep="")
   )
 
   #lines(RocMatrix[,1],RocMatrix[,2], col= "blue")
@@ -1354,7 +1372,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
   EvennessMatrix = data$EvennessMatrix
 
   #Cut Data after x years
-  CutValue = 20000
+  CutValue = MaxAge
 
   EvennessMatrix=EvennessMatrix[EvennessMatrix[,1]<=CutValue,]
 
@@ -1375,10 +1393,10 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
 
   plot(NA,
        ylim=c(Ymin,Ymax),
-       xlim=c(Xmin,Xmax),
+       xlim=c(Xmax,Xmin),
        ylab="Value",
        xlab="Age",
-       main=paste("Evenness ",CutValue,sep="")
+       main=paste("Evenness Mean",CutValue,sep="")
   )
 
   #lines(EvennessMatrix[,1],EvennessMatrix[,2], col= "blue")
@@ -1397,6 +1415,390 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1){
 
 
 
+  ################################################################################
+  ################################ Evenness Solo #################################
+  ################################################################################
+
+  PlotsVariantsLoess = c("Normal","Loess") # "Normal","Loess"
+  PlotsVariantsTransform = c("Non Transformed","Transformed")
+
+
+  for (VariantsLoess in PlotsVariantsLoess){
+    for (VariantsTransform in PlotsVariantsTransform){
+
+      Xmax=0
+      Ymax=0
+      Xmin=Inf
+      Ymin=Inf
+
+      pdf(paste("Evenness_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+
+      for (i in 1:length(data$Diatom)){
+
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]]$evenness
+
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
+
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+
+            if(!is.null(Values)){
+
+              if(VariantsTransform=="Transformed"){
+
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              if(VariantsLoess == "Loess"){
+
+                #Loess
+                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                Values = cbind(Values[,1],ValuesLoess$fitted)
+
+              }
+
+              if(max(Values[,2])>Xmax){
+                Xmax=max(Values[,2])
+              }
+              if(min(Values[,2])<Xmin){
+                Xmin=min(Values[,2])
+              }
+              if(max(Values[,1])>Ymax){
+                Ymax=max(Values[,1])
+              }
+              if(min(Values[,1])<Ymin){
+                Ymin=min(Values[,1])
+              }
+            }
+          }
+        }
+      }
+
+      plot(NA,
+           ylim=c(Xmin,Xmax),
+           xlim=c(Ymax,Ymin),
+           ylab="Value",
+           xlab="Age",
+           main=paste("Evenness | ",VariantsLoess, " | ",VariantsTransform,sep="")
+      )
+
+      for (i in 1:length(data$Diatom)){
+
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]]$evenness
+
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
+
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+
+            if(!is.null(Values)){
+
+              if(VariantsTransform=="Transformed"){
+
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              if(VariantsLoess == "Loess"){
+
+                #Loess
+                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                Values = cbind(Values[,1],ValuesLoess$fitted)
+
+              }
+
+              lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+
+            }
+          }
+        }
+      }
+
+      #Plot Numbers
+
+      for (i in 1:length(data$Diatom)){
+
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]]$evenness
+
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
+
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+
+            if(!is.null(Values)){
+
+              if(VariantsTransform=="Transformed"){
+
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              if(VariantsLoess == "Loess"){
+
+                #Loess
+                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                Values = cbind(Values[,1],ValuesLoess$fitted)
+
+              }
+
+              distance = 120
+
+              if(i>=10){distance = 200}
+
+              text(Values[dim(Values)[1],1]+distance,
+                   Values[dim(Values)[1],2],
+                   label=i,
+                   col="white",
+                   cex=1.2)
+
+              text(Values[dim(Values)[1],1]+distance,
+                   Values[dim(Values)[1],2],
+                   label=i,
+                   col=Allcolor[i])
+
+            }
+          }
+        }
+      }
+
+      dev.off()
+
+    }
+  }
+
+
+  ################################################################################
+  ################################### RoC Solo ###################################
+  ################################################################################
+
+
+  PlotsVariantsLoess = c("Normal","Loess") # "Normal","Loess"
+  PlotsVariantsTransform = c("Non Transformed","Transformed")
+
+  for (VariantsLoess in PlotsVariantsLoess){
+    for (VariantsTransform in PlotsVariantsTransform){
+
+      Xmax=0
+      Ymax=0
+      Xmin=Inf
+      Ymin=Inf
+
+      pdf(paste("RoC_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+
+      for (i in 1:length(data$Diatom)){
+
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]]$RoC
+
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
+
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+
+            if(!is.null(Values)){
+
+              if(VariantsTransform=="Transformed"){
+
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              if(VariantsLoess == "Loess"){
+
+                #Loess
+                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                Values = cbind(Values[,1],ValuesLoess$fitted)
+
+              }
+
+              if(max(Values[,2])>Xmax){
+                Xmax=max(Values[,2])
+              }
+              if(min(Values[,2])<Xmin){
+                Xmin=min(Values[,2])
+              }
+              if(max(Values[,1])>Ymax){
+                Ymax=max(Values[,1])
+              }
+              if(min(Values[,1])<Ymin){
+                Ymin=min(Values[,1])
+              }
+            }
+          }
+        }
+      }
+
+      plot(NA,
+           ylim=c(Xmin,Xmax),
+           xlim=c(Ymax,Ymin),
+           ylab="Value",
+           xlab="Age",
+           main=paste("RoC | ",VariantsLoess, " | ",VariantsTransform,sep="")
+      )
+
+      for (i in 1:length(data$Diatom)){
+
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]]$RoC
+
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
+
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+
+            if(!is.null(Values)){
+
+              if(VariantsTransform=="Transformed"){
+
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              if(VariantsLoess == "Loess"){
+
+                #Loess
+                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                Values = cbind(Values[,1],ValuesLoess$fitted)
+
+              }
+
+              lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+
+            }
+          }
+        }
+      }
+
+      #Plot Numbers
+
+      for (i in 1:length(data$Diatom)){
+
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]]$RoC
+
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
+
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+
+            if(!is.null(Values)){
+
+              if(VariantsTransform=="Transformed"){
+
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              if(VariantsLoess == "Loess"){
+
+                #Loess
+                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                Values = cbind(Values[,1],ValuesLoess$fitted)
+
+              }
+
+              distance = 120
+
+              if(i>=10){distance = 200}
+
+              text(Values[dim(Values)[1],1]+distance,
+                   Values[dim(Values)[1],2],
+                   label=i,
+                   col="white",
+                   cex=1.2)
+
+              text(Values[dim(Values)[1],1]+distance,
+                   Values[dim(Values)[1],2],
+                   label=i,
+                   col=Allcolor[i])
+
+            }
+          }
+        }
+      }
+
+      dev.off()
+
+    }
+  }
+
+
+  ################################################################################
+  ################################### StressPlot ###################################
+  ################################################################################
+
+  pdf("Stress.pdf",width=15,height=10)
+  DiatomNames = ls(data$Diatom)
+
+  LakeType = vector("character",length(DiatomNames))
+  Stress = vector("numeric",length(DiatomNames))
+  Names = DiatomNames
+
+  counter = 0
+
+  for (i in 1:length(DiatomNames)){
+
+    counter = counter+1
+
+    if (!sum(data$LakeData$CoreID==DiatomNames[counter])==0){
+
+      LakeType[counter] = data$LakeDat$LakeType[which(data$LakeData$CoreID==DiatomNames[counter])]
+      Stress [counter] = data$Diatom[[DiatomNames[counter]]]$nMDS$Stress
+
+    }else{
+
+      LakeType = LakeType[-counter]
+      Stress = Stress[-counter]
+      Names = Names[-counter]
+
+      counter=counter-1
+
+    }
+  }
+
+  names(Stress) = Names
+  names(LakeType) = Names
+
+  Stress = Stress[!LakeType == "-"]
+  LakeType = LakeType[!LakeType == "-"]
+
+  sortStress = Stress[order(Stress,decreasing = F)]
+  sortLakeType = LakeType[order(Stress,decreasing = F)]
+
+  LakeFactor =  as.factor(LakeType)
+
+  color = rainbow(length(levels(LakeFactor)))
+
+  colorVector <- vector( "character" , length(LakeType)[1])
+
+  for (c in 1:length(levels(LakeFactor))){
+
+    colorVector[which(LakeFactor == levels(LakeFactor)[c])] = color[c]
+
+  }
+
+  par(mar = c(5, 9, 5, 5))
+  par(mfrow = c(1,1))
+
+  barplot(sortStress,horiz = TRUE, las = 1, col = colorVector, main = "Stress Plot",
+          border = colorVector,
+          space=0.3)
+
+  legend(x = "bottomright",
+         legend = levels(LakeFactor),
+         fill =color,
+         cex = 0.8,
+         bty = 'n',
+         inset = c(-0.15,0))
+
+  par(mar = c(5, 5, 5, 5))
+  par(mfrow = c(1,1))
+
+  dev.off()
 
 
   setwd(orginalWorkingDirectoryPath)

@@ -431,6 +431,7 @@ MultiExcelLoader = function(){
   FileNamesInsolation=FileNames[grep("insolation.txt",FileNames)]
   FileNamesClima=FileNames[grep("HAD3MCB-M",FileNames)]
   FileNamesMeta=FileNames[grep("LakeData_Alex",FileNames)]
+  FileNamesTrace=FileNames[grep("TRACE",FileNames)]
 
   if(identical(FileNamesAge, character(0))){
 
@@ -461,6 +462,14 @@ MultiExcelLoader = function(){
     setwd(orginalWorkingDirectoryPath)
 
     stop("No file named LakeData_Alex.xlsx found")
+
+  }
+
+  if(identical(FileNamesTrace, character(0))){
+
+    setwd(orginalWorkingDirectoryPath)
+
+    stop("No file named TRACE.csv found")
 
   }
 
@@ -574,6 +583,13 @@ MultiExcelLoader = function(){
   LakeData=suppressWarnings(as.data.frame(matrix(as.character(unlist(LakeData)),ncol = dim(LakeData)[2])))
   colnames(LakeData) = Headder
   Folder[["LakeData"]]=LakeData
+
+  #TraceData
+
+  cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "Leading a ton of TraceData. This can take a while...",sep="")
+  Trace=read.csv(file = paste(getwd(),"/",FileNamesTrace,sep=""),sep=";",header = F)
+  Folder[["Trace"]]=Trace
 
   for(i in 1:length(list.files()[grep("data.xlsx",list.files())])){
 

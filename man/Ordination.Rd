@@ -4,7 +4,12 @@
 \alias{Ordination}
 \title{Ordination}
 \usage{
-Ordination(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1)
+Ordination(
+  data,
+  minimumRowsAfterCutOutMaxAge = 12,
+  allspan = 1,
+  MaxAge = 20000
+)
 }
 \arguments{
 \item{data}{List of data generates by the Multivar function.}
@@ -12,6 +17,8 @@ Ordination(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1)
 \item{minimumRowsAfterCutOutMaxAge}{minimum rows count after filtering.}
 
 \item{allspan}{The span for all loess functions.}
+
+\item{MaxAge}{The max Age where to cut the Data.}
 }
 \value{
 nothing.

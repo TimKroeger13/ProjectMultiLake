@@ -42,16 +42,61 @@ SaveOutput = function(data){
     turnedOutPutDiscriptionMatrix=OutPutDiscriptionMatrix
 
       write.table(turnedOutPutDiscriptionMatrix,file = paste(getwd(),"/","Metadata",".csv",sep=""),
-                  append = FALSE,na = "", sep = "; ", row.names = T, col.names = F,quote = F)
+                  append = FALSE,na = "", sep = ";", row.names = T, col.names = F,quote = F)
 
   }
 
+  #Save MetaData on Sever when possible
 
+  MacPath = "/Volumes/projects/p_arclakes"
+  PathMetadata = "/ArcLakesDB/LAKEDATA/00-METADATA/"
 
+  directory = NULL
 
+  if(is.null(directory)){
 
+    for (PossibleDirectory in letters){
 
+      getwdTry <-  try(setwd(paste(toupper(PossibleDirectory),":",PathMetadata,sep="")),
+                       silent = TRUE)
 
+      if(!class(getwdTry) == "try-error"){
+
+        directory = paste(toupper(PossibleDirectory),":",sep = "")
+
+      }
+    }
+  }
+
+  if(is.null(directory)){
+
+    getwdTry <-  try(setwd(MacPath),
+                     silent = TRUE)
+
+    if(!class(getwdTry) == "try-error"){
+
+      directory = MacPath
+
+    }
+  }
+
+  if(is.null(directory)){
+
+    setwd(orginalWorkingDirectoryPath)
+
+  }
+
+  if(!is.null(directory)){
+
+  setwd(paste(directory,PathMetadata,sep=""))
+
+  write.table(turnedOutPutDiscriptionMatrix,file = paste(getwd(),"/","Metadata",".csv",sep=""),
+              append = FALSE,na = "", sep = "; ", row.names = T, col.names = F,quote = F)
+
+  cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "Metadata Uploaded",sep="")
+
+  }
 
   setwd(orginalWorkingDirectoryPath)
 
