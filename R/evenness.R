@@ -116,7 +116,6 @@ evenness = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRowsAft
       cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
           z,"/",length(ls(data[["Diatom"]]))," calculating evenness",sep="")
 
-
     }
   }
 

@@ -30,7 +30,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   }
 
-  CutOutMaxAge = function(DataVector, Cutage){
+  CutOutMaxAge = function(DataVector, Cutage, minimumRowsAfterCutOutMaxAge){
 
     FittingAges = as.numeric(row.names(DataVector))<=Cutage
 
@@ -47,11 +47,11 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
     }
   }
 
-  CutOutMaxAgeForInterpolatedData = function(DataVector, Cutage){
+  CutOutMaxAgeForInterpolatedData = function(DataVector, Cutage, minimumRowsAfterCutOutMaxAge){
 
     FittingAges = as.numeric(DataVector[,1])<=Cutage
 
-    if(sum(FittingAges)>=2){
+    if(sum(FittingAges)>minimumRowsAfterCutOutMaxAge){
 
       DataVector=cbind(DataVector[FittingAges,1],DataVector[FittingAges,2])
 
@@ -104,7 +104,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   for (VariantsLoess in PlotsVariantsLoess){
     for (VariantsTransform in PlotsVariantsTransform){
       if(VariantsTransform == "Non Transformed"){
-        pdf(paste("MDS_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+        pdf(paste("Z_old MDS_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
         #Plot Limits
 
@@ -126,7 +126,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -152,7 +152,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
              xlim=c(Ymax,Ymin),
              ylab="Value",
              xlab="Age",
-             main=paste("MDS | ",VariantsLoess, " | ",VariantsTransform,sep="")
+             main=paste("Z_old MDS | ",VariantsLoess, " | ",VariantsTransform,sep="")
         )
 
         for (i in 1:length(data$Diatom)){
@@ -163,7 +163,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -194,7 +194,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -229,7 +229,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
       }
 
       if(VariantsTransform == "Transformed"){
-        pdf(paste("MDS_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+        pdf(paste("Z_old MDS_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
         Xmax=0
         Ymax=0
@@ -249,7 +249,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -277,7 +277,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
              xlim=c(Ymax,Ymin),
              ylab="Value",
              xlab="Age",
-             main=paste("MDS | ",VariantsLoess, " | ",VariantsTransform,sep="")
+             main=paste("Z_old MDS | ",VariantsLoess, " | ",VariantsTransform,sep="")
         )
 
         for (i in 1:length(data$Diatom)){
@@ -288,7 +288,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -321,7 +321,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -381,134 +381,134 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
         if(!is.null(Values)){
 
-        pdf(paste("N2_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+          pdf(paste("Z_old N2_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
-        #Plot Limits
+          #Plot Limits
 
-        Xmax=0
-        Ymax=0
-        Xmin=Inf
-        Ymin=Inf
+          Xmax=0
+          Ymax=0
+          Xmin=Inf
+          Ymin=Inf
 
-        for (i in 1:length(data$Diatom)){
+          for (i in 1:length(data$Diatom)){
 
-          DiatomsNames = AllDiatomsNames[i]
-          Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]]) #  $nMDS$Dim1
+            DiatomsNames = AllDiatomsNames[i]
+            Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]]) #  $nMDS$Dim1
 
-          if(!is.null(Values)){
-            if(dim(Values)[1]>0){
-              if(length(Values)>=minlegth){
+            if(!is.null(Values)){
+              if(dim(Values)[1]>0){
+                if(length(Values)>=minlegth){
 
-                valueNames = as.numeric(rownames(Values))
-                Values = as.numeric(Values)
-                Values = matrix(Values, ncol = 1)
-                rownames(Values) = valueNames
+                  valueNames = as.numeric(rownames(Values))
+                  Values = as.numeric(Values)
+                  Values = matrix(Values, ncol = 1)
+                  rownames(Values) = valueNames
 
-                Values = CutOutMaxAge(Values,MaxAge)
+                  Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
-                if(!is.null(Values)){
+                  if(!is.null(Values)){
 
-                  if(max(Values[,2])>Xmax){
-                    Xmax=max(Values[,2])
-                  }
-                  if(min(Values[,2])<Xmin){
-                    Xmin=min(Values[,2])
-                  }
-                  if(max(Values[,1])>Ymax){
-                    Ymax=max(Values[,1])
-                  }
-                  if(min(Values[,1])<Ymin){
-                    Ymin=min(Values[,1])
+                    if(max(Values[,2])>Xmax){
+                      Xmax=max(Values[,2])
+                    }
+                    if(min(Values[,2])<Xmin){
+                      Xmin=min(Values[,2])
+                    }
+                    if(max(Values[,1])>Ymax){
+                      Ymax=max(Values[,1])
+                    }
+                    if(min(Values[,1])<Ymin){
+                      Ymin=min(Values[,1])
+                    }
                   }
                 }
               }
             }
           }
-        }
 
-        plot(NA,
-             ylim=c(Xmin,Xmax),
-             xlim=c(Ymax,Ymin),
-             ylab="Value",
-             xlab="Age",
-             main=paste("N2 | ",VariantsLoess, " | ",VariantsTransform,sep="")
-        )
+          plot(NA,
+               ylim=c(Xmin,Xmax),
+               xlim=c(Ymax,Ymin),
+               ylab="Value",
+               xlab="Age",
+               main=paste("Z_old N2 | ",VariantsLoess, " | ",VariantsTransform,sep="")
+          )
 
-        for (i in 1:length(data$Diatom)){
+          for (i in 1:length(data$Diatom)){
 
-          DiatomsNames = AllDiatomsNames[i]
-          Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+            DiatomsNames = AllDiatomsNames[i]
+            Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
 
-          if(!is.null(Values)){
-            if(dim(Values)[1]>0){
-              if(length(Values)>=minlegth){
+            if(!is.null(Values)){
+              if(dim(Values)[1]>0){
+                if(length(Values)>=minlegth){
 
-                Values = CutOutMaxAge(Values,MaxAge)
+                  Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
-                if(!is.null(Values)){
+                  if(!is.null(Values)){
 
-                  points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                    points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
 
-                  if(VariantsLoess == "Loess"){
+                    if(VariantsLoess == "Loess"){
 
-                    #Loess
-                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
-                    Values = cbind(Values[,1],ValuesLoess$fitted)
+                      #Loess
+                      ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                      Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                    }
+
+                    lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
 
                   }
-
-                  lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
-
                 }
               }
             }
           }
-        }
 
-        #Plot Numbers
+          #Plot Numbers
 
-        for (i in 1:length(data$Diatom)){
+          for (i in 1:length(data$Diatom)){
 
-          DiatomsNames = AllDiatomsNames[i]
-          Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+            DiatomsNames = AllDiatomsNames[i]
+            Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
 
-          if(!is.null(Values)){
-            if(dim(Values)[1]>0){
-              if(length(Values)>=minlegth){
+            if(!is.null(Values)){
+              if(dim(Values)[1]>0){
+                if(length(Values)>=minlegth){
 
-                Values = CutOutMaxAge(Values,MaxAge)
+                  Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
-                if(!is.null(Values)){
+                  if(!is.null(Values)){
 
-                  if(VariantsLoess == "Loess"){
+                    if(VariantsLoess == "Loess"){
 
-                    #Loess
-                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
-                    Values = cbind(Values[,1],ValuesLoess$fitted)
+                      #Loess
+                      ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                      Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                    }
+
+                    distance = 120
+
+                    if(i>=10){distance = 200}
+
+                    text(Values[dim(Values)[1],1]+distance,
+                         Values[dim(Values)[1],2],
+                         label=i,
+                         col="white",
+                         cex=1.2)
+
+                    text(Values[dim(Values)[1],1]+distance,
+                         Values[dim(Values)[1],2],
+                         label=i,
+                         col=Allcolor[i])
 
                   }
-
-                  distance = 120
-
-                  if(i>=10){distance = 200}
-
-                  text(Values[dim(Values)[1],1]+distance,
-                       Values[dim(Values)[1],2],
-                       label=i,
-                       col="white",
-                       cex=1.2)
-
-                  text(Values[dim(Values)[1],1]+distance,
-                       Values[dim(Values)[1],2],
-                       label=i,
-                       col=Allcolor[i])
-
                 }
               }
             }
           }
-        }
-        dev.off()
+          dev.off()
         }
       }
 
@@ -518,140 +518,140 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
         if(!is.null(Values)){
 
-        pdf(paste("N2_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+          pdf(paste("Z_old N2_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
-        Xmax=0
-        Ymax=0
-        Xmin=Inf
-        Ymin=Inf
+          Xmax=0
+          Ymax=0
+          Xmin=Inf
+          Ymin=Inf
 
-        for (i in 1:length(data$Diatom)){
+          for (i in 1:length(data$Diatom)){
 
-          DiatomsNames = AllDiatomsNames[i]
-          Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+            DiatomsNames = AllDiatomsNames[i]
+            Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
 
-          if(!is.null(Values)){
-            if(dim(Values)[1]>0){
-              if(length(Values)>=minlegth){
+            if(!is.null(Values)){
+              if(dim(Values)[1]>0){
+                if(length(Values)>=minlegth){
 
-                valueNames = as.numeric(rownames(Values))
-                Values = as.numeric(Values)
-                Values = matrix(Values, ncol = 1)
-                rownames(Values) = valueNames
+                  valueNames = as.numeric(rownames(Values))
+                  Values = as.numeric(Values)
+                  Values = matrix(Values, ncol = 1)
+                  rownames(Values) = valueNames
 
-                Values = CutOutMaxAge(Values,MaxAge)
+                  Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
-                if(!is.null(Values)){
+                  if(!is.null(Values)){
 
-                  Values[,2] = scale(Values[,2],center = T, scale = T)
+                    Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                  if(max(Values[,2])>Xmax){
-                    Xmax=max(Values[,2])
-                  }
-                  if(min(Values[,2])<Xmin){
-                    Xmin=min(Values[,2])
-                  }
-                  if(max(Values[,1])>Ymax){
-                    Ymax=max(Values[,1])
-                  }
-                  if(min(Values[,1])<Ymin){
-                    Ymin=min(Values[,1])
+                    if(max(Values[,2])>Xmax){
+                      Xmax=max(Values[,2])
+                    }
+                    if(min(Values[,2])<Xmin){
+                      Xmin=min(Values[,2])
+                    }
+                    if(max(Values[,1])>Ymax){
+                      Ymax=max(Values[,1])
+                    }
+                    if(min(Values[,1])<Ymin){
+                      Ymin=min(Values[,1])
+                    }
                   }
                 }
               }
             }
           }
-        }
 
 
 
-        plot(NA,
-             ylim=c(Xmin,Xmax),
-             xlim=c(Ymax,Ymin),
-             ylab="Value",
-             xlab="Age",
-             main=paste("N2 | ",VariantsLoess, " | ",VariantsTransform,sep="")
-        )
+          plot(NA,
+               ylim=c(Xmin,Xmax),
+               xlim=c(Ymax,Ymin),
+               ylab="Value",
+               xlab="Age",
+               main=paste("Z_old N2 | ",VariantsLoess, " | ",VariantsTransform,sep="")
+          )
 
-        for (i in 1:length(data$Diatom)){
+          for (i in 1:length(data$Diatom)){
 
-          DiatomsNames = AllDiatomsNames[i]
-          Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+            DiatomsNames = AllDiatomsNames[i]
+            Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
 
-          if(!is.null(Values)){
-            if(dim(Values)[1]>0){
-              if(length(Values)>=minlegth){
+            if(!is.null(Values)){
+              if(dim(Values)[1]>0){
+                if(length(Values)>=minlegth){
 
-                Values = CutOutMaxAge(Values,MaxAge)
+                  Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
-                if(!is.null(Values)){
+                  if(!is.null(Values)){
 
-                  Values[,2] = scale(Values[,2],center = T, scale = T)
+                    Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                  points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                    points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
 
-                  if(VariantsLoess == "Loess"){
+                    if(VariantsLoess == "Loess"){
 
-                    #Loess
-                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
-                    Values = cbind(Values[,1],ValuesLoess$fitted)
+                      #Loess
+                      ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                      Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                    }
+
+                    lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
 
                   }
-
-                  lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
-
                 }
               }
             }
           }
-        }
 
-        #Plot Numbers
+          #Plot Numbers
 
-        for (i in 1:length(data$Diatom)){
+          for (i in 1:length(data$Diatom)){
 
-          DiatomsNames = AllDiatomsNames[i]
-          Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+            DiatomsNames = AllDiatomsNames[i]
+            Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
 
-          if(!is.null(Values)){
-            if(dim(Values)[1]>0){
-              if(length(Values)>=minlegth){
+            if(!is.null(Values)){
+              if(dim(Values)[1]>0){
+                if(length(Values)>=minlegth){
 
-                Values = CutOutMaxAge(Values,MaxAge)
+                  Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
-                if(!is.null(Values)){
+                  if(!is.null(Values)){
 
-                  Values[,2] = scale(Values[,2],center = T, scale = T)
+                    Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                  if(VariantsLoess == "Loess"){
+                    if(VariantsLoess == "Loess"){
 
-                    #Loess
-                    ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
-                    Values = cbind(Values[,1],ValuesLoess$fitted)
+                      #Loess
+                      ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                      Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                    }
+
+                    distance = 120
+
+                    if(i>=10){distance = 200}
+
+                    text(Values[dim(Values)[1],1]+distance,
+                         Values[dim(Values)[1],2],
+                         label=i,
+                         col="white",
+                         cex=1.2)
+
+                    text(Values[dim(Values)[1],1]+distance,
+                         Values[dim(Values)[1],2],
+                         label=i,
+                         col=Allcolor[i])
 
                   }
-
-                  distance = 120
-
-                  if(i>=10){distance = 200}
-
-                  text(Values[dim(Values)[1],1]+distance,
-                       Values[dim(Values)[1],2],
-                       label=i,
-                       col="white",
-                       cex=1.2)
-
-                  text(Values[dim(Values)[1],1]+distance,
-                       Values[dim(Values)[1],2],
-                       label=i,
-                       col=Allcolor[i])
-
                 }
               }
             }
           }
-        }
-        dev.off()
+          dev.off()
         }
       }
 
@@ -694,7 +694,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -736,7 +736,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -772,7 +772,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -828,7 +828,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -873,7 +873,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -912,7 +912,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -968,7 +968,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
     for (VariantsTransform in PlotsVariantsTransform){
 
       if(VariantsTransform == "Non Transformed"){
-        pdf(paste("TOC_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+        pdf(paste("Z_old TOC_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
         #Plot Limits
 
@@ -995,7 +995,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -1021,7 +1021,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
              xlim=c(Ymax,Ymin),
              ylab="Value",
              xlab="Age",
-             main=paste("TOC | ",VariantsLoess, " | ",VariantsTransform,sep="")
+             main=paste("Z_old TOC | ",VariantsLoess, " | ",VariantsTransform,sep="")
         )
 
         for (i in 1:length(data$Diatom)){ #length(data$Diatom)
@@ -1042,7 +1042,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -1083,7 +1083,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -1118,7 +1118,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
       }
 
       if(VariantsTransform == "Transformed"){
-        pdf(paste("TOC_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+        pdf(paste("Z_old TOC_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
         Xmax=0
         Ymax=0
@@ -1143,7 +1143,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -1171,7 +1171,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
              xlim=c(Ymax,Ymin),
              ylab="Value",
              xlab="Age",
-             main=paste("TOC | ",VariantsLoess, " | ",VariantsTransform,sep="")
+             main=paste("Z_old TOC | ",VariantsLoess, " | ",VariantsTransform,sep="")
         )
 
         for (i in 1:length(data$Diatom)){
@@ -1192,7 +1192,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -1235,7 +1235,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
               Values = matrix(Values, ncol = 1)
               rownames(Values) = valueNames
 
-              Values = CutOutMaxAge(Values,MaxAge)
+              Values = CutOutMaxAge(Values,MaxAge,minimumRowsAfterCutOutMaxAge)
 
               if(!is.null(Values)){
 
@@ -1311,6 +1311,41 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   legend(x = "right", legend = paste((SplitValue2+1):SplitValue3,"-",AllDiatomsNamesPart3), col = Allcolor[(SplitValue2+1):SplitValue3], lty = 1, lwd = 3, text.width=0.3, cex = thickness, bty="n") # bty="n"
 
   dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   ################################################################################
@@ -1414,6 +1449,153 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   dev.off()
 
 
+  ################################################################################
+  ############################### InverseSimpsion ################################
+  ################################################################################
+
+  pdf("InverseSimpsion.pdf",width=15,height=10)
+
+  InverseSimpsionMatrix = data$InverseSimpsionMatrix
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  InverseSimpsionMatrix=InverseSimpsionMatrix[InverseSimpsionMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  Xmin = min(InverseSimpsionMatrix[,1])
+  Xmax = max(InverseSimpsionMatrix[,1])
+  Ymin = min(InverseSimpsionMatrix[,3])
+  Ymax = max(InverseSimpsionMatrix[,4])
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(InverseSimpsionMatrix)[1])
+  P_color[] = "red"
+  P_color[InverseSimpsionMatrix[,5]<P_value] = "green"
+  P_color[InverseSimpsionMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("InverseSimpsion Mean",CutValue,sep="")
+  )
+
+  #lines(InverseSimpsionMatrix[,1],InverseSimpsionMatrix[,2], col= "blue")
+  #points(InverseSimpsionMatrix[,1],InverseSimpsionMatrix[,2], pch = 19, cex = 0.1, col= "black")
+
+  for (i in 1:(dim(InverseSimpsionMatrix)[1]-1)){
+
+    lines(InverseSimpsionMatrix[i:(i+1),1],InverseSimpsionMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(InverseSimpsionMatrix[,1],InverseSimpsionMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(InverseSimpsionMatrix[,1],InverseSimpsionMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+
+  ################################################################################
+  ############################### SpeciesRichness ################################
+  ################################################################################
+
+  pdf("SpeciesRichness.pdf",width=15,height=10)
+
+  SpeciesRichnessMatrix = data$SpeciesRichnessMatrix
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  SpeciesRichnessMatrix=SpeciesRichnessMatrix[SpeciesRichnessMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  Xmin = min(SpeciesRichnessMatrix[,1])
+  Xmax = max(SpeciesRichnessMatrix[,1])
+  Ymin = min(SpeciesRichnessMatrix[,3])
+  Ymax = max(SpeciesRichnessMatrix[,4])
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(SpeciesRichnessMatrix)[1])
+  P_color[] = "red"
+  P_color[SpeciesRichnessMatrix[,5]<P_value] = "green"
+  P_color[SpeciesRichnessMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("SpeciesRichness Mean",CutValue,sep="")
+  )
+
+  for (i in 1:(dim(SpeciesRichnessMatrix)[1]-1)){
+
+    lines(SpeciesRichnessMatrix[i:(i+1),1],SpeciesRichnessMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(SpeciesRichnessMatrix[,1],SpeciesRichnessMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(SpeciesRichnessMatrix[,1],SpeciesRichnessMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+  ################################################################################
+  ##################################### MDS ######################################
+  ################################################################################
+
+  pdf("MDS.pdf",width=15,height=10)
+
+  MDSMatrix = data$MDSMatrix
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  MDSMatrix=MDSMatrix[MDSMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  Xmin = min(MDSMatrix[,1])
+  Xmax = max(MDSMatrix[,1])
+  Ymin = min(MDSMatrix[,3])
+  Ymax = max(MDSMatrix[,4])
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(MDSMatrix)[1])
+  P_color[] = "red"
+  P_color[MDSMatrix[,5]<P_value] = "green"
+  P_color[MDSMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("MDS Mean",CutValue,sep="")
+  )
+
+  #lines(MDSMatrix[,1],MDSMatrix[,2], col= "blue")
+  #points(MDSMatrix[,1],MDSMatrix[,2], pch = 19, cex = 0.1, col= "black")
+
+  for (i in 1:(dim(MDSMatrix)[1]-1)){
+
+    lines(MDSMatrix[i:(i+1),1],MDSMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(MDSMatrix[,1],MDSMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(MDSMatrix[,1],MDSMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
 
   ################################################################################
   ################################ Evenness Solo #################################
@@ -1421,7 +1603,6 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   PlotsVariantsLoess = c("Normal","Loess") # "Normal","Loess"
   PlotsVariantsTransform = c("Non Transformed","Transformed")
-
 
   for (VariantsLoess in PlotsVariantsLoess){
     for (VariantsTransform in PlotsVariantsTransform){
@@ -1441,7 +1622,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
             if(!is.null(Values)){
 
@@ -1492,7 +1673,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
             if(!is.null(Values)){
 
@@ -1527,7 +1708,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
             if(!is.null(Values)){
 
@@ -1597,7 +1778,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
             if(!is.null(Values)){
 
@@ -1648,7 +1829,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
             if(!is.null(Values)){
 
@@ -1683,7 +1864,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
             if(!is.null(Values)){
 
@@ -1726,6 +1907,386 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
     }
   }
 
+  ##############################################################################
+  ############################ Inverse Simpson Solo ############################
+  ##############################################################################
+
+  PlotsVariantsTransform = c("Non Transformed","Transformed")
+
+  for (VariantsTransform in PlotsVariantsTransform){
+
+    Xmax=0
+    Ymax=0
+    Xmin=Inf
+    Ymin=Inf
+
+    pdf(paste("InverseSimpsion_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+
+    for (i in 1:length(data$Diatom)){
+
+      DiatomsNames = AllDiatomsNames[i]
+      Values = data$Diatom[[DiatomsNames]]$inverseSimpsion
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            if(max(Values[,2])>Xmax){
+              Xmax=max(Values[,2])
+            }
+            if(min(Values[,2])<Xmin){
+              Xmin=min(Values[,2])
+            }
+            if(max(Values[,1])>Ymax){
+              Ymax=max(Values[,1])
+            }
+            if(min(Values[,1])<Ymin){
+              Ymin=min(Values[,1])
+            }
+          }
+        }
+      }
+    }
+
+    plot(NA,
+         ylim=c(Xmin,Xmax),
+         xlim=c(Ymax,Ymin),
+         ylab="Value",
+         xlab="Age",
+         main=paste("InverseSimpsion | ",VariantsTransform,sep="")
+    )
+
+    for (i in 1:length(data$Diatom)){
+
+      DiatomsNames = AllDiatomsNames[i]
+      Values = data$Diatom[[DiatomsNames]]$inverseSimpsion
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+
+          }
+        }
+      }
+    }
+
+    #Plot Numbers
+
+    for (i in 1:length(data$Diatom)){
+
+      DiatomsNames = AllDiatomsNames[i]
+      Values = data$Diatom[[DiatomsNames]]$inverseSimpsion
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            distance = 120
+
+            if(i>=10){distance = 200}
+
+            text(Values[dim(Values)[1],1]+distance,
+                 Values[dim(Values)[1],2],
+                 label=i,
+                 col="white",
+                 cex=1.2)
+
+            text(Values[dim(Values)[1],1]+distance,
+                 Values[dim(Values)[1],2],
+                 label=i,
+                 col=Allcolor[i])
+
+          }
+        }
+      }
+    }
+
+    dev.off()
+
+  }
+
+  ##############################################################################
+  ########################### Species Richness Solo ############################
+  ##############################################################################
+
+  PlotsVariantsTransform = c("Non Transformed","Transformed")
+
+  for (VariantsTransform in PlotsVariantsTransform){
+
+    Xmax=0
+    Ymax=0
+    Xmin=Inf
+    Ymin=Inf
+
+    pdf(paste("SpeciesRichness_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+
+    for (i in 1:length(data$Diatom)){
+
+      DiatomsNames = AllDiatomsNames[i]
+      Values = data$Diatom[[DiatomsNames]]$speciesRichness
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            if(max(Values[,2])>Xmax){
+              Xmax=max(Values[,2])
+            }
+            if(min(Values[,2])<Xmin){
+              Xmin=min(Values[,2])
+            }
+            if(max(Values[,1])>Ymax){
+              Ymax=max(Values[,1])
+            }
+            if(min(Values[,1])<Ymin){
+              Ymin=min(Values[,1])
+            }
+          }
+        }
+      }
+    }
+
+    plot(NA,
+         ylim=c(Xmin,Xmax),
+         xlim=c(Ymax,Ymin),
+         ylab="Value",
+         xlab="Age",
+         main=paste("SpeciesRichness | ",VariantsTransform,sep="")
+    )
+
+    for (i in 1:length(data$Diatom)){
+
+      DiatomsNames = AllDiatomsNames[i]
+      Values = data$Diatom[[DiatomsNames]]$speciesRichness
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+
+          }
+        }
+      }
+    }
+
+    #Plot Numbers
+
+    for (i in 1:length(data$Diatom)){
+
+      DiatomsNames = AllDiatomsNames[i]
+      Values = data$Diatom[[DiatomsNames]]$speciesRichness
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            distance = 120
+
+            if(i>=10){distance = 200}
+
+            text(Values[dim(Values)[1],1]+distance,
+                 Values[dim(Values)[1],2],
+                 label=i,
+                 col="white",
+                 cex=1.2)
+
+            text(Values[dim(Values)[1],1]+distance,
+                 Values[dim(Values)[1],2],
+                 label=i,
+                 col=Allcolor[i])
+
+          }
+        }
+      }
+    }
+
+    dev.off()
+
+  }
+
+  ##############################################################################
+  ################################## MDS Solo ##################################
+  ##############################################################################
+
+  PlotsVariantsTransform = c("Non Transformed","Transformed")
+
+  for (VariantsTransform in PlotsVariantsTransform){
+
+    Xmax=0
+    Ymax=0
+    Xmin=Inf
+    Ymin=Inf
+
+    pdf(paste("MDS_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+
+    for (i in 1:length(data$Diatom)){
+
+      DiatomsNames = AllDiatomsNames[i]
+      Values = data$Diatom[[DiatomsNames]]$MDS
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            if(max(Values[,2])>Xmax){
+              Xmax=max(Values[,2])
+            }
+            if(min(Values[,2])<Xmin){
+              Xmin=min(Values[,2])
+            }
+            if(max(Values[,1])>Ymax){
+              Ymax=max(Values[,1])
+            }
+            if(min(Values[,1])<Ymin){
+              Ymin=min(Values[,1])
+            }
+          }
+        }
+      }
+    }
+
+    plot(NA,
+         ylim=c(Xmin,Xmax),
+         xlim=c(Ymax,Ymin),
+         ylab="Value",
+         xlab="Age",
+         main=paste("MDS | ",VariantsTransform,sep="")
+    )
+
+    for (i in 1:length(data$Diatom)){
+
+      DiatomsNames = AllDiatomsNames[i]
+      Values = data$Diatom[[DiatomsNames]]$MDS
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+
+          }
+        }
+      }
+    }
+
+    #Plot Numbers
+
+    for (i in 1:length(data$Diatom)){
+
+      DiatomsNames = AllDiatomsNames[i]
+      Values = data$Diatom[[DiatomsNames]]$MDS
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            distance = 120
+
+            if(i>=10){distance = 200}
+
+            text(Values[dim(Values)[1],1]+distance,
+                 Values[dim(Values)[1],2],
+                 label=i,
+                 col="white",
+                 cex=1.2)
+
+            text(Values[dim(Values)[1],1]+distance,
+                 Values[dim(Values)[1],2],
+                 label=i,
+                 col=Allcolor[i])
+
+          }
+        }
+      }
+    }
+
+    dev.off()
+
+  }
 
   ################################################################################
   ################################### StressPlot ###################################
@@ -1788,10 +2349,10 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
           border = colorVector,
           space=0.3)
 
-  legend(x = "bottomright",
+  legend(x = "bottom",
          legend = levels(LakeFactor),
          fill =color,
-         cex = 0.8,
+         cex = 1.3,
          bty = 'n',
          inset = c(-0.15,0))
 

@@ -10,7 +10,8 @@ Multivar(
   standardize = c("", "sqrt"),
   percentFilterWeight = 0,
   allLoessSpans = 0.8,
-  minimumRowsAfterFiltering = 0
+  minimumRowsAfterFiltering = 0,
+  minDistanceToCoast = 10
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ Multivar(
 \item{allLoessSpans}{span value for all Loess calculations made by Multivar.}
 
 \item{minimumRowsAfterFiltering}{Value for the minimum rows after filtering.}
+
+\item{minDistanceToCoast}{The minimum wanted distance to coast in km.}
 }
 \value{
 Returns the same List but with new added parameters.
