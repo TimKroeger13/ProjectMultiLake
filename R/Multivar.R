@@ -7,7 +7,6 @@
 #'@param percentFilterWeight Value how much percent a single species must relevant at minimum from the dataset.
 #'@param allLoessSpans span value for all Loess calculations made by Multivar.
 #'@param minimumRowsAfterFiltering Value for the minimum rows after filtering.
-#'@param minDistanceToCoast The minimum wanted distance to coast in km.
 #'@import vegan SRS
 #'@importFrom stats prcomp loess median predict qt quantile approx
 #'@export
@@ -16,7 +15,7 @@
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.8,minimumRowsAfterFiltering = 0, minDistanceToCoast = 10){
+Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.8,minimumRowsAfterFiltering = 0){
 
   DeleteRowWithoutTimestamp <- function(data){
 
@@ -245,8 +244,6 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     return(data)
   }
-
-  data = FilterAfterLakeData(data, distanceToCoast = minDistanceToCoast)
 
   data = filterDataForMinimumRows(data)
 

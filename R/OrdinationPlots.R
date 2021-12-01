@@ -91,7 +91,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   ################################# Discription ##################################
   ################################################################################
 
-  Allcolor = rainbow(length(data$Diatom))
+  Allcolor = rainbow(dim(data$CoreList)[1])
   AllDiatomsNames = ls(data$Diatom)
 
   ################################################################################
@@ -117,6 +117,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Diatom[[DiatomsNames]]$nMDS$Dim1)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -159,6 +160,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Diatom[[DiatomsNames]]$nMDS$Dim1)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -167,7 +169,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
               if(!is.null(Values)){
 
-                points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                points(Values[,1],Values[,2],col=Allcolor[RID], lwd=1, cex= 0.8)
 
                 if(VariantsLoess == "Loess"){
 
@@ -177,7 +179,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 }
 
-                lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+                lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
               }
             }
@@ -190,6 +192,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Diatom[[DiatomsNames]]$nMDS$Dim1)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -212,14 +215,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 text(Values[dim(Values)[1],1]+distance,
                      Values[dim(Values)[1],2],
-                     label=i,
+                     label=RID,
                      col="white",
                      cex=1.2)
 
                 text(Values[dim(Values)[1],1]+distance,
                      Values[dim(Values)[1],2],
-                     label=i,
-                     col=Allcolor[i])
+                     label=RID,
+                     col=Allcolor[RID])
 
               }
             }
@@ -240,6 +243,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Diatom[[DiatomsNames]]$nMDS$Dim1)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -284,6 +288,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Diatom[[DiatomsNames]]$nMDS$Dim1)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -294,7 +299,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                points(Values[,1],Values[,2],col=Allcolor[RID], lwd=1, cex= 0.8)
 
                 if(VariantsLoess == "Loess"){
 
@@ -304,7 +309,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 }
 
-                lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+                lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
               }
             }
@@ -317,6 +322,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Diatom[[DiatomsNames]]$nMDS$Dim1)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -341,14 +347,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 text(Values[dim(Values)[1],1]+distance,
                      Values[dim(Values)[1],2],
-                     label=i,
+                     label=RID,
                      col="white",
                      cex=1.2)
 
                 text(Values[dim(Values)[1],1]+distance,
                      Values[dim(Values)[1],2],
-                     label=i,
-                     col=Allcolor[i])
+                     label=RID,
+                     col=Allcolor[RID])
 
               }
             }
@@ -394,6 +400,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             DiatomsNames = AllDiatomsNames[i]
             Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]]) #  $nMDS$Dim1
+            RID = which(data$CoreList[,1]==DiatomsNames)
 
             if(!is.null(Values)){
               if(dim(Values)[1]>0){
@@ -438,6 +445,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             DiatomsNames = AllDiatomsNames[i]
             Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+            RID = which(data$CoreList[,1]==DiatomsNames)
 
             if(!is.null(Values)){
               if(dim(Values)[1]>0){
@@ -447,7 +455,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                   if(!is.null(Values)){
 
-                    points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                    points(Values[,1],Values[,2],col=Allcolor[RID], lwd=1, cex= 0.8)
 
                     if(VariantsLoess == "Loess"){
 
@@ -457,7 +465,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                     }
 
-                    lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+                    lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
                   }
                 }
@@ -471,6 +479,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             DiatomsNames = AllDiatomsNames[i]
             Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+            RID = which(data$CoreList[,1]==DiatomsNames)
 
             if(!is.null(Values)){
               if(dim(Values)[1]>0){
@@ -494,14 +503,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                     text(Values[dim(Values)[1],1]+distance,
                          Values[dim(Values)[1],2],
-                         label=i,
+                         label=RID,
                          col="white",
                          cex=1.2)
 
                     text(Values[dim(Values)[1],1]+distance,
                          Values[dim(Values)[1],2],
-                         label=i,
-                         col=Allcolor[i])
+                         label=RID,
+                         col=Allcolor[RID])
 
                   }
                 }
@@ -529,6 +538,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             DiatomsNames = AllDiatomsNames[i]
             Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+            RID = which(data$CoreList[,1]==DiatomsNames)
 
             if(!is.null(Values)){
               if(dim(Values)[1]>0){
@@ -563,8 +573,6 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
             }
           }
 
-
-
           plot(NA,
                ylim=c(Xmin,Xmax),
                xlim=c(Ymax,Ymin),
@@ -577,6 +585,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             DiatomsNames = AllDiatomsNames[i]
             Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+            RID = which(data$CoreList[,1]==DiatomsNames)
 
             if(!is.null(Values)){
               if(dim(Values)[1]>0){
@@ -588,7 +597,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                     Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                    points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                    points(Values[,1],Values[,2],col=Allcolor[RID], lwd=1, cex= 0.8)
 
                     if(VariantsLoess == "Loess"){
 
@@ -598,7 +607,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                     }
 
-                    lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+                    lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
                   }
                 }
@@ -612,6 +621,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             DiatomsNames = AllDiatomsNames[i]
             Values = na.omit(data$Diatom[[DiatomsNames]]$Species_richness[[nameNormal]])
+            RID = which(data$CoreList[,1]==DiatomsNames)
 
             if(!is.null(Values)){
               if(dim(Values)[1]>0){
@@ -637,14 +647,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                     text(Values[dim(Values)[1],1]+distance,
                          Values[dim(Values)[1],2],
-                         label=i,
+                         label=RID,
                          col="white",
                          cex=1.2)
 
                     text(Values[dim(Values)[1],1]+distance,
                          Values[dim(Values)[1],2],
-                         label=i,
-                         col=Allcolor[i])
+                         label=RID,
+                         col=Allcolor[RID])
 
                   }
                 }
@@ -685,6 +695,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Clima$annual[[DiatomsNames]])
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -727,6 +738,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Clima$annual[[DiatomsNames]])
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -740,7 +752,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
               if(!is.null(Values)){
 
-                points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                points(Values[,1],Values[,2],col=Allcolor[RID], lwd=1, cex= 0.8)
 
                 if(VariantsLoess == "Loess"){
 
@@ -750,7 +762,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 }
 
-                lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+                lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
               }
             }
@@ -763,6 +775,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Clima$annual[[DiatomsNames]])
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -790,14 +803,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 text(Values[1,1]+distance,
                      Values[1,2],
-                     label=i,
+                     label=RID,
                      col="white",
                      cex=1.2)
 
                 text(Values[1,1]+distance,
                      Values[1,2],
-                     label=i,
-                     col=Allcolor[i])
+                     label=RID,
+                     col=Allcolor[RID])
 
               }
             }
@@ -818,6 +831,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Clima$annual[[DiatomsNames]])
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -863,6 +877,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Clima$annual[[DiatomsNames]])
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -879,7 +894,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                points(Values[,1],Values[,2],col=Allcolor[RID], lwd=1, cex= 0.8)
 
                 if(VariantsLoess == "Loess"){
 
@@ -889,7 +904,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 }
 
-                lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+                lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
               }
             }
@@ -902,6 +917,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Clima$annual[[DiatomsNames]])
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(dim(Values)[1]>0){
@@ -932,14 +948,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 text(Values[1,1]+distance,
                      Values[1,2],
-                     label=i,
+                     label=RID,
                      col="white",
                      cex=1.2)
 
                 text(Values[1,1]+distance,
                      Values[1,2],
-                     label=i,
-                     col=Allcolor[i])
+                     label=RID,
+                     col=Allcolor[RID])
 
               }
             }
@@ -981,6 +997,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Carbon[[DiatomsNames]]$rawData$TOC) #  $Species_richness[[nameNormal]]
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(length(Values)>0){
@@ -1028,6 +1045,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Carbon[[DiatomsNames]]$rawData$TOC)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(length(Values)>0){
@@ -1046,7 +1064,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
               if(!is.null(Values)){
 
-                points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                points(Values[,1],Values[,2],col=Allcolor[RID], lwd=1, cex= 0.8)
 
                 if(VariantsLoess == "Loess"){
 
@@ -1056,7 +1074,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 }
 
-                lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+                lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
               }
             }
@@ -1069,6 +1087,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Carbon[[DiatomsNames]]$rawData$TOC)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(length(Values)>0){
@@ -1101,14 +1120,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 text(Values[dim(Values)[1],1]+distance,
                      Values[dim(Values)[1],2],
-                     label=i,
+                     label=RID,
                      col="white",
                      cex=1.2)
 
                 text(Values[dim(Values)[1],1]+distance,
                      Values[dim(Values)[1],2],
-                     label=i,
-                     col=Allcolor[i])
+                     label=RID,
+                     col=Allcolor[RID])
 
               }
             }
@@ -1129,6 +1148,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Carbon[[DiatomsNames]]$rawData$TOC)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(length(Values)>0){
@@ -1178,6 +1198,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Carbon[[DiatomsNames]]$rawData$TOC)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(length(Values)>0){
@@ -1198,7 +1219,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 Values[,2] =  scale(Values[,2],center = T, scale = T)
 
-                points(Values[,1],Values[,2],col=Allcolor[i], lwd=1, cex= 0.8)
+                points(Values[,1],Values[,2],col=Allcolor[RID], lwd=1, cex= 0.8)
 
                 if(VariantsLoess == "Loess"){
 
@@ -1208,7 +1229,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 }
 
-                lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+                lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
               }
             }
@@ -1221,6 +1242,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
           DiatomsNames = AllDiatomsNames[i]
           Values = na.omit(data$Carbon[[DiatomsNames]]$rawData$TOC)
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
           if(!is.null(Values)){
             if(length(Values)>0){
@@ -1255,14 +1277,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
                 text(Values[dim(Values)[1],1]+distance,
                      Values[dim(Values)[1],2],
-                     label=i,
+                     label=RID,
                      col="white",
                      cex=1.2)
 
                 text(Values[dim(Values)[1],1]+distance,
                      Values[dim(Values)[1],2],
-                     label=i,
-                     col=Allcolor[i])
+                     label=RID,
+                     col=Allcolor[RID])
 
               }
             }
@@ -1281,15 +1303,17 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   pdf("Legend.pdf",width=15,height=10)
 
-  LegendsSplit = length(AllDiatomsNames)/3
+ # AllCoreList dim(data$CoreList)[1]
+
+  LegendsSplit = length(Allcolor)/3
 
   SplitValue1 = ceiling(LegendsSplit)
   SplitValue2 = ceiling(LegendsSplit*2)
-  SplitValue3 = length(AllDiatomsNames)
+  SplitValue3 = length(Allcolor)
 
-  AllDiatomsNamesPart1 = AllDiatomsNames[1:SplitValue1]
-  AllDiatomsNamesPart2 = AllDiatomsNames[(SplitValue1+1):SplitValue2]
-  AllDiatomsNamesPart3 = AllDiatomsNames[(SplitValue2+1):SplitValue3]
+  AllNamesPart1 = data$CoreList[,1][1:SplitValue1]
+  AllNamesPart2 = data$CoreList[,1][(SplitValue1+1):SplitValue2]
+  AllNamesPart3 = data$CoreList[,1][(SplitValue2+1):SplitValue3]
 
   plot(NA,
        ylim=c(0,1),
@@ -1302,13 +1326,13 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
        yaxt='n'
   )
 
-  thickness = 0.9
+  thickness = 1
 
-  legend(x = "left", legend = paste(1:SplitValue1,"-",AllDiatomsNamesPart1), col = Allcolor[1:SplitValue1], lty = 1, lwd = 3, text.width=0.3, cex = thickness, bty="n") # bty="n"
+  legend(x = "left", legend = paste(1:SplitValue1,"-",AllNamesPart1), col = Allcolor[1:SplitValue1], lty = 1, lwd = 3, text.width=0.3, cex = thickness, bty="n") # bty="n"
 
-  legend(x = "center", legend = paste((SplitValue1+1):SplitValue2,"-",AllDiatomsNamesPart2), col = Allcolor[(SplitValue1+1):SplitValue2], lty = 1, lwd = 3, text.width=0.3, cex = thickness, bty="n") # bty="n"
+  legend(x = "center", legend = paste((SplitValue1+1):SplitValue2,"-",AllNamesPart2), col = Allcolor[(SplitValue1+1):SplitValue2], lty = 1, lwd = 3, text.width=0.3, cex = thickness, bty="n") # bty="n"
 
-  legend(x = "right", legend = paste((SplitValue2+1):SplitValue3,"-",AllDiatomsNamesPart3), col = Allcolor[(SplitValue2+1):SplitValue3], lty = 1, lwd = 3, text.width=0.3, cex = thickness, bty="n") # bty="n"
+  legend(x = "right", legend = paste((SplitValue2+1):SplitValue3,"-",AllNamesPart3), col = Allcolor[(SplitValue2+1):SplitValue3], lty = 1, lwd = 3, text.width=0.3, cex = thickness, bty="n") # bty="n"
 
   dev.off()
 
@@ -1618,6 +1642,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
         DiatomsNames = AllDiatomsNames[i]
         Values = data$Diatom[[DiatomsNames]]$evenness
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
@@ -1669,6 +1694,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
         DiatomsNames = AllDiatomsNames[i]
         Values = data$Diatom[[DiatomsNames]]$evenness
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
@@ -1691,7 +1717,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
               }
 
-              lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+              lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
             }
           }
@@ -1704,6 +1730,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
         DiatomsNames = AllDiatomsNames[i]
         Values = data$Diatom[[DiatomsNames]]$evenness
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
@@ -1732,14 +1759,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
               text(Values[dim(Values)[1],1]+distance,
                    Values[dim(Values)[1],2],
-                   label=i,
+                   label=RID,
                    col="white",
                    cex=1.2)
 
               text(Values[dim(Values)[1],1]+distance,
                    Values[dim(Values)[1],2],
-                   label=i,
-                   col=Allcolor[i])
+                   label=RID,
+                   col=Allcolor[RID])
 
             }
           }
@@ -1774,6 +1801,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
         DiatomsNames = AllDiatomsNames[i]
         Values = data$Diatom[[DiatomsNames]]$RoC
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
@@ -1825,6 +1853,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
         DiatomsNames = AllDiatomsNames[i]
         Values = data$Diatom[[DiatomsNames]]$RoC
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
@@ -1847,7 +1876,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
               }
 
-              lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+              lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
             }
           }
@@ -1860,6 +1889,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
         DiatomsNames = AllDiatomsNames[i]
         Values = data$Diatom[[DiatomsNames]]$RoC
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
         if(!is.null(Values)){
           if(dim(Values)[1]>0){
@@ -1888,14 +1918,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
               text(Values[dim(Values)[1],1]+distance,
                    Values[dim(Values)[1],2],
-                   label=i,
+                   label=RID,
                    col="white",
                    cex=1.2)
 
               text(Values[dim(Values)[1],1]+distance,
                    Values[dim(Values)[1],2],
-                   label=i,
-                   col=Allcolor[i])
+                   label=RID,
+                   col=Allcolor[RID])
 
             }
           }
@@ -1926,6 +1956,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
       DiatomsNames = AllDiatomsNames[i]
       Values = data$Diatom[[DiatomsNames]]$inverseSimpsion
+      RID = which(data$CoreList[,1]==DiatomsNames)
 
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
@@ -1969,6 +2000,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
       DiatomsNames = AllDiatomsNames[i]
       Values = data$Diatom[[DiatomsNames]]$inverseSimpsion
+      RID = which(data$CoreList[,1]==DiatomsNames)
 
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
@@ -1983,7 +2015,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             }
 
-            lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+            lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
           }
         }
@@ -1996,6 +2028,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
       DiatomsNames = AllDiatomsNames[i]
       Values = data$Diatom[[DiatomsNames]]$inverseSimpsion
+      RID = which(data$CoreList[,1]==DiatomsNames)
 
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
@@ -2016,14 +2049,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             text(Values[dim(Values)[1],1]+distance,
                  Values[dim(Values)[1],2],
-                 label=i,
+                 label=RID,
                  col="white",
                  cex=1.2)
 
             text(Values[dim(Values)[1],1]+distance,
                  Values[dim(Values)[1],2],
-                 label=i,
-                 col=Allcolor[i])
+                 label=RID,
+                 col=Allcolor[RID])
 
           }
         }
@@ -2053,6 +2086,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
       DiatomsNames = AllDiatomsNames[i]
       Values = data$Diatom[[DiatomsNames]]$speciesRichness
+      RID = which(data$CoreList[,1]==DiatomsNames)
 
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
@@ -2096,6 +2130,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
       DiatomsNames = AllDiatomsNames[i]
       Values = data$Diatom[[DiatomsNames]]$speciesRichness
+      RID = which(data$CoreList[,1]==DiatomsNames)
 
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
@@ -2110,7 +2145,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             }
 
-            lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+            lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
           }
         }
@@ -2123,6 +2158,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
       DiatomsNames = AllDiatomsNames[i]
       Values = data$Diatom[[DiatomsNames]]$speciesRichness
+      RID = which(data$CoreList[,1]==DiatomsNames)
 
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
@@ -2143,14 +2179,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             text(Values[dim(Values)[1],1]+distance,
                  Values[dim(Values)[1],2],
-                 label=i,
+                 label=RID,
                  col="white",
                  cex=1.2)
 
             text(Values[dim(Values)[1],1]+distance,
                  Values[dim(Values)[1],2],
-                 label=i,
-                 col=Allcolor[i])
+                 label=RID,
+                 col=Allcolor[RID])
 
           }
         }
@@ -2180,6 +2216,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
       DiatomsNames = AllDiatomsNames[i]
       Values = data$Diatom[[DiatomsNames]]$MDS
+      RID = which(data$CoreList[,1]==DiatomsNames)
 
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
@@ -2223,6 +2260,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
       DiatomsNames = AllDiatomsNames[i]
       Values = data$Diatom[[DiatomsNames]]$MDS
+      RID = which(data$CoreList[,1]==DiatomsNames)
 
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
@@ -2237,7 +2275,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             }
 
-            lines(Values[,1],Values[,2],col=Allcolor[i], lwd=1)
+            lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
           }
         }
@@ -2250,6 +2288,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
       DiatomsNames = AllDiatomsNames[i]
       Values = data$Diatom[[DiatomsNames]]$MDS
+      RID = which(data$CoreList[,1]==DiatomsNames)
 
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
@@ -2270,14 +2309,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             text(Values[dim(Values)[1],1]+distance,
                  Values[dim(Values)[1],2],
-                 label=i,
+                 label=RID,
                  col="white",
                  cex=1.2)
 
             text(Values[dim(Values)[1],1]+distance,
                  Values[dim(Values)[1],2],
-                 label=i,
-                 col=Allcolor[i])
+                 label=RID,
+                 col=Allcolor[RID])
 
           }
         }

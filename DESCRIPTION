@@ -3,7 +3,7 @@ Type: Package
 Title: RTools used by the Alfred wegner institut
 Version: 0.1.1
 Author: Tim Kröger
-Depends: compositions, vegan, readxl, SRS
+Depends: compositions, vegan, readxl, SRS, varhandle
 Maintainer: The package maintainer <tim.kroeger@awi.de>
 Description: This function has only been developed for the Alfred Wegener Institute Helmholtz 
     Centre for Polar and Marine Research and should therefore only be used in combination with their database.

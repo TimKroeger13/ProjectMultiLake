@@ -90,7 +90,6 @@ MultiExcelLoader = function(){
 
   }
 
-
   RoundDepth = function(roundData){
 
     for (i in 1:length(roundData)){
@@ -322,7 +321,6 @@ MultiExcelLoader = function(){
         Folder[["Carbon"]][[FilenameKey]][["rawData"]]=Carbon
 
       }
-
 
       if(sum(!is.na(Carbon[,which(colnames(Carbon)=="LOI")]))>0){
         Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="LOI_availible"),2]=TRUE
@@ -588,8 +586,11 @@ MultiExcelLoader = function(){
 
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
       "Leading a ton of TraceData. This can take a while...",sep="")
-  Trace=read.csv(file = paste(getwd(),"/",FileNamesTrace,sep=""),sep=";",header = F)
-  Folder[["Trace"]]=Trace
+  #Trace=read.csv(file = paste(getwd(),"/",FileNamesTrace,sep=""),sep=";",header = F) #<------------------------------- reuse This when there a better Trace data
+  #Folder[["Trace"]]=Trace #<------------------------------------------------------------------------------------------ reuse This when there a better Trace data
+
+  CoreList = matrix(NA,ncol = 2, nrow = length(list.files()[grep("data.xlsx",list.files())]))
+  colnames(CoreList) = c("name","ID")
 
   for(i in 1:length(list.files()[grep("data.xlsx",list.files())])){
 
@@ -599,11 +600,57 @@ MultiExcelLoader = function(){
 
     Folder=SingelExcelLoader(Folder,Excelname,age,FilenameKey)
 
+    CoreList[i,] = c(FilenameKey,i)
+
     #Printer
     cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
         i,"/",length(list.files()[grep("data.xlsx",list.files())])," Loading Excels from ",getwd(),sep="")
 
   }
+
+  Folder[["CoreList"]] = CoreList
+
+  #Add extra description
+
+  extraDiscription1 = "RID"
+  extraDiscription2 = colnames(LakeData)
+
+  AlreadyUsedNames = Folder$Description[[1]][,1]
+
+  extraDiscriptionList = NULL
+
+  for(e in extraDiscription2){
+
+    if(!(sum(e==AlreadyUsedNames)+sum(e=="CoreID")+sum(e=="TanDEM-X (Krieger et al. 2007)) tile number"))>0){
+
+      extraDiscriptionList=c(extraDiscriptionList,e)
+
+    }
+  }
+
+  for(h in 1:length(list.files()[grep("data.xlsx",list.files())])){
+
+    FilenameKey=read.table(textConnection(gsub("_", " ", FileNamesXlsx)))[h,1]
+
+    extraDiscriptionMatrix = matrix(NA,ncol = 2, nrow = length(extraDiscriptionList)+1)
+    extraDiscriptionMatrix[,1] = c("RID",extraDiscriptionList)
+    extraDiscriptionMatrix[which(extraDiscriptionMatrix[,1] == "RID"),2] = which(CoreList[,1]==FilenameKey)
+
+    for (b in extraDiscriptionList){
+
+      if(sum(LakeData[,which(colnames(LakeData)=="CoreID")]==FilenameKey)>0){
+
+      extraDiscriptionMatrix[which(extraDiscriptionMatrix[,1] == b),2] =
+        LakeData[which(LakeData[,which(colnames(LakeData)=="CoreID")]==FilenameKey),which(colnames(LakeData)==b)]
+
+      }
+    }
+
+    Folder$Description[[FilenameKey]] = rbind(Folder$Description[[FilenameKey]],extraDiscriptionMatrix)
+
+  }
+
+  Folder[["Filter"]] = "NotFiltert"
 
   setwd(orginalWorkingDirectoryPath)
 
