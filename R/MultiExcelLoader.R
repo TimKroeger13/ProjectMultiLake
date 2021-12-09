@@ -463,6 +463,7 @@ MultiExcelLoader = function(){
 
   }
 
+  '
   if(identical(FileNamesTrace, character(0))){
 
     setwd(orginalWorkingDirectoryPath)
@@ -470,6 +471,7 @@ MultiExcelLoader = function(){
     stop("No file named TRACE.csv found")
 
   }
+  '
 
   #Insolation
 
@@ -621,7 +623,8 @@ MultiExcelLoader = function(){
 
   for(e in extraDiscription2){
 
-    if(!(sum(e==AlreadyUsedNames)+sum(e=="CoreID")+sum(e=="TanDEM-X (Krieger et al. 2007)) tile number"))>0){
+    if(!(sum(e==AlreadyUsedNames)+sum(e=="CoreID")+sum(e=="TanDEM-X (Krieger et al. 2007)) tile number")+sum(e=="TanDEM-X (Krieger et al. 2007)) tile number")
+         +sum(e=="BathymetricData")+sum(e=="ReferenceBathy"))>0){
 
       extraDiscriptionList=c(extraDiscriptionList,e)
 
@@ -651,6 +654,7 @@ MultiExcelLoader = function(){
   }
 
   Folder[["Filter"]] = "NotFiltert"
+  Folder[["FilterList"]] = "NotFiltert"
 
   setwd(orginalWorkingDirectoryPath)
 

@@ -106,7 +106,7 @@ MetadataFilter = function(data,
 
               if(TempFilter["criteria"]=="greater"){
 
-                if(KeyValue<=TempFilter["value"]){
+                if(KeyValue<=as.numeric(TempFilter["value"])){
 
                   TempdataDiatom = TempdataDiatom[-counter]
                   counter = counter-1
@@ -117,7 +117,7 @@ MetadataFilter = function(data,
               if(TempFilter["criteria"]=="smaller"){
 
 
-                if(KeyValue>=TempFilter["value"]){
+                if(KeyValue>=as.numeric(TempFilter["value"])){
 
                   TempdataDiatom = TempdataDiatom[-counter]
                   counter = counter-1
@@ -180,7 +180,7 @@ MetadataFilter = function(data,
 
               if(TempFilter["criteria"]=="greater"){
 
-                if(KeyValue<=TempFilter["value"]){
+                if(KeyValue<=as.numeric(TempFilter["value"])){
 
                   TempdataCarbon = TempdataCarbon[-counter]
                   counter = counter-1
@@ -191,7 +191,7 @@ MetadataFilter = function(data,
               if(TempFilter["criteria"]=="smaller"){
 
 
-                if(KeyValue>=TempFilter["value"]){
+                if(KeyValue>=as.numeric(TempFilter["value"])){
 
                   TempdataCarbon = TempdataCarbon[-counter]
                   counter = counter-1
@@ -286,7 +286,7 @@ MetadataFilter = function(data,
 
               if(TempFilter["criteria"]=="greater"){
 
-                if(KeyValue<=TempFilter["value"]){
+                if(KeyValue<=as.numeric(TempFilter["value"])){
 
                   TempdataDiatom = TempdataDiatom[-counter]
                   counter = counter-1
@@ -297,7 +297,7 @@ MetadataFilter = function(data,
               if(TempFilter["criteria"]=="smaller"){
 
 
-                if(KeyValue>=TempFilter["value"]){
+                if(KeyValue>=as.numeric(TempFilter["value"])){
 
                   TempdataDiatom = TempdataDiatom[-counter]
                   counter = counter-1
@@ -360,7 +360,7 @@ MetadataFilter = function(data,
 
               if(TempFilter["criteria"]=="greater"){
 
-                if(KeyValue<=TempFilter["value"]){
+                if(KeyValue<=as.numeric(TempFilter["value"])){
 
                   TempdataCarbon = TempdataCarbon[-counter]
                   counter = counter-1
@@ -371,7 +371,7 @@ MetadataFilter = function(data,
               if(TempFilter["criteria"]=="smaller"){
 
 
-                if(KeyValue>=TempFilter["value"]){
+                if(KeyValue>=as.numeric(TempFilter["value"])){
 
                   TempdataCarbon = TempdataCarbon[-counter]
                   counter = counter-1
@@ -466,7 +466,7 @@ MetadataFilter = function(data,
 
               if(TempFilter["criteria"]=="greater"){
 
-                if(KeyValue<=TempFilter["value"]){
+                if(KeyValue<=as.numeric(TempFilter["value"])){
 
                   TempdataDiatom = TempdataDiatom[-counter]
                   counter = counter-1
@@ -477,7 +477,7 @@ MetadataFilter = function(data,
               if(TempFilter["criteria"]=="smaller"){
 
 
-                if(KeyValue>=TempFilter["value"]){
+                if(KeyValue>=as.numeric(TempFilter["value"])){
 
                   TempdataDiatom = TempdataDiatom[-counter]
                   counter = counter-1
@@ -540,7 +540,7 @@ MetadataFilter = function(data,
 
               if(TempFilter["criteria"]=="greater"){
 
-                if(KeyValue<=TempFilter["value"]){
+                if(KeyValue<=as.numeric(TempFilter["value"])){
 
                   TempdataCarbon = TempdataCarbon[-counter]
                   counter = counter-1
@@ -551,7 +551,7 @@ MetadataFilter = function(data,
               if(TempFilter["criteria"]=="smaller"){
 
 
-                if(KeyValue>=TempFilter["value"]){
+                if(KeyValue>=as.numeric(TempFilter["value"])){
 
                   TempdataCarbon = TempdataCarbon[-counter]
                   counter = counter-1
@@ -646,7 +646,7 @@ MetadataFilter = function(data,
 
               if(TempFilter["criteria"]=="greater"){
 
-                if(KeyValue<=TempFilter["value"]){
+                if(KeyValue<=as.numeric(TempFilter["value"])){
 
                   TempdataDiatom = TempdataDiatom[-counter]
                   counter = counter-1
@@ -657,7 +657,7 @@ MetadataFilter = function(data,
               if(TempFilter["criteria"]=="smaller"){
 
 
-                if(KeyValue>=TempFilter["value"]){
+                if(KeyValue>=as.numeric(TempFilter["value"])){
 
                   TempdataDiatom = TempdataDiatom[-counter]
                   counter = counter-1
@@ -720,7 +720,7 @@ MetadataFilter = function(data,
 
               if(TempFilter["criteria"]=="greater"){
 
-                if(KeyValue<=TempFilter["value"]){
+                if(KeyValue<=as.numeric(TempFilter["value"])){
 
                   TempdataCarbon = TempdataCarbon[-counter]
                   counter = counter-1
@@ -731,7 +731,7 @@ MetadataFilter = function(data,
               if(TempFilter["criteria"]=="smaller"){
 
 
-                if(KeyValue>=TempFilter["value"]){
+                if(KeyValue>=as.numeric(TempFilter["value"])){
 
                   TempdataCarbon = TempdataCarbon[-counter]
                   counter = counter-1
@@ -826,7 +826,7 @@ MetadataFilter = function(data,
 
               if(TempFilter["criteria"]=="greater"){
 
-                if(KeyValue<=TempFilter["value"]){
+                if(KeyValue<=as.numeric(TempFilter["value"])){
 
                   TempdataDiatom = TempdataDiatom[-counter]
                   counter = counter-1
@@ -837,7 +837,7 @@ MetadataFilter = function(data,
               if(TempFilter["criteria"]=="smaller"){
 
 
-                if(KeyValue>=TempFilter["value"]){
+                if(KeyValue>=as.numeric(TempFilter["value"])){
 
                   TempdataDiatom = TempdataDiatom[-counter]
                   counter = counter-1
@@ -900,7 +900,7 @@ MetadataFilter = function(data,
 
               if(TempFilter["criteria"]=="greater"){
 
-                if(KeyValue<=TempFilter["value"]){
+                if(KeyValue<=as.numeric(TempFilter["value"])){
 
                   TempdataCarbon = TempdataCarbon[-counter]
                   counter = counter-1
@@ -911,7 +911,7 @@ MetadataFilter = function(data,
               if(TempFilter["criteria"]=="smaller"){
 
 
-                if(KeyValue>=TempFilter["value"]){
+                if(KeyValue>=as.numeric(TempFilter["value"])){
 
                   TempdataCarbon = TempdataCarbon[-counter]
                   counter = counter-1
@@ -956,6 +956,89 @@ MetadataFilter = function(data,
       stop(paste("Please enter a criteria",sep = ""))
     }
   }
+
+  ##############################################################################
+  #Filter Code name and exact name
+  ##############################################################################
+
+  DataWasFilterd = FALSE
+
+  #Create filterDiscriptionDocument
+
+  filterDiscriptionDocument = matrix(NA, nrow = 1, ncol = 3);
+  filterDiscriptionDocument[,1:3] = c("name","criteria","value")
+
+  if(!Filter1["name"]=="metdataName"){
+
+    DataWasFilterd = TRUE
+
+    if(length(Filter1)==2){Filter1 = c(Filter1,"NA")}
+
+    filterDiscriptionDocument = rbind(filterDiscriptionDocument,Filter1)
+
+  }
+  if(!Filter2["name"]=="metdataName"){
+
+    DataWasFilterd = TRUE
+
+    if(length(Filter2)==2){Filter2 = c(Filter2,"NA")}
+
+    filterDiscriptionDocument = rbind(filterDiscriptionDocument,Filter2)
+
+  }
+  if(!Filter3["name"]=="metdataName"){
+
+    DataWasFilterd = TRUE
+
+    if(length(Filter3)==2){Filter3 = c(Filter3,"NA")}
+
+    filterDiscriptionDocument = rbind(filterDiscriptionDocument,Filter3)
+
+  }
+  if(!Filter4["name"]=="metdataName"){
+
+    DataWasFilterd = TRUE
+
+    if(length(Filter4)==2){Filter4 = c(Filter4,"NA")}
+
+    filterDiscriptionDocument = rbind(filterDiscriptionDocument,Filter4)
+
+  }
+  if(!Filter5["name"]=="metdataName"){
+
+    DataWasFilterd = TRUE
+
+    if(length(Filter5)==2){Filter5 = c(Filter5,"NA")}
+
+    filterDiscriptionDocument = rbind(filterDiscriptionDocument,Filter5)
+
+  }
+
+  if(DataWasFilterd){
+
+    #GetFilterKey
+
+    FilterKey = ""
+
+    for (i in 2:dim(filterDiscriptionDocument)[1]){
+
+      for (k in 1:dim(filterDiscriptionDocument)[2]){
+
+        FilterKey = c(FilterKey,substr(filterDiscriptionDocument[i,k], 0, 2))
+
+      }
+    }
+
+    #Delete the first underscor
+    FilterKey = FilterKey[-1]
+
+    FilterKey = paste(FilterKey, collapse = "_")
+
+    data[["Filter"]] = FilterKey
+    data[["FilterList"]] = filterDiscriptionDocument
+
+  }
+
 
   return(data)
 

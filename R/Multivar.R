@@ -248,7 +248,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
   data = filterDataForMinimumRows(data)
 
   data=StandadizeData(data, standardize, percentFilterWeight)
-  #data=SrsFilter(data)
+
   data = SrsFilter(data)
 
   #Main Loop
@@ -307,7 +307,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   #Main Loop
   for (i in 1:length(ls(data[["Diatom"]]))){
-    #for (i in 1:4){
+
 
     Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
 
@@ -315,51 +315,51 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     if(!class(TempdataForCalculation)[1] == "try-error"){
 
-      TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
-      TempdataForCalculation=round(TempdataForCalculation)
+        TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
+        TempdataForCalculation=round(TempdataForCalculation)
 
-      #Richness
+        #Richness
 
-      richness = rarefy(TempdataForCalculation, sample = sum(TempdataForCalculation[1,]), se=T)
-      shannon = diversity(TempdataForCalculation, index = "shannon")
-      invsimpson = diversity(TempdataForCalculation, index = "invsimpson")
+        richness = rarefy(TempdataForCalculation, sample = sum(TempdataForCalculation[1,]), se=T)
+        shannon = diversity(TempdataForCalculation, index = "shannon")
+        invsimpson = diversity(TempdataForCalculation, index = "invsimpson")
 
-      richness=cbind(richness[1,])
-      colnames(richness)=c("richness")
-      row.names(richness)=Tempdata[,1]
-      shannon=cbind(shannon)
-      row.names(shannon)=Tempdata[,1]
-      invsimpson=cbind(invsimpson)
-      row.names(invsimpson)=Tempdata[,1]
+        richness=cbind(richness[1,])
+        colnames(richness)=c("richness")
+        row.names(richness)=Tempdata[,1]
+        shannon=cbind(shannon)
+        row.names(shannon)=Tempdata[,1]
+        invsimpson=cbind(invsimpson)
+        row.names(invsimpson)=Tempdata[,1]
 
-      data[["Diatom"]][[i]][["Species_richness"]][[paste("richness")]]=richness
-      data[["Diatom"]][[i]][["Species_richness"]][[paste("shannon")]]=shannon
-      data[["Diatom"]][[i]][["Species_richness"]][[paste("invsimpson")]]=invsimpson
+        data[["Diatom"]][[i]][["Species_richness"]][[paste("richness")]]=richness
+        data[["Diatom"]][[i]][["Species_richness"]][[paste("shannon")]]=shannon
+        data[["Diatom"]][[i]][["Species_richness"]][[paste("invsimpson")]]=invsimpson
 
 
-      # Loess Predictor
-      for (r in c("richness","shannon","invsimpson")){
+        # Loess Predictor
+        for (r in c("richness","shannon","invsimpson")){
 
-        y=as.numeric(row.names(data[["Diatom"]][[i]][["Species_richness"]][[r]]))
-        x=data[["Diatom"]][[i]][["Species_richness"]][[r]]
+          y=as.numeric(row.names(data[["Diatom"]][[i]][["Species_richness"]][[r]]))
+          x=data[["Diatom"]][[i]][["Species_richness"]][[r]]
 
-        loessValues=predict(loess(x ~ y, span=allLoessSpans), se=T,newdata = as.numeric(y)) #Critical Span value
+          loessValues=predict(loess(x ~ y, span=allLoessSpans), se=T,newdata = as.numeric(y)) #Critical Span value
 
-        LoessMean = loessValues$fit
-        LoessConfUp = loessValues$fit + qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
-        LoessConfDown = loessValues$fit - qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
+          LoessMean = loessValues$fit
+          LoessConfUp = loessValues$fit + qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
+          LoessConfDown = loessValues$fit - qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
 
-        LoessOut=cbind(LoessMean,LoessConfUp,LoessConfDown)
-        row.names(LoessOut)=Tempdata[,1]
+          LoessOut=cbind(LoessMean,LoessConfUp,LoessConfDown)
+          row.names(LoessOut)=Tempdata[,1]
 
-        data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][["Species_richness"]][[paste("Loess_",r,sep = "")]]=LoessOut
+          data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][["Species_richness"]][[paste("Loess_",r,sep = "")]]=LoessOut
 
-      }
+        }
 
-      #DCA
-      dca=suppressWarnings(decorana(data[["Diatom"]][[i]]$rawData[,4:dim(data[["Diatom"]][[i]]$rawData)[2]]))
+        #DCA
+        dca=suppressWarnings(decorana(data[["Diatom"]][[i]]$rawData[,4:dim(data[["Diatom"]][[i]]$rawData)[2]]))
 
-      data[["Diatom"]][[i]][["DCA_Gradient_Length"]]=round(max(dca$rproj[,1:4]),digits = 3)
+        data[["Diatom"]][[i]][["DCA_Gradient_Length"]]=round(max(dca$rproj[,1:4]),digits = 3)
 
     }
 
@@ -368,6 +368,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
         i,"/",length(ls(data[["Diatom"]]))," calculating species richness",sep="")
 
   }
+
 
   data = rateofChange(data = data, intervallBy = 100, allLoessSpans = allLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method)
 

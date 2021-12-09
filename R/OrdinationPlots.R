@@ -20,13 +20,13 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   orginalWorkingDirectoryPath=getwd()
 
-  getwdTry <-  try(setwd(paste(getwd(),.Platform[2],"Output",sep="")),silent = TRUE)
+  getwdTry <-  try(setwd(paste(getwd(),.Platform[2],paste("Out_",data$Filter,sep = ""),sep="")),silent = TRUE)
 
   if(class(getwdTry) == "try-error"){
 
-    dir.create(paste(getwd(),.Platform[2],"Output",sep=""))
+    dir.create(paste(getwd(),.Platform[2],paste("Out_",data$Filter,sep = ""),sep=""))
 
-    setwd(paste(getwd(),.Platform[2],"Output",sep=""))
+    setwd(paste(getwd(),.Platform[2],paste("Out_",data$Filter,sep = ""),sep=""))
 
   }
 
@@ -81,6 +81,27 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
     RichnessData = RichnessData[,1]
 
     return((RichnessData-min(RichnessData))/(max(RichnessData)-min(RichnessData)))
+
+  }
+
+  DeleteMeanNAS = function(MeanMatrix){
+
+    MeanMatrixCounter = 0
+
+    while (MeanMatrixCounter<dim(MeanMatrix)[1]) {
+
+      MeanMatrixCounter = MeanMatrixCounter+1
+
+      if(MeanMatrix[MeanMatrixCounter,2]==0){
+
+        MeanMatrix = MeanMatrix[-MeanMatrixCounter,]
+
+        MeanMatrixCounter = MeanMatrixCounter-1
+
+      }
+    }
+
+    return(MeanMatrix)
 
   }
 
@@ -664,8 +685,6 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
           dev.off()
         }
       }
-
-
     }
   }
 
@@ -963,8 +982,6 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
         }
         dev.off()
       }
-
-
     }
   }
 
@@ -1387,6 +1404,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   #Plot Mean Rat of change
 
+  RocMatrix = DeleteMeanNAS(RocMatrix)
+
   Xmin = min(RocMatrix[,1])
   Xmax = max(RocMatrix[,1])
   Ymin = min(RocMatrix[,3])
@@ -1436,6 +1455,9 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   EvennessMatrix=EvennessMatrix[EvennessMatrix[,1]<=CutValue,]
 
   #Plot Mean Rat of change
+
+  EvennessMatrix = DeleteMeanNAS(EvennessMatrix)
+
 
   Xmin = min(EvennessMatrix[,1])
   Xmax = max(EvennessMatrix[,1])
@@ -1488,6 +1510,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   #Plot Mean Rat of change
 
+  InverseSimpsionMatrix = DeleteMeanNAS(InverseSimpsionMatrix)
+
   Xmin = min(InverseSimpsionMatrix[,1])
   Xmax = max(InverseSimpsionMatrix[,1])
   Ymin = min(InverseSimpsionMatrix[,3])
@@ -1539,6 +1563,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   #Plot Mean Rat of change
 
+  SpeciesRichnessMatrix = DeleteMeanNAS(SpeciesRichnessMatrix)
+
   Xmin = min(SpeciesRichnessMatrix[,1])
   Xmax = max(SpeciesRichnessMatrix[,1])
   Ymin = min(SpeciesRichnessMatrix[,3])
@@ -1585,6 +1611,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   MDSMatrix=MDSMatrix[MDSMatrix[,1]<=CutValue,]
 
   #Plot Mean Rat of change
+
+  MDSMatrix = DeleteMeanNAS(MDSMatrix)
 
   Xmin = min(MDSMatrix[,1])
   Xmax = max(MDSMatrix[,1])
@@ -2002,6 +2030,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
       Values = data$Diatom[[DiatomsNames]]$inverseSimpsion
       RID = which(data$CoreList[,1]==DiatomsNames)
 
+      PointValues = data$Diatom[[DiatomsNames]]$Species_richness$invsimpson
+
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
 
@@ -2012,10 +2042,13 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
             if(VariantsTransform=="Transformed"){
 
               Values[,2] = scale(Values[,2],center = T, scale = T)
+              PointValues = scale(PointValues,center = T, scale = T)
 
             }
 
             lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
+
+            points(as.numeric(row.names(PointValues)),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
 
           }
         }
@@ -2132,6 +2165,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
       Values = data$Diatom[[DiatomsNames]]$speciesRichness
       RID = which(data$CoreList[,1]==DiatomsNames)
 
+      PointValues = data$Diatom[[DiatomsNames]]$Species_richness$richness
+
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
 
@@ -2142,10 +2177,12 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
             if(VariantsTransform=="Transformed"){
 
               Values[,2] = scale(Values[,2],center = T, scale = T)
+              PointValues = scale(PointValues,center = T, scale = T)
 
             }
 
             lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
+            points(as.numeric(row.names(PointValues)),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
 
           }
         }
@@ -2262,6 +2299,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
       Values = data$Diatom[[DiatomsNames]]$MDS
       RID = which(data$CoreList[,1]==DiatomsNames)
 
+      PointValues = data$Diatom[[DiatomsNames]]$nMDS$Dim1
+
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
 
@@ -2272,10 +2311,13 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
             if(VariantsTransform=="Transformed"){
 
               Values[,2] = scale(Values[,2],center = T, scale = T)
+              PointValues = scale(PointValues,center = T, scale = T)
 
             }
 
             lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
+
+            points(as.numeric(row.names(PointValues)),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
 
           }
         }
@@ -2293,7 +2335,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
 
-          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+          Values = CutOutMaxAgeForInterpolatedData(Values, MaxAge, minimumRowsAfterCutOutMaxAge)
 
           if(!is.null(Values)){
 
@@ -2328,7 +2370,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   }
 
   ################################################################################
-  ################################### StressPlot ###################################
+  ################################# StressPlot ###################################
   ################################################################################
 
   pdf("Stress.pdf",width=15,height=10)
@@ -2399,6 +2441,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   par(mfrow = c(1,1))
 
   dev.off()
+
+
 
 
   setwd(orginalWorkingDirectoryPath)

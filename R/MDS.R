@@ -82,8 +82,7 @@ MDS = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRowsAfterInt
 
         InterpolationMatrixLoess[,1] = predict(loess(InterpolationMatrix ~ InterpolationMatrixRowNames, span = allLoessSpans))
 
-
-        InterpolationMatrixLoess[InterpolationMatrixLoess<0]=0
+        #InterpolationMatrixLoess[InterpolationMatrixLoess<0]=0 <--------------- Not for MDS
 
         MDSMatrix = matrix(NA, ncol = 2, nrow = dim(InterpolationMatrixLoess)[1])
 

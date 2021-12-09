@@ -82,7 +82,7 @@ MDSAsyncTabel = function(data, intervallBy = 100){
     }
   }
 
-  AsyncTabel[which(AsyncTabel[,3]<0),3] = 0
+  #AsyncTabel[which(AsyncTabel[,3]<0),3] = 0 #<---------------------------------- Not for MDS
 
   data[["MDSMatrix"]] = AsyncTabel
 

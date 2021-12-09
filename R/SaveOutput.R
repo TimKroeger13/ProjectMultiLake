@@ -13,13 +13,13 @@ SaveOutput = function(data){
 
   orginalWorkingDirectoryPath=getwd()
 
-  getwdTry <-  try(setwd(paste(getwd(),.Platform[2],"Output",sep="")),silent = TRUE)
+  getwdTry <-  try(setwd(paste(getwd(),.Platform[2],paste("Out_",data$Filter,sep = ""),sep="")),silent = TRUE)
 
   if(class(getwdTry) == "try-error"){
 
-    dir.create(paste(getwd(),.Platform[2],"Output",sep=""))
+    dir.create(paste(getwd(),.Platform[2],paste("Out_",data$Filter,sep = ""),sep=""))
 
-    setwd(paste(getwd(),.Platform[2],"Output",sep=""))
+    setwd(paste(getwd(),.Platform[2],paste("Out_",data$Filter,sep = ""),sep=""))
 
   }
 
@@ -45,6 +45,12 @@ SaveOutput = function(data){
                   append = FALSE,na = "", sep = ";", row.names = T, col.names = F,quote = F)
 
   }
+
+  #Folder discription
+
+  write.table(data$FilterList,file = paste(getwd(),"/","Filter",".txt",sep=""),
+              append = FALSE,na = "", sep = "\t", row.names = F, col.names = F,quote = F)
+
 
   #Save MetaData on Sever when possible
 
