@@ -7,6 +7,7 @@
 #'@param percentFilterWeight Value how much percent a single species must relevant at minimum from the dataset.
 #'@param allLoessSpans span value for all Loess calculations made by Multivar.
 #'@param minimumRowsAfterFiltering Value for the minimum rows after filtering.
+#'@param InterpolationLoessSpans span value for all interpolation Loess calculations made by Multivar, where more values are given.
 #'@import vegan SRS
 #'@importFrom stats prcomp loess median predict qt quantile approx
 #'@export
@@ -15,7 +16,7 @@
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.8,minimumRowsAfterFiltering = 0){
+Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.8,minimumRowsAfterFiltering = 0, InterpolationLoessSpans = 0.8){
 
   DeleteRowWithoutTimestamp <- function(data){
 
@@ -370,25 +371,29 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
   }
 
 
-  data = rateofChange(data = data, intervallBy = 100, allLoessSpans = allLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method)
+  data = rateofChange(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method)
 
   data = RateOfChangeAsyncTabel(data = data, intervallBy = 100)
 
-  data = evenness(data = data, intervallBy = 100, allLoessSpans = allLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+  data = evenness(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
 
   data = EvennessAsyncTabel(data = data, intervallBy = 100)
 
-  data = inverseSimpsion(data = data, intervallBy = 100, allLoessSpans = allLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+  data = inverseSimpsion(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
 
   data = InverseSimpsionAsyncTabel(data = data, intervallBy = 100)
 
-  data = speciesRichness(data = data, intervallBy = 100, allLoessSpans = allLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+  data = speciesRichness(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
 
   data = SpeciesRichnessAsyncTabel(data = data, intervallBy = 100)
 
-  data = MDS(data = data, intervallBy = 100, allLoessSpans = allLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+  data = MDS(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
 
   data = MDSAsyncTabel(data = data, intervallBy = 100)
+
+  data = TOC(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+
+  data = TOCAsyncTabel(data = data, intervallBy = 100)
 
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
       "Done",sep="")

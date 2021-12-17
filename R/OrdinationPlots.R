@@ -114,6 +114,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   Allcolor = rainbow(dim(data$CoreList)[1])
   AllDiatomsNames = ls(data$Diatom)
+  AllCarbonsNames = ls(data$Carbon)
 
   ################################################################################
   ##################################### MDS ######################################
@@ -1649,6 +1650,59 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   dev.off()
 
+
+  ################################################################################
+  ##################################### TOC ######################################
+  ################################################################################
+
+  pdf("TOC.pdf",width=15,height=10)
+
+  TOCMatrix = data$TOCMatrix
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  TOCMatrix=TOCMatrix[TOCMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  TOCMatrix = DeleteMeanNAS(TOCMatrix)
+
+  Xmin = min(TOCMatrix[,1])
+  Xmax = max(TOCMatrix[,1])
+  Ymin = min(TOCMatrix[,3])
+  Ymax = max(TOCMatrix[,4])
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(TOCMatrix)[1])
+  P_color[] = "red"
+  P_color[TOCMatrix[,5]<P_value] = "green"
+  P_color[TOCMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("TOC Mean",CutValue,sep="")
+  )
+
+  #lines(TOCMatrix[,1],TOCMatrix[,2], col= "blue")
+  #points(TOCMatrix[,1],TOCMatrix[,2], pch = 19, cex = 0.1, col= "black")
+
+  for (i in 1:(dim(TOCMatrix)[1]-1)){
+
+    lines(TOCMatrix[i:(i+1),1],TOCMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(TOCMatrix[,1],TOCMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(TOCMatrix[,1],TOCMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
   ################################################################################
   ################################ Evenness Solo #################################
   ################################################################################
@@ -2331,6 +2385,141 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
       DiatomsNames = AllDiatomsNames[i]
       Values = data$Diatom[[DiatomsNames]]$MDS
       RID = which(data$CoreList[,1]==DiatomsNames)
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values, MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            distance = 120
+
+            if(i>=10){distance = 200}
+
+            text(Values[dim(Values)[1],1]+distance,
+                 Values[dim(Values)[1],2],
+                 label=RID,
+                 col="white",
+                 cex=1.2)
+
+            text(Values[dim(Values)[1],1]+distance,
+                 Values[dim(Values)[1],2],
+                 label=RID,
+                 col=Allcolor[RID])
+
+          }
+        }
+      }
+    }
+
+    dev.off()
+
+  }
+
+  ##############################################################################
+  ################################## TOC Solo ##################################
+  ##############################################################################
+
+  PlotsVariantsTransform = c("Non Transformed","Transformed")
+
+  for (VariantsTransform in PlotsVariantsTransform){
+
+    Xmax=0
+    Ymax=0
+    Xmin=Inf
+    Ymin=Inf
+
+    pdf(paste("TOC_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+
+    for (i in 1:length(data$Carbon)){
+
+      CarbonsNames = AllCarbonsNames[i]
+      Values = data$Carbon[[CarbonsNames]]$TOC
+      RID = which(data$CoreList[,1]==CarbonsNames)
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+
+            }
+
+            if(max(Values[,2])>Xmax){
+              Xmax=max(Values[,2])
+            }
+            if(min(Values[,2])<Xmin){
+              Xmin=min(Values[,2])
+            }
+            if(max(Values[,1])>Ymax){
+              Ymax=max(Values[,1])
+            }
+            if(min(Values[,1])<Ymin){
+              Ymin=min(Values[,1])
+            }
+          }
+        }
+      }
+    }
+
+    plot(NA,
+         ylim=c(Xmin,Xmax),
+         xlim=c(Ymax,Ymin),
+         ylab="Value",
+         xlab="Age",
+         main=paste("TOC | ",VariantsTransform,sep="")
+    )
+
+    for (i in 1:length(data$Carbon)){
+
+      CarbonsNames = AllCarbonsNames[i]
+      Values = data$Carbon[[CarbonsNames]]$TOC
+      RID = which(data$CoreList[,1]==CarbonsNames)
+
+      PointValues = data$Carbon[[CarbonsNames]]$rawData$TOC
+
+      if(!is.null(Values)){
+        if(dim(Values)[1]>0){
+
+          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+          if(!is.null(Values)){
+
+            if(VariantsTransform=="Transformed"){
+
+              Values[,2] = scale(Values[,2],center = T, scale = T)
+              PointValues = scale(PointValues,center = T, scale = T)
+
+            }
+
+            lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
+
+            points(as.numeric(data$Carbon[[CarbonsNames]]$rawData$depth),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
+
+          }
+        }
+      }
+    }
+
+    #Plot Numbers
+
+    for (i in 1:length(data$Carbon)){
+
+      CarbonsNames = AllCarbonsNames[i]
+      Values = data$Carbon[[CarbonsNames]]$TOC
+      RID = which(data$CoreList[,1]==CarbonsNames)
 
       if(!is.null(Values)){
         if(dim(Values)[1]>0){
