@@ -86,6 +86,13 @@ SpeciesRichnessAsyncTabel = function(data, intervallBy = 100){
 
   data[["SpeciesRichnessMatrix"]] = AsyncTabel
 
+  #VectorMatrix
+
+  VectorTable = DataSignalAfterTable(DataAllInOneTabel = speciesRichnessAllInOneTabel,BasicAsyncTable = AsyncTabel,ValueCantBeSamlerThanZero = TRUE)
+
+  data[["Vector_SpeciesRichnessMatrix"]] = VectorTable
+
+
   return(data)
 
 }

@@ -69,59 +69,61 @@ TOC = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRowsAfterInt
     TOCData = matrix(data$Carbon[[CarbonNames[z]]]$rawData$TOC, ncol = 1)
     rownames(TOCData) = data$Carbon[[CarbonNames[z]]]$rawData$depth
 
-    if(!is.null(TOCData)){
+    if(sum(is.na(TOCData))==0){
+      if(!is.null(TOCData)){
 
-      #Delete Doubles
-      TOCData = deleteDoubles(na.omit(TOCData))
+        #Delete Doubles
+        TOCData = deleteDoubles(na.omit(TOCData))
 
-      depthVectorOfData = as.numeric(row.names(TOCData))
+        depthVectorOfData = as.numeric(row.names(TOCData))
 
-      lowerBoundry = ceiling(min(depthVectorOfData)/intervallBy)*intervallBy
+        lowerBoundry = ceiling(min(depthVectorOfData)/intervallBy)*intervallBy
 
-      upperBoundry = floor(max(depthVectorOfData)/intervallBy)*intervallBy
+        upperBoundry = floor(max(depthVectorOfData)/intervallBy)*intervallBy
 
-      InterpolationMatrixRowNames =   approx (x = TOCData[,1],
-                                              y = NULL,
-                                              xout = seq(from = lowerBoundry, to = upperBoundry, by = intervallBy),
-                                              method = "linear",
-                                              n = 50)[[1]]
+        InterpolationMatrixRowNames =   approx (x = TOCData[,1],
+                                                y = NULL,
+                                                xout = seq(from = lowerBoundry, to = upperBoundry, by = intervallBy),
+                                                method = "linear",
+                                                n = 50)[[1]]
 
-      InterpolationMatrix = matrix(NA, nrow = length(InterpolationMatrixRowNames), ncol = dim(TOCData)[2])
+        InterpolationMatrix = matrix(NA, nrow = length(InterpolationMatrixRowNames), ncol = dim(TOCData)[2])
 
 
-      InterpolationMatrix[,1] =  approx (x = depthVectorOfData,
-                                         y = TOCData,
-                                         xout = seq(from = lowerBoundry, to = upperBoundry, by = intervallBy),
-                                         method = "linear",
-                                         n = 50)[[2]]
+        InterpolationMatrix[,1] =  approx (x = depthVectorOfData,
+                                           y = TOCData,
+                                           xout = seq(from = lowerBoundry, to = upperBoundry, by = intervallBy),
+                                           method = "linear",
+                                           n = 50)[[2]]
 
-      colnames(InterpolationMatrix) = "TOC"
-      rownames(InterpolationMatrix) = InterpolationMatrixRowNames
+        colnames(InterpolationMatrix) = "TOC"
+        rownames(InterpolationMatrix) = InterpolationMatrixRowNames
 
-      #check this minRows of the interpolated data
+        #check this minRows of the interpolated data
 
-      if(dim(InterpolationMatrix)[1]>minimumRowsAfterInterpolating){
+        if(dim(InterpolationMatrix)[1]>minimumRowsAfterInterpolating){
 
-        InterpolationMatrixLoess = InterpolationMatrix
-        InterpolationMatrixLoess[]=NA
+          InterpolationMatrixLoess = InterpolationMatrix
+          InterpolationMatrixLoess[]=NA
 
-        InterpolationMatrixLoess[,1] = predict(loess(InterpolationMatrix ~ InterpolationMatrixRowNames, span = allLoessSpans))
+          InterpolationMatrixLoess[,1] = predict(loess(InterpolationMatrix ~ InterpolationMatrixRowNames, span = allLoessSpans))
 
-        InterpolationMatrixLoess[InterpolationMatrixLoess<0]=0 #<--------------- Not for MDS
+          InterpolationMatrixLoess[InterpolationMatrixLoess<0]=0 #<--------------- Not for MDS
 
-        TOCMatrix = matrix(NA, ncol = 2, nrow = dim(InterpolationMatrixLoess)[1])
+          TOCMatrix = matrix(NA, ncol = 2, nrow = dim(InterpolationMatrixLoess)[1])
 
-        TOCMatrix[,1] = InterpolationMatrixRowNames
-        TOCMatrix[,2] = InterpolationMatrixLoess
+          TOCMatrix[,1] = InterpolationMatrixRowNames
+          TOCMatrix[,2] = InterpolationMatrixLoess
+
+        }
+
+        data[["Carbon"]][[CarbonNames[z]]][["TOC"]] = TOCMatrix
+
+        #Printer
+        cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+            z,"/",length(ls(data[["Carbon"]]))," calculating TOC",sep="")
 
       }
-
-      data[["Carbon"]][[CarbonNames[z]]][["TOC"]] = TOCMatrix
-
-      #Printer
-      cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-          z,"/",length(ls(data[["Carbon"]]))," calculating TOC",sep="")
-
     }
   }
 

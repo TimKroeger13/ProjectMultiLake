@@ -177,8 +177,8 @@ MultiExcelLoader = function(){
 
       DatasetDescriptionElemts = c("agemodel_available",
                                    "Diatoms_available",
-                                   "Diatom_samples_before_11700",
-                                   "Diatom_samples_after_11700",
+                                   "Diatom_samples_=<11.7",
+                                   "Diatom_samples_>11.7",
                                    "TC_available",
                                    "TOC_available",
                                    "LOI_availible",
@@ -393,6 +393,18 @@ MultiExcelLoader = function(){
 
   }
 
+  TraceExcelLoader = function(Folder,Excelname,age,FilenameKey,Outputname = "UnknownTrace"){
+
+    TraceData = read.csv(file = paste(getwd(),"/",Excelname,sep=""))
+    colnames(TraceData) = c("age","temp")
+    rownames(TraceData) = TraceData[,1]
+
+    Folder[["TRACE"]][[FilenameKey]][[paste(Outputname,"_raw",sep = "")]]=TraceData
+
+    return(Folder)
+
+  }
+
   ####
 
   orginalWorkingDirectoryPath=getwd()
@@ -429,7 +441,9 @@ MultiExcelLoader = function(){
   FileNamesInsolation=FileNames[grep("insolation.txt",FileNames)]
   FileNamesClima=FileNames[grep("HAD3MCB-M",FileNames)]
   FileNamesMeta=FileNames[grep("LakeData_Alex",FileNames)]
-  FileNamesTrace=FileNames[grep("TRACE",FileNames)]
+  FileNamesJJA_temp=FileNames[grep("_JJA_temp_",FileNames)]
+  FileNamesDJF_temp=FileNames[grep("_DJF_temp_",FileNames)]
+  FileNameshydrological_year_temp=FileNames[grep("_hydrological_year_temp_",FileNames)]
 
   if(identical(FileNamesAge, character(0))){
 
@@ -463,15 +477,29 @@ MultiExcelLoader = function(){
 
   }
 
-  '
-  if(identical(FileNamesTrace, character(0))){
+  if(identical(FileNamesJJA_temp, character(0))){
 
     setwd(orginalWorkingDirectoryPath)
 
-    stop("No file named TRACE.csv found")
+    stop("No files named JJA_temp founded")
 
   }
-  '
+
+  if(identical(FileNamesDJF_temp, character(0))){
+
+    setwd(orginalWorkingDirectoryPath)
+
+    stop("No files named DJF_temp founded")
+
+  }
+
+  if(identical(FileNameshydrological_year_temp, character(0))){
+
+    setwd(orginalWorkingDirectoryPath)
+
+    stop("No files named hydrological_year_temp founded")
+
+  }
 
   #Insolation
 
@@ -586,10 +614,55 @@ MultiExcelLoader = function(){
 
   #TraceData
 
-  cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-      "Leading a ton of TraceData. This can take a while...",sep="")
-  #Trace=read.csv(file = paste(getwd(),"/",FileNamesTrace,sep=""),sep=";",header = F) #<------------------------------- reuse This when there a better Trace data
-  #Folder[["Trace"]]=Trace #<------------------------------------------------------------------------------------------ reuse This when there a better Trace data
+  #FileNamesJJA_temp
+
+  for(i in 1:length(list.files()[grep("_JJA_temp_",list.files())])){
+
+    FilenameKey=read.table(textConnection(gsub("_", " ", FileNamesJJA_temp)))[i,1]
+
+    Excelname=FileNamesJJA_temp[i]
+
+    Folder=TraceExcelLoader(Folder,Excelname,age,FilenameKey,Outputname = "JJA")
+
+    #Printer
+    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        i,"/",length(list.files()[grep("data.xlsx",list.files())])," Loading CSV from ",getwd(),sep="")
+
+  }
+
+  # _DJF_temp_
+
+  for(i in 1:length(list.files()[grep("_DJF_temp_",list.files())])){
+
+    FilenameKey=read.table(textConnection(gsub("_", " ", FileNamesDJF_temp)))[i,1]
+
+    Excelname=FileNamesDJF_temp[i]
+
+    Folder=TraceExcelLoader(Folder,Excelname,age,FilenameKey,Outputname = "DJF")
+
+    #Printer
+    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        i,"/",length(list.files()[grep("data.xlsx",list.files())])," Loading CSV from ",getwd(),sep="")
+
+  }
+
+  # _hydrological_year_temp_
+
+  for(i in 1:length(list.files()[grep("_hydrological_year_temp_",list.files())])){
+
+    FilenameKey=read.table(textConnection(gsub("_", " ", FileNameshydrological_year_temp)))[i,1]
+
+    Excelname=FileNameshydrological_year_temp[i]
+
+    Folder=TraceExcelLoader(Folder,Excelname,age,FilenameKey,Outputname = "hydrological")
+
+    #Printer
+    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        i,"/",length(list.files()[grep("data.xlsx",list.files())])," Loading CSV from ",getwd(),sep="")
+
+  }
+
+  #CoreList
 
   CoreList = matrix(NA,ncol = 2, nrow = length(list.files()[grep("data.xlsx",list.files())]))
   colnames(CoreList) = c("name","ID")
@@ -600,7 +673,7 @@ MultiExcelLoader = function(){
 
     Excelname=FileNamesXlsx[i]
 
-    Folder=SingelExcelLoader(Folder,Excelname,age,FilenameKey)
+    Folder = SingelExcelLoader(Folder,Excelname,age,FilenameKey)
 
     CoreList[i,] = c(FilenameKey,i)
 
@@ -649,7 +722,24 @@ MultiExcelLoader = function(){
       }
     }
 
-    Folder$Description[[FilenameKey]] = rbind(Folder$Description[[FilenameKey]],extraDiscriptionMatrix)
+    #MaxAge & Minage
+
+    MaxMinAgeDiscriptionMatrix = matrix(NA,ncol = 2, nrow = 2)
+
+    MaxMinAgeValue = Folder$Diatom[[FilenameKey]]$rawData$depth
+
+    if(is.null(MaxMinAgeValue)){
+
+      MaxMinAgeDiscriptionMatrix[,] = c("StartAge","EndAge",NA,NA)
+
+    }else{
+
+      MaxMinAgeDiscriptionMatrix[,] = c("StartAge","EndAge",max(MaxMinAgeValue),min(MaxMinAgeValue))
+
+    }
+
+    #Add Discription together
+    Folder$Description[[FilenameKey]] = rbind(Folder$Description[[FilenameKey]],extraDiscriptionMatrix,MaxMinAgeDiscriptionMatrix)
 
   }
 

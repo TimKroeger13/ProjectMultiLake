@@ -115,6 +115,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   Allcolor = rainbow(dim(data$CoreList)[1])
   AllDiatomsNames = ls(data$Diatom)
   AllCarbonsNames = ls(data$Carbon)
+  AllTRACENames = ls(data$TRACE)
 
   ################################################################################
   ##################################### MDS ######################################
@@ -1321,7 +1322,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   pdf("Legend.pdf",width=15,height=10)
 
- # AllCoreList dim(data$CoreList)[1]
+  # AllCoreList dim(data$CoreList)[1]
 
   LegendsSplit = length(Allcolor)/3
 
@@ -1411,6 +1412,59 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   Xmax = max(RocMatrix[,1])
   Ymin = min(RocMatrix[,3])
   Ymax = max(RocMatrix[,4])
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(RocMatrix)[1])
+  P_color[] = "red"
+  P_color[RocMatrix[,5]<P_value] = "green"
+  P_color[RocMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("RoC Mean",sep="")
+  )
+
+  #lines(RocMatrix[,1],RocMatrix[,2], col= "blue")
+  #points(RocMatrix[,1],RocMatrix[,2], pch = 19, cex = 0.1, col= "black")
+
+  for (i in 1:(dim(RocMatrix)[1]-1)){
+
+    lines(RocMatrix[i:(i+1),1],RocMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(RocMatrix[,1],RocMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(RocMatrix[,1],RocMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+  ################################################################################
+  #################################     RoC     ##################################
+  ############################### SpeciesRichness ################################
+  ################################################################################
+
+  pdf("Vector_RoC.pdf",width=15,height=10)
+
+  RocMatrix = data$Vector_RocMatrix
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  RocMatrix=RocMatrix[RocMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  RocMatrix = DeleteMeanNAS(RocMatrix)
+
+  Xmin = min(RocMatrix[,1])
+  Xmax = max(RocMatrix[,1])
+  Ymin = min(na.omit(RocMatrix[,3]))
+  Ymax = max(na.omit(RocMatrix[,4]))
 
   #Create Color after p Value from
   P_value = 0.05
@@ -1598,6 +1652,58 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   dev.off()
 
+
+  ################################################################################
+  ################################     Vector     ################################
+  ############################### SpeciesRichness ################################
+  ################################################################################
+
+  pdf("Vector_SpeciesRichness.pdf",width=15,height=10)
+
+  SpeciesRichnessMatrix = data$Vector_SpeciesRichnessMatrix
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  SpeciesRichnessMatrix=SpeciesRichnessMatrix[SpeciesRichnessMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  SpeciesRichnessMatrix = DeleteMeanNAS(SpeciesRichnessMatrix)
+
+  Xmin = min(SpeciesRichnessMatrix[,1])
+  Xmax = max(SpeciesRichnessMatrix[,1])
+  Ymin = min(na.omit(SpeciesRichnessMatrix[,3]))
+  Ymax = max(na.omit(SpeciesRichnessMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(SpeciesRichnessMatrix)[1])
+  P_color[] = "red"
+  P_color[SpeciesRichnessMatrix[,5]<P_value] = "green"
+  P_color[SpeciesRichnessMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector SpeciesRichness Mean",CutValue,sep="")
+  )
+
+  for (i in 1:(dim(SpeciesRichnessMatrix)[1]-1)){
+
+    lines(SpeciesRichnessMatrix[i:(i+1),1],SpeciesRichnessMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(SpeciesRichnessMatrix[,1],SpeciesRichnessMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(SpeciesRichnessMatrix[,1],SpeciesRichnessMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+
   ################################################################################
   ##################################### MDS ######################################
   ################################################################################
@@ -1702,6 +1808,89 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   lines(TOCMatrix[,1],TOCMatrix[,4], col= "black",lty=3,lwd=2)
 
   dev.off()
+
+  ################################################################################
+  #################################### TRACE #####################################
+  ################################################################################
+
+  TRACEMeanPlot= function(TraceName = "UnknownTrace"){
+
+    pdf(paste("TRACE_",TraceName,".pdf",sep=""),width=15,height=10)
+
+    TRACEMatrix = data$TRACEMatrix[[TraceName]]
+
+    #Cut Data after x years
+    CutValue = MaxAge
+
+    TRACEMatrix=TRACEMatrix[TRACEMatrix[,1]<=CutValue,]
+
+    #Plot Mean Rat of change
+
+    TRACEMatrix = DeleteMeanNAS(TRACEMatrix)
+
+    Xmin = min(TRACEMatrix[,1])
+    Xmax = max(TRACEMatrix[,1])
+    Ymin = min(TRACEMatrix[,3])
+    Ymax = max(TRACEMatrix[,4])
+
+    #Create Color after p Value from
+    P_value = 0.05
+
+    P_color <- vector( "character" , dim(TRACEMatrix)[1])
+    P_color[] = "red"
+    P_color[TRACEMatrix[,5]<P_value] = "green"
+    P_color[TRACEMatrix[,6]==1] = "black"
+
+    plot(NA,
+         ylim=c(Ymin,Ymax),
+         xlim=c(Xmax,Xmin),
+         ylab="Value",
+         xlab="Age",
+         main=paste("TRACE Mean ",TraceName," ",CutValue,sep="")
+    )
+
+    #lines(TRACEMatrix[,1],TRACEMatrix[,2], col= "blue")
+    #points(TRACEMatrix[,1],TRACEMatrix[,2], pch = 19, cex = 0.1, col= "black")
+
+    for (i in 1:(dim(TRACEMatrix)[1]-1)){
+
+      lines(TRACEMatrix[i:(i+1),1],TRACEMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+    }
+
+    '
+    Xmin = 0
+
+    lowerBoundry = ceiling(Xmin/ConvIntervall)*ConvIntervall
+    upperBoundry = floor(Xmax/ConvIntervall)*ConvIntervall
+
+    ConvNumbers = seq(from = lowerBoundry, to = upperBoundry, by = ConvIntervall)
+
+
+    AgeMean = vector(mode="numeric", length=(length(ConvNumbers)-1))
+    ValueMeanLower = vector(mode="numeric", length=(length(ConvNumbers)-1))
+    ValueMeanUpper = vector(mode="numeric", length=(length(ConvNumbers)-1))
+
+
+    for (k in 1:(length(ConvNumbers)-1)){
+
+      AgeMean[k] = mean(TRACEMatrix[ConvNumbers[k]:ConvNumbers[k+1],1])
+      ValueMeanLower[k] = mean(TRACEMatrix[ConvNumbers[k]:ConvNumbers[k+1],3])
+      ValueMeanUpper[k] = mean(TRACEMatrix[ConvNumbers[k]:ConvNumbers[k+1],4])
+
+    }
+
+    '
+    lines(TRACEMatrix[,1],TRACEMatrix[,3], col= "black",lty=3,lwd=2)
+    lines(TRACEMatrix[,1],TRACEMatrix[,4], col= "black",lty=3,lwd=2)
+
+    dev.off()
+
+  }
+
+  TRACEMeanPlot(TraceName = "JJA_mean")
+  TRACEMeanPlot(TraceName = "DJF_mean")
+  TRACEMeanPlot(TraceName = "hydrological_mean")
 
   ################################################################################
   ################################ Evenness Solo #################################
@@ -2557,6 +2746,154 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
     dev.off()
 
   }
+
+  ##############################################################################
+  ################################# TRACE Solo #################################
+  ##############################################################################
+
+  TRACESoloPlot= function(TraceType = "UnknownTrace"){
+
+    PlotsVariantsTransform = c("Non Transformed","Transformed")
+
+    for (VariantsTransform in PlotsVariantsTransform){
+
+      Xmax=0
+      Ymax=0
+      Xmin=Inf
+      Ymin=Inf
+
+      pdf(paste("TRACE_",TraceType," ",VariantsTransform,".pdf",sep=""),width=15,height=10)
+
+      for (i in 1:length(data$TRACE)){
+
+        TRACEsNames = AllTRACENames[i]
+        Values = data$TRACE[[TRACEsNames]][[TraceType]]
+        RID = which(data$CoreList[,1]==TRACEsNames)
+
+        if(length(RID)>0){
+          if(!is.null(Values)){
+            if(dim(Values)[1]>0){
+
+              Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+              if(!is.null(Values)){
+
+                if(VariantsTransform=="Transformed"){
+
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
+
+                }
+
+                if(max(Values[,2])>Xmax){
+                  Xmax=max(Values[,2])
+                }
+                if(min(Values[,2])<Xmin){
+                  Xmin=min(Values[,2])
+                }
+                if(max(Values[,1])>Ymax){
+                  Ymax=max(Values[,1])
+                }
+                if(min(Values[,1])<Ymin){
+                  Ymin=min(Values[,1])
+                }
+              }
+            }
+          }
+        }
+      }
+
+      plot(NA,
+           ylim=c(Xmin,Xmax),
+           xlim=c(Ymax,Ymin),
+           ylab="Value",
+           xlab="Age",
+           main=paste("TRACE | ",TraceType," ",VariantsTransform,sep="")
+      )
+
+      for (i in 1:length(data$TRACE)){
+
+        TRACEsNames = AllTRACENames[i]
+        Values = data$TRACE[[TRACEsNames]][[TraceType]]
+        RID = which(data$CoreList[,1]==TRACEsNames)
+
+        #PointValues = data$TRACE[[TRACEsNames]]$rawData$TRACE
+
+        if(length(RID)>0){
+          if(!is.null(Values)){
+            if(dim(Values)[1]>0){
+
+              Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+
+              if(!is.null(Values)){
+
+                if(VariantsTransform=="Transformed"){
+
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
+                  #PointValues = scale(PointValues,center = T, scale = T)
+
+                }
+
+                lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
+
+                #points(as.numeric(data$TRACE[[TRACEsNames]]$rawData$depth),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
+
+              }
+            }
+          }
+        }
+      }
+
+      #Plot Numbers
+
+      for (i in 1:length(data$TRACE)){
+
+        TRACEsNames = AllTRACENames[i]
+        Values = data$TRACE[[TRACEsNames]][[TraceType]]
+        RID = which(data$CoreList[,1]==TRACEsNames)
+
+        if(length(RID)>0){
+          if(!is.null(Values)){
+            if(dim(Values)[1]>0){
+
+              Values = CutOutMaxAgeForInterpolatedData(Values, MaxAge, minimumRowsAfterCutOutMaxAge)
+
+              if(!is.null(Values)){
+
+                if(VariantsTransform=="Transformed"){
+
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
+
+                }
+
+                distance = 120
+
+                if(i>=10){distance = 200}
+
+                text(Values[dim(Values)[1],1]+distance,
+                     Values[dim(Values)[1],2],
+                     label=RID,
+                     col="white",
+                     cex=1.2)
+
+                text(Values[dim(Values)[1],1]+distance,
+                     Values[dim(Values)[1],2],
+                     label=RID,
+                     col=Allcolor[RID])
+
+              }
+            }
+          }
+        }
+      }
+
+      dev.off()
+
+    }
+  }
+
+  TRACESoloPlot(TraceType = "JJA_mean")
+  TRACESoloPlot(TraceType = "DJF_mean")
+  TRACESoloPlot(TraceType = "hydrological_mean")
 
   ################################################################################
   ################################# StressPlot ###################################

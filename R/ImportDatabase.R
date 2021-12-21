@@ -14,6 +14,9 @@ ImportDatabase = function(directory=NULL){
   MacPath = "/Volumes/projects/p_arclakes"
   PathDatabase = "/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/"
   PathMetadata = "/ArcLakesDB/LAKEDATA/00-METADATA/"
+  PathJJA_Mean_Temp = "/TraCE/Data-Output/JJA_Mean_Temp/"
+  PathDJF_Mean_Temp = "/TraCE/Data-Output/DJF_Mean_Temp/"
+  PathHydrological_Year_Temp = "/TraCE/Data-Output/Hydrological_Year_Temp/"
 
   FilesUpdated = -1
 
@@ -70,6 +73,8 @@ ImportDatabase = function(directory=NULL){
     stop("\n\nPlease connect to the AWI VPN and the AWI Server")
 
   }
+
+  #Standadized data sheets
 
   setwd(paste(directory,PathDatabase,sep=""))
 
@@ -170,6 +175,177 @@ ImportDatabase = function(directory=NULL){
       FilesUpdated=FilesUpdated+1
 
       file.copy(from = paste(directory,PathMetadata,CurrentFilenName,sep=""),
+                to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
+                recursive = F,
+                overwrite = TRUE,
+                copy.mode = TRUE,
+                copy.date = TRUE)
+
+    }
+
+    #Printer
+    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        i,
+        "/",
+        length(FilesToCopy)," Downloading/Updating Files from ",getwd(),
+        " to ",
+        paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),sep="")
+
+  }
+
+  #PathJJA_Mean_Temp
+
+  setwd(paste(directory,PathJJA_Mean_Temp,sep=""))
+
+  FilesToCopy = list.files()
+
+  for (i in 1:length(FilesToCopy)){
+
+    CurrentFilenName = FilesToCopy[i]
+
+    #Error handling for false imported data
+
+    if(substr(CurrentFilenName, 0, 2)=="~$"){
+
+      CurrentFilenName = substr(CurrentFilenName, 3, nchar(CurrentFilenName))
+
+    }
+
+    #Check if Files exits and if they are up to date
+
+    overwrite = TRUE
+
+    if(file.exists(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))){
+
+      NewDataInfo =  file.info(paste(directory,PathJJA_Mean_Temp,CurrentFilenName,sep=""))$mtime
+      OldDataInfo = file.info(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))$mtime
+
+      if(NewDataInfo == OldDataInfo){
+
+        overwrite = FALSE
+
+      }
+    }
+
+    if(overwrite){
+
+      FilesUpdated=FilesUpdated+1
+
+      file.copy(from = paste(directory,PathJJA_Mean_Temp,CurrentFilenName,sep=""),
+                to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
+                recursive = F,
+                overwrite = TRUE,
+                copy.mode = TRUE,
+                copy.date = TRUE)
+
+    }
+
+    #Printer
+    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        i,
+        "/",
+        length(FilesToCopy)," Downloading/Updating Files from ",getwd(),
+        " to ",
+        paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),sep="")
+
+  }
+
+  #PathDJF_Mean_Temp
+
+  setwd(paste(directory,PathDJF_Mean_Temp,sep=""))
+
+  FilesToCopy = list.files()
+
+  for (i in 1:length(FilesToCopy)){
+
+    CurrentFilenName = FilesToCopy[i]
+
+    #Error handling for false imported data
+
+    if(substr(CurrentFilenName, 0, 2)=="~$"){
+
+      CurrentFilenName = substr(CurrentFilenName, 3, nchar(CurrentFilenName))
+
+    }
+
+    #Check if Files exits and if they are up to date
+
+    overwrite = TRUE
+
+    if(file.exists(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))){
+
+      NewDataInfo =  file.info(paste(directory,PathDJF_Mean_Temp,CurrentFilenName,sep=""))$mtime
+      OldDataInfo = file.info(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))$mtime
+
+      if(NewDataInfo == OldDataInfo){
+
+        overwrite = FALSE
+
+      }
+    }
+
+    if(overwrite){
+
+      FilesUpdated=FilesUpdated+1
+
+      file.copy(from = paste(directory,PathDJF_Mean_Temp,CurrentFilenName,sep=""),
+                to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
+                recursive = F,
+                overwrite = TRUE,
+                copy.mode = TRUE,
+                copy.date = TRUE)
+
+    }
+
+    #Printer
+    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        i,
+        "/",
+        length(FilesToCopy)," Downloading/Updating Files from ",getwd(),
+        " to ",
+        paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),sep="")
+
+  }
+
+  #PathHydrological_Year_Temp
+
+  setwd(paste(directory,PathHydrological_Year_Temp,sep=""))
+
+  FilesToCopy = list.files()
+
+  for (i in 1:length(FilesToCopy)){
+
+    CurrentFilenName = FilesToCopy[i]
+
+    #Error handling for false imported data
+
+    if(substr(CurrentFilenName, 0, 2)=="~$"){
+
+      CurrentFilenName = substr(CurrentFilenName, 3, nchar(CurrentFilenName))
+
+    }
+
+    #Check if Files exits and if they are up to date
+
+    overwrite = TRUE
+
+    if(file.exists(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))){
+
+      NewDataInfo =  file.info(paste(directory,PathHydrological_Year_Temp,CurrentFilenName,sep=""))$mtime
+      OldDataInfo = file.info(paste(orginalWorkingDirectoryPath,.Platform[2],"data/",CurrentFilenName,sep=""))$mtime
+
+      if(NewDataInfo == OldDataInfo){
+
+        overwrite = FALSE
+
+      }
+    }
+
+    if(overwrite){
+
+      FilesUpdated=FilesUpdated+1
+
+      file.copy(from = paste(directory,PathHydrological_Year_Temp,CurrentFilenName,sep=""),
                 to = paste(orginalWorkingDirectoryPath,.Platform[2],"data",sep=""),
                 recursive = F,
                 overwrite = TRUE,

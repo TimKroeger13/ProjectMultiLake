@@ -55,7 +55,7 @@ SaveOutput = function(data){
   #Save MetaData on Sever when possible
 
   MacPath = "/Volumes/projects/p_arclakes"
-  PathMetadata = "/ArcLakesDB/LAKEDATA/00-METADATA/"
+  PathMetadata = "/ArcLakesDB/COREDATA/METADATA/"
 
   directory = NULL
 

@@ -81,6 +81,12 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100){
 
   data[["RocMatrix"]] = AsyncTabel
 
+  #VectorMatrix
+
+  VectorTable = DataSignalAfterTable(DataAllInOneTabel = RocAllInOneTabel,BasicAsyncTable = AsyncTabel,ValueCantBeSamlerThanZero = TRUE)
+
+  data[["Vector_RocMatrix"]] = VectorTable
+
   return(data)
 
 }

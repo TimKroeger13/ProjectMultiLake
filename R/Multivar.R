@@ -395,6 +395,12 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   data = TOCAsyncTabel(data = data, intervallBy = 100)
 
+  data =TRACETabel(data = data, TraceName = "JJA")
+
+  data =TRACETabel(data = data, TraceName = "DJF")
+
+  data =TRACETabel(data = data, TraceName = "hydrological")
+
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
       "Done",sep="")
 
