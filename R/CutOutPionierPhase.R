@@ -1,20 +1,19 @@
-#'rateofChange
+#'CutOutPionierPhase
 #'@description
-#'Calculates the Rate of change for the multivar function.
+#'Cut out the Pionier Phase of the Lake data.
+#'\cr The new stating value is the first Value that passes the T.test that for two samples with a P_value <=0.05.
 #'@param data List of data generates by the Multivar function.
-#'@param intervallBy Intervalls by to interpolate to.
+#'@param intervallBy Intervals by to interpolate to.
 #'@param allLoessSpans span value for all Loess calculations made by Multivar.
-#'@param minimumRowsAfterInterpolating alue for the minimum rows after filtering.
-#'@param method Method for calculation Dissimilarity Indices for Community Ecologists.
-#'@param Importname importname after data$Diatom$DiatomNames$
-#'@param Exportname data$Diatom$DiatomNames$
+#'@param minimumRowsAfterInterpolating Value for the minimum rows after filtering.
+#'@param method The method for the dissimilarity calculation.
 #'@export
 #'@return Returns the same List but with new added parameters.
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-rateofChange = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRowsAfterInterpolating = 0, method = "bray", Importname = "", Exportname = ""){
+CutOutPionierPhase = function(data,intervallBy = 100,allLoessSpans = 0.3, minimumRowsAfterInterpolating = 12,method = "bray"){
 
   deleteDoubles = function(doublData){
 
@@ -41,7 +40,7 @@ rateofChange = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRow
 
   for (z in 1:length(DiatomNames)){
 
-    rateOfChangeData = data$Diatom[[DiatomNames[z]]][[Importname]]
+    rateOfChangeData = data$Diatom[[DiatomNames[z]]]$SRS_data
 
     if(!is.null(rateOfChangeData)){
 
@@ -49,7 +48,6 @@ rateofChange = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRow
 
       #Delete Doubles
       rateOfChangeData = deleteDoubles(rateOfChangeData)
-
 
       lowerBoundry = ceiling(min(depthVectorOfData)/intervallBy)*intervallBy
 
@@ -112,18 +110,91 @@ rateofChange = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRow
         }
       }
 
-      data[["Diatom"]][[DiatomNames[z]]][[Exportname]] = DistanceMatrix
+      #Second Loess for best distribution to Cut. To make the Pionier Phase visible
+
+      ROC_Loess_after_interplating = 0.4 #<- Fix value. Seems to be the best fit after some testing for 0-20.000 years
+
+      #Loess
+      ValuesLoess=loess(DistanceMatrix[,2] ~ DistanceMatrix[,1], span=ROC_Loess_after_interplating)
+      DistanceMatrixLoess = cbind(DistanceMatrix[,1],ValuesLoess$fitted)
+
+      #Check for Pionier Phase
+
+      p_value = 0.05
+
+      SpliValue = dim(DistanceMatrixLoess)[1]
+      SplitStart = DistanceMatrixLoess[(SpliValue-1):SpliValue,2]
+      SplitEnd = DistanceMatrixLoess[1:(SpliValue-1),2]
+      SplitTTest = t.test(SplitStart,SplitEnd)
+
+      #correction
+      #Find Pionier Phase in the interpolation
+
+      if(SplitTTest$p.value > p_value){
+
+        SplitvalueNotFound = TRUE
+
+        while (SplitvalueNotFound){
+
+          SpliValue = SpliValue-1
+          SplitStart = DistanceMatrixLoess[(SpliValue-1):SpliValue,2]
+          SplitEnd = DistanceMatrixLoess[1:(SpliValue-1),2]
+
+          SplitTTest = t.test(SplitStart,SplitEnd)
+
+          if(SplitTTest$p.value <= p_value){
+
+            SplitvalueNotFound = FALSE
+
+          }
+        }
+      }
+
+      #Find the next value of the raw data
+
+      PionierLoess = DistanceMatrixLoess[SpliValue,1]
+
+      PionierFreeSRS = data$Diatom[[DiatomNames[z]]]$SRS_data
+
+      PionierFreeSRS = PionierFreeSRS[PionierFreeSRS[,1] <= PionierLoess,]
+
+      data$Diatom[[DiatomNames[z]]][["Cut_SRS_data"]] = PionierFreeSRS
 
       #Printer
       cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-          z,"/",length(ls(data[["Diatom"]]))," calculating ",Importname," of change",sep="")
-
+          z,"/",length(ls(data[["Diatom"]]))," Cut SRS Data",sep="")
     }
   }
 
   return(data)
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

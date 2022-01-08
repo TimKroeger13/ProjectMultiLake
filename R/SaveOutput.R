@@ -46,7 +46,49 @@ SaveOutput = function(data){
 
   }
 
-  #Folder discription
+  #GiveOutDiatomMetadata
+
+  counter = 0
+
+  DiatomturnedOutPutDiscriptionMatrix = turnedOutPutDiscriptionMatrix
+
+  while(counter < dim(DiatomturnedOutPutDiscriptionMatrix)[2]){
+
+    counter = counter+1
+
+    if(!as.logical(DiatomturnedOutPutDiscriptionMatrix[which(row.names(DiatomturnedOutPutDiscriptionMatrix)=="DiatomDataNotFilterd"),counter])){
+
+      DiatomturnedOutPutDiscriptionMatrix = DiatomturnedOutPutDiscriptionMatrix[,-counter]
+
+      counter = counter-1
+
+    }
+  }
+  write.table(DiatomturnedOutPutDiscriptionMatrix,file = paste(getwd(),"/","Metadata_Only_Diatom",".csv",sep=""),
+              append = FALSE,na = "", sep = ";", row.names = T, col.names = F,quote = F)
+
+  #GiveOutCarbonMetadata
+
+  counter = 0
+
+  CarbonturnedOutPutDiscriptionMatrix = turnedOutPutDiscriptionMatrix
+
+  while(counter < dim(CarbonturnedOutPutDiscriptionMatrix)[2]){
+
+    counter = counter+1
+
+    if(!as.logical(CarbonturnedOutPutDiscriptionMatrix[which(row.names(CarbonturnedOutPutDiscriptionMatrix)=="CarbonDataNotFilterd"),counter])){
+
+      CarbonturnedOutPutDiscriptionMatrix = CarbonturnedOutPutDiscriptionMatrix[,-counter]
+
+      counter = counter-1
+
+    }
+  }
+  write.table(CarbonturnedOutPutDiscriptionMatrix,file = paste(getwd(),"/","Metadata_Only_Carbon",".csv",sep=""),
+              append = FALSE,na = "", sep = ";", row.names = T, col.names = F,quote = F)
+
+  #Filterlist
 
   write.table(data$FilterList,file = paste(getwd(),"/","Filter",".txt",sep=""),
               append = FALSE,na = "", sep = "\t", row.names = F, col.names = F,quote = F)

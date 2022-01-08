@@ -2055,156 +2055,161 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   ################################################################################
 
 
-  PlotsVariantsLoess = c("Normal","Loess") # "Normal","Loess"
-  PlotsVariantsTransform = c("Non Transformed","Transformed")
+  ImportVersions = c("RoC","Cut_RoC")
 
-  for (VariantsLoess in PlotsVariantsLoess){
-    for (VariantsTransform in PlotsVariantsTransform){
+  for (IV in ImportVersions){
 
-      Xmax=0
-      Ymax=0
-      Xmin=Inf
-      Ymin=Inf
+    PlotsVariantsLoess = c("Normal","Loess") # "Normal","Loess"
+    PlotsVariantsTransform = c("Non Transformed","Transformed")
 
-      pdf(paste("RoC_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+    for (VariantsLoess in PlotsVariantsLoess){
+      for (VariantsTransform in PlotsVariantsTransform){
 
-      for (i in 1:length(data$Diatom)){
+        Xmax=0
+        Ymax=0
+        Xmin=Inf
+        Ymin=Inf
 
-        DiatomsNames = AllDiatomsNames[i]
-        Values = data$Diatom[[DiatomsNames]]$RoC
-        RID = which(data$CoreList[,1]==DiatomsNames)
+        pdf(paste(IV,"_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
-        if(!is.null(Values)){
-          if(dim(Values)[1]>0){
+        for (i in 1:length(data$Diatom)){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+          DiatomsNames = AllDiatomsNames[i]
+          Values = data$Diatom[[DiatomsNames]][[IV]]
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
-            if(!is.null(Values)){
+          if(!is.null(Values)){
+            if(dim(Values)[1]>0){
 
-              if(VariantsTransform=="Transformed"){
+              Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-                Values[,2] = scale(Values[,2],center = T, scale = T)
+              if(!is.null(Values)){
 
-              }
+                if(VariantsTransform=="Transformed"){
 
-              if(VariantsLoess == "Loess"){
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                #Loess
-                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
-                Values = cbind(Values[,1],ValuesLoess$fitted)
+                }
 
-              }
+                if(VariantsLoess == "Loess"){
 
-              if(max(Values[,2])>Xmax){
-                Xmax=max(Values[,2])
-              }
-              if(min(Values[,2])<Xmin){
-                Xmin=min(Values[,2])
-              }
-              if(max(Values[,1])>Ymax){
-                Ymax=max(Values[,1])
-              }
-              if(min(Values[,1])<Ymin){
-                Ymin=min(Values[,1])
+                  #Loess
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                  Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                }
+
+                if(max(Values[,2])>Xmax){
+                  Xmax=max(Values[,2])
+                }
+                if(min(Values[,2])<Xmin){
+                  Xmin=min(Values[,2])
+                }
+                if(max(Values[,1])>Ymax){
+                  Ymax=max(Values[,1])
+                }
+                if(min(Values[,1])<Ymin){
+                  Ymin=min(Values[,1])
+                }
               }
             }
           }
         }
-      }
 
-      plot(NA,
-           ylim=c(Xmin,Xmax),
-           xlim=c(Ymax,Ymin),
-           ylab="Value",
-           xlab="Age",
-           main=paste("RoC | ",VariantsLoess, " | ",VariantsTransform,sep="")
-      )
+        plot(NA,
+             ylim=c(Xmin,Xmax),
+             xlim=c(Ymax,Ymin),
+             ylab="Value",
+             xlab="Age",
+             main=paste(IV," | ",VariantsLoess, " | ",VariantsTransform,sep="")
+        )
 
-      for (i in 1:length(data$Diatom)){
+        for (i in 1:length(data$Diatom)){
 
-        DiatomsNames = AllDiatomsNames[i]
-        Values = data$Diatom[[DiatomsNames]]$RoC
-        RID = which(data$CoreList[,1]==DiatomsNames)
+          DiatomsNames = AllDiatomsNames[i]
+          Values = data$Diatom[[DiatomsNames]][[IV]]
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
-        if(!is.null(Values)){
-          if(dim(Values)[1]>0){
+          if(!is.null(Values)){
+            if(dim(Values)[1]>0){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+              Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-            if(!is.null(Values)){
+              if(!is.null(Values)){
 
-              if(VariantsTransform=="Transformed"){
+                if(VariantsTransform=="Transformed"){
 
-                Values[,2] = scale(Values[,2],center = T, scale = T)
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
+
+                }
+
+                if(VariantsLoess == "Loess"){
+
+                  #Loess
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                  Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                }
+
+                lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
               }
-
-              if(VariantsLoess == "Loess"){
-
-                #Loess
-                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
-                Values = cbind(Values[,1],ValuesLoess$fitted)
-
-              }
-
-              lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
-
             }
           }
         }
-      }
 
-      #Plot Numbers
+        #Plot Numbers
 
-      for (i in 1:length(data$Diatom)){
+        for (i in 1:length(data$Diatom)){
 
-        DiatomsNames = AllDiatomsNames[i]
-        Values = data$Diatom[[DiatomsNames]]$RoC
-        RID = which(data$CoreList[,1]==DiatomsNames)
+          DiatomsNames = AllDiatomsNames[i]
+          Values = data$Diatom[[DiatomsNames]][[IV]]
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
-        if(!is.null(Values)){
-          if(dim(Values)[1]>0){
+          if(!is.null(Values)){
+            if(dim(Values)[1]>0){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+              Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-            if(!is.null(Values)){
+              if(!is.null(Values)){
 
-              if(VariantsTransform=="Transformed"){
+                if(VariantsTransform=="Transformed"){
 
-                Values[,2] = scale(Values[,2],center = T, scale = T)
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
+
+                }
+
+                if(VariantsLoess == "Loess"){
+
+                  #Loess
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                  Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                }
+
+                distance = 120
+
+                if(i>=10){distance = 200}
+
+                text(Values[dim(Values)[1],1]+distance,
+                     Values[dim(Values)[1],2],
+                     label=RID,
+                     col="white",
+                     cex=1.2)
+
+                text(Values[dim(Values)[1],1]+distance,
+                     Values[dim(Values)[1],2],
+                     label=RID,
+                     col=Allcolor[RID])
 
               }
-
-              if(VariantsLoess == "Loess"){
-
-                #Loess
-                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
-                Values = cbind(Values[,1],ValuesLoess$fitted)
-
-              }
-
-              distance = 120
-
-              if(i>=10){distance = 200}
-
-              text(Values[dim(Values)[1],1]+distance,
-                   Values[dim(Values)[1],2],
-                   label=RID,
-                   col="white",
-                   cex=1.2)
-
-              text(Values[dim(Values)[1],1]+distance,
-                   Values[dim(Values)[1],2],
-                   label=RID,
-                   col=Allcolor[RID])
-
             }
           }
         }
+
+        dev.off()
+
       }
-
-      dev.off()
-
     }
   }
 
@@ -2914,14 +2919,30 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
     if (!sum(data$LakeData$CoreID==DiatomNames[counter])==0){
 
+      StressValue = data$Diatom[[DiatomNames[counter]]]$nMDS$Stress
+
+      if(!is.null(StressValue)){
+
       LakeType[counter] = data$LakeDat$LakeType[which(data$LakeData$CoreID==DiatomNames[counter])]
-      Stress [counter] = data$Diatom[[DiatomNames[counter]]]$nMDS$Stress
+      Stress[counter] = StressValue
+
+      }else{
+
+        LakeType = LakeType[-counter]
+        Stress = Stress[-counter]
+        Names = Names[-counter]
+        DiatomNames = DiatomNames[-counter]
+
+        counter=counter-1
+
+      }
 
     }else{
 
       LakeType = LakeType[-counter]
       Stress = Stress[-counter]
       Names = Names[-counter]
+      DiatomNames = DiatomNames[-counter]
 
       counter=counter-1
 
@@ -2967,7 +2988,6 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   par(mfrow = c(1,1))
 
   dev.off()
-
 
 
 

@@ -3,6 +3,9 @@
 #'Calculates the Rate of change given by the rateofChange function.
 #'@param data List of data generates by the Multivar function.
 #'@param intervallBy Intervalls by to interpolate to.
+#'@param Importname importname after data$Diatom$DiatomNames$
+#'@param Exportname data$Diatom$DiatomNames$
+#'@param CreateVector Shuld the vector plot build on this dataset.
 #'@importFrom stats t.test
 #'@export
 #'@return Returns the same List but with new added parameters.
@@ -10,7 +13,7 @@
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-RateOfChangeAsyncTabel = function(data, intervallBy = 100){
+RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Exportname = "", CreateVector = FALSE){
 
   #Printer
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
@@ -24,11 +27,14 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100){
 
   for (main in 1:length(DiatomNames)){
 
-    RocData = data$Diatom[[DiatomNames[main]]][["RoC"]]
+    RocData = data$Diatom[[DiatomNames[main]]][[Importname]]
 
-    MinRoC = c(MinRoC,min(RocData[,1]))
-    MaxRoC = c(MaxRoC,max(RocData[,1]))
+    if(!is.null(RocData)){
 
+      MinRoC = c(MinRoC,min(RocData[,1]))
+      MaxRoC = c(MaxRoC,max(RocData[,1]))
+
+    }
   }
 
   #Create RocAllInOneTabel
@@ -39,12 +45,15 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100){
 
   for (main in 1:length(DiatomNames)){
 
-    RocData = data$Diatom[[DiatomNames[main]]][["RoC"]]
+    RocData = data$Diatom[[DiatomNames[main]]][[Importname]]
 
-    for (k in 1:dim(RocData)[1]){
+    if(!is.null(RocData)){
 
-      RocAllInOneTabel[((RocData[k,1] - min(MinRoC)) / intervallBy)+1,main] = RocData[k,2]
+      for (k in 1:dim(RocData)[1]){
 
+        RocAllInOneTabel[((RocData[k,1] - min(MinRoC)) / intervallBy)+1,main] = RocData[k,2]
+
+      }
     }
   }
 
@@ -79,13 +88,17 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100){
 
   AsyncTabel[which(AsyncTabel[,3]<0),3] = 0
 
-  data[["RocMatrix"]] = AsyncTabel
+  data[[Exportname]] = AsyncTabel
 
-  #VectorMatrix
+  if(CreateVector){
 
-  VectorTable = DataSignalAfterTable(DataAllInOneTabel = RocAllInOneTabel,BasicAsyncTable = AsyncTabel,ValueCantBeSamlerThanZero = TRUE)
+    #VectorMatrix
 
-  data[["Vector_RocMatrix"]] = VectorTable
+    VectorTable = DataSignalAfterTable(DataAllInOneTabel = RocAllInOneTabel,BasicAsyncTable = AsyncTabel,ValueCantBeSamlerThanZero = TRUE)
+
+    data[["Vector_RocMatrix"]] = VectorTable
+
+  }
 
   return(data)
 

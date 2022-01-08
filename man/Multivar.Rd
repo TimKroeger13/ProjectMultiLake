@@ -11,7 +11,8 @@ Multivar(
   percentFilterWeight = 0,
   allLoessSpans = 0.8,
   minimumRowsAfterFiltering = 0,
-  InterpolationLoessSpans = 0.8
+  InterpolationLoessSpans = 0.8,
+  ResampleQuantileValue = 0.05
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ Multivar(
 \item{minimumRowsAfterFiltering}{Value for the minimum rows after filtering.}
 
 \item{InterpolationLoessSpans}{span value for all interpolation Loess calculations made by Multivar, where more values are given.}
+
+\item{ResampleQuantileValue}{Value that indicates by which percent of quantiles all the Diatom counts should be cut.}
 }
 \value{
 Returns the same List but with new added parameters.

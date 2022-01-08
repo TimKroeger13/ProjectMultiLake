@@ -49,8 +49,6 @@ TRACETabel = function(data, TraceName = "UnknownTrace", intervallBy = 100){
   }
 
 
-
-
   #Table
 
   TraceName = paste(TraceName,"_mean",sep="")

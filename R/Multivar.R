@@ -8,6 +8,7 @@
 #'@param allLoessSpans span value for all Loess calculations made by Multivar.
 #'@param minimumRowsAfterFiltering Value for the minimum rows after filtering.
 #'@param InterpolationLoessSpans span value for all interpolation Loess calculations made by Multivar, where more values are given.
+#'@param ResampleQuantileValue Value that indicates by which percent of quantiles all the Diatom counts should be cut.
 #'@import vegan SRS
 #'@importFrom stats prcomp loess median predict qt quantile approx
 #'@export
@@ -16,7 +17,7 @@
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.8,minimumRowsAfterFiltering = 0, InterpolationLoessSpans = 0.8){
+Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWeight=0,allLoessSpans=0.8,minimumRowsAfterFiltering = 0, InterpolationLoessSpans = 0.8, ResampleQuantileValue = 0.05){
 
   DeleteRowWithoutTimestamp <- function(data){
 
@@ -117,7 +118,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     }
 
-    SRS_Value = round(quantile(allCounts,probs = c(0.05)))
+    SRS_Value = round(quantile(allCounts,probs = c(ResampleQuantileValue)))
 
     for (i in 1:length(ls(data[["Diatom"]]))){
 
@@ -133,21 +134,24 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
       }
 
-      Tempdata = Tempdata[CountedValves >= SRS_Value,]
-      TempdataForCalculation = TempdataForCalculation[CountedValves >= SRS_Value,]
+      if(sum(CountedValves >= SRS_Value)>0){
 
-      TempTurn = data.frame(t(TempdataForCalculation))
-      TempTurn = SRS(TempTurn, Cmin = SRS_Value, set_seed = TRUE, seed = 1)
-      SRSTempdataForCalculation = data.frame(t(TempTurn))
+        Tempdata = Tempdata[CountedValves >= SRS_Value,]
+        TempdataForCalculation = TempdataForCalculation[CountedValves >= SRS_Value,]
 
-      output = cbind(Tempdata[,1:3],SRSTempdataForCalculation)
-      colnames(output) = colnames(Tempdata)
-      output[,2] = SRS_Value
+        TempTurn = data.frame(t(TempdataForCalculation))
+        TempTurn = SRS(TempTurn, Cmin = SRS_Value, set_seed = TRUE, seed = 1)
+        SRSTempdataForCalculation = data.frame(t(TempTurn))
 
-      if(dim(output)[1]>=minimumRowsAfterFiltering){
+        output = cbind(Tempdata[,1:3],SRSTempdataForCalculation)
+        colnames(output) = colnames(Tempdata)
+        output[,2] = SRS_Value
 
-        data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("SRS_data")]] = output
+        if(dim(output)[1]>=minimumRowsAfterFiltering){
 
+          data[["Diatom"]][[names(data[["Diatom"]])[[i]]]][[paste("SRS_data")]] = output
+
+        }
       }
 
       cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
@@ -248,9 +252,14 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   data = filterDataForMinimumRows(data)
 
-  data=StandadizeData(data, standardize, percentFilterWeight)
+  #data=StandadizeData(data, standardize, percentFilterWeight) #<---------------- Outdated Diatom calculation
 
   data = SrsFilter(data)
+
+  data = CutOutPionierPhase(data = data, intervallBy = 100,
+                            allLoessSpans = allLoessSpans,
+                            minimumRowsAfterInterpolating = minimumRowsAfterFiltering,
+                            method = method)
 
   #Main Loop
   for (i in 1:length(ls(data[["Diatom"]]))){
@@ -258,7 +267,9 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     #MDS
 
-    MDSData=data[["Diatom"]][[i]][["StandadizedData"]]
+    MDSData=data[["Diatom"]][[i]][["SRS_data"]] #StandadizedData
+
+    if(!is.null(MDSData)){
 
     MDSData=DeleteRowWithoutTimestamp(MDSData)
 
@@ -303,6 +314,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
     #Stress
     data[["Diatom"]][[i]][["nMDS"]][["Stress"]]=MDSrotation$stress
 
+    }
   }
 
 
@@ -371,9 +383,15 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
   }
 
 
-  data = rateofChange(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method)
+  data = rateofChange(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method,
+                      Importname = "SRS_data", Exportname = "RoC")
+  data = rateofChange(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method,
+                      Importname = "Cut_SRS_data", Exportname = "Cut_RoC")
 
-  data = RateOfChangeAsyncTabel(data = data, intervallBy = 100)
+  data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
+                                Importname = "RoC", Exportname = "RocMatrix", CreateVector = F)
+  data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
+                                Importname = "Cut_RoC", Exportname = "Cut_RocMatrix", CreateVector = T)
 
   data = evenness(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
 
@@ -395,14 +413,155 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   data = TOCAsyncTabel(data = data, intervallBy = 100)
 
-  data =TRACETabel(data = data, TraceName = "JJA")
+  data = TRACETabel(data = data, TraceName = "JJA")
 
-  data =TRACETabel(data = data, TraceName = "DJF")
+  data = TRACETabel(data = data, TraceName = "DJF")
 
-  data =TRACETabel(data = data, TraceName = "hydrological")
+  data = TRACETabel(data = data, TraceName = "hydrological")
 
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
       "Done",sep="")
+
+
+  ################################################################################
+  ################################ Discrption ####################################
+  ################################################################################
+
+  #Diatom
+
+  DiscriptionNames = ls(data$Description)
+
+  DiatomDataNotFilterd = rep(FALSE, length(DiscriptionNames))
+
+  for(d in 1:length(data$Description)){
+
+    CurrentDiscriptionName = DiscriptionNames[d]
+
+    CurrentDiscription = data$Diatom[[CurrentDiscriptionName]]$SRS_data
+
+    if(!is.null(CurrentDiscription)){
+
+      DiatomDataNotFilterd[d] = TRUE
+
+    }
+  }
+  DiatomDataNotFilterd = DiscriptionNames[DiatomDataNotFilterd]
+
+  #Carbon
+
+  DiscriptionNames = ls(data$Description)
+
+  CarbonDataNotFilterd = rep(FALSE, length(DiscriptionNames))
+
+  for(d in 1:length(data$Description)){
+
+    CurrentDiscriptionName = DiscriptionNames[d]
+
+    CurrentDiscription = data$Carbon[[CurrentDiscriptionName]]$rawData$TOC
+
+    if(sum(!is.na(CurrentDiscription))==0){
+
+      CurrentDiscription = NULL
+
+    }
+
+    if(!is.null(CurrentDiscription)){
+
+      CarbonDataNotFilterd[d] = TRUE
+
+    }
+  }
+  CarbonDataNotFilterd = DiscriptionNames[CarbonDataNotFilterd]
+
+  #Get SRS recounts
+
+  SRSRecountsConditionData = NULL
+  SRSRecountsCondition = TRUE
+  SRSRecountsConditionCounter = 0
+
+  while (SRSRecountsCondition) {
+
+    SRSRecountsConditionCounter = SRSRecountsConditionCounter+1
+
+    SRSRecountsConditionData = data$Diatom[[SRSRecountsConditionCounter]]$SRS_data$`Total numbers of counted diatom valves`[1]
+
+    if(!is.null(SRSRecountsConditionData)){
+
+      SRSRecountsCondition = FALSE
+
+    }
+
+
+    if(SRSRecountsConditionCounter == length(data$Description)){
+
+      SRSRecountsCondition = FALSE
+
+    }
+  }
+  extraDiscriptionAdder3 = matrix(c("Adjusted_Total_number_of_counted_diatom_valves",SRSRecountsConditionData),ncol = 2)
+
+  #Add discription
+
+  for (i in 1:length(data$Description)){
+
+    #Diatom
+
+    extraDiscriptionAdder1 = matrix(c("DiatomDataNotFilterd","FALSE"),ncol = 2)
+
+    if(sum(DiatomDataNotFilterd == ls(data$Description[i]))==1){
+
+      extraDiscriptionAdder1 = matrix(c("DiatomDataNotFilterd","TRUE"),ncol = 2)
+
+    }
+
+    #Carbon
+
+    extraDiscriptionAdder2 = matrix(c("CarbonDataNotFilterd","FALSE"),ncol = 2)
+
+    if(sum(CarbonDataNotFilterd == ls(data$Description[i]))==1){
+
+      extraDiscriptionAdder2 = matrix(c("CarbonDataNotFilterd","TRUE"),ncol = 2)
+
+    }
+
+    data$Description[[ls(data$Description[i])]] = rbind(data$Description[[ls(data$Description[i])]],
+                                                        extraDiscriptionAdder1,
+                                                        extraDiscriptionAdder2,
+                                                        extraDiscriptionAdder3)
+
+  }
+
+  #Get Number of not Filtered Data points
+  #Diatom
+  DiatomNotFilterdDataSheets = 0
+
+  for (i in 1:length(data$Description)){
+
+    if(data$Description[[i]][which(data$Description[[i]][,1] == "DiatomDataNotFilterd"),2]){
+
+      DiatomNotFilterdDataSheets = DiatomNotFilterdDataSheets+1
+
+    }
+  }
+
+  #Carbon
+  CarbonNotFilterdDataSheets = 0
+
+  for (i in 1:length(data$Description)){
+
+    if(data$Description[[i]][which(data$Description[[i]][,1] == "CarbonDataNotFilterd"),2]){
+
+      CarbonNotFilterdDataSheets = CarbonNotFilterdDataSheets+1
+
+    }
+  }
+
+  cat("\n\n","Used Diatom Data (Not Filterd): ",DiatomNotFilterdDataSheets,
+      "\n","Used Carbon Data (Not Filterd): ",CarbonNotFilterdDataSheets,
+      "\n\n","Adjusted Total number of counted diatom valves: ",SRSRecountsConditionData,sep="")
+
+  ##############################################################################
+  #Return
 
   return(data)
 
