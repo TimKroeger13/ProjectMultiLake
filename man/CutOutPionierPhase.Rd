@@ -9,7 +9,9 @@ CutOutPionierPhase(
   intervallBy = 100,
   allLoessSpans = 0.3,
   minimumRowsAfterInterpolating = 12,
-  method = "bray"
+  method = "bray",
+  AgeBuffer = 1000,
+  AgeBuffer2 = 500
 )
 }
 \arguments{
@@ -22,6 +24,10 @@ CutOutPionierPhase(
 \item{minimumRowsAfterInterpolating}{Value for the minimum rows after filtering.}
 
 \item{method}{The method for the dissimilarity calculation.}
+
+\item{AgeBuffer}{How much age get Cut away.}
+
+\item{AgeBuffer2}{How much age get Cut away as the second value.}
 }
 \value{
 Returns the same List but with new added parameters.

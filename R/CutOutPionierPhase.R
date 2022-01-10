@@ -7,13 +7,15 @@
 #'@param allLoessSpans span value for all Loess calculations made by Multivar.
 #'@param minimumRowsAfterInterpolating Value for the minimum rows after filtering.
 #'@param method The method for the dissimilarity calculation.
+#'@param AgeBuffer How much age get Cut away.
+#'@param AgeBuffer2 How much age get Cut away as the second value.
 #'@export
 #'@return Returns the same List but with new added parameters.
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-CutOutPionierPhase = function(data,intervallBy = 100,allLoessSpans = 0.3, minimumRowsAfterInterpolating = 12,method = "bray"){
+CutOutPionierPhase = function(data,intervallBy = 100,allLoessSpans = 0.3, minimumRowsAfterInterpolating = 12,method = "bray", AgeBuffer = 1000, AgeBuffer2 = 500){
 
   deleteDoubles = function(doublData){
 
@@ -44,160 +46,66 @@ CutOutPionierPhase = function(data,intervallBy = 100,allLoessSpans = 0.3, minimu
 
     if(!is.null(rateOfChangeData)){
 
-      depthVectorOfData = rateOfChangeData[,1]
+      TempDatarateOfChangeData = rateOfChangeData[,4:dim(rateOfChangeData)[2]]
 
-      #Delete Doubles
-      rateOfChangeData = deleteDoubles(rateOfChangeData)
+      RateofChangeAge = rateOfChangeData[,1]
 
-      lowerBoundry = ceiling(min(depthVectorOfData)/intervallBy)*intervallBy
+      DistanceMatrix = matrix(NA, ncol = 2, nrow = (dim(TempDatarateOfChangeData)[1]-1))
 
-      upperBoundry = floor(max(depthVectorOfData)/intervallBy)*intervallBy
+      for (p in 1:(dim(TempDatarateOfChangeData)[1]-1)){
 
-      dissimilarityMatrixRowNames =   approx (x = rateOfChangeData[,1],
-                                              y = NULL,
-                                              xout = seq(from = lowerBoundry, to = upperBoundry, by = intervallBy),
-                                              method = "linear",
-                                              n = 50)[[1]]
+        distdata = vegdist(TempDatarateOfChangeData[p:(p+1),],method=method,na.rm = T)
 
-      dissimilarityMatrix = matrix(NA, nrow = length(dissimilarityMatrixRowNames), ncol = dim(rateOfChangeData)[2]-3)
-
-      matrixCounter = 0
-
-      for (i in 4:dim(rateOfChangeData)[2]){
-
-        matrixCounter = matrixCounter+1
-
-        dissimilarityMatrix[,matrixCounter] =  approx (x = rateOfChangeData[,1],
-                                                       y = rateOfChangeData[,i],
-                                                       xout = seq(from = lowerBoundry, to = upperBoundry, by = intervallBy),
-                                                       method = "linear",
-                                                       n = 50)[[2]]
+        DistanceMatrix[p,2] = distdata
+        DistanceMatrix[p,1] = rateOfChangeData[,1][p]
 
       }
 
-      colnames(dissimilarityMatrix) = colnames(rateOfChangeData)[4:dim(rateOfChangeData)[2]]
-      rownames(dissimilarityMatrix) = dissimilarityMatrixRowNames
+      PionierAge = DistanceMatrix[dim(DistanceMatrix)[1],1]-AgeBuffer
 
-      #check this minRows of the interpolated data
+      SplitStart = DistanceMatrix[DistanceMatrix[,1] <= PionierAge,]
+      SplitEnd =  DistanceMatrix[DistanceMatrix[,1] > PionierAge,]
 
-      if(dim(dissimilarityMatrix)[1]>minimumRowsAfterInterpolating){
-
-        dissimilarityMatrixLoess = dissimilarityMatrix
-        dissimilarityMatrixLoess[]=NA
-
-        for (i in 1:dim(dissimilarityMatrix)[2]){
-
-          dissimilarityMatrixLoess[,i] = predict(loess(dissimilarityMatrix[,i] ~ dissimilarityMatrixRowNames, span = allLoessSpans))
-
-        }
-
-        dissimilarityMatrixLoess[dissimilarityMatrixLoess<0]=0
-
-        #Sqrt transform
-        dissimilarityMatrixLoess = sqrt(dissimilarityMatrixLoess)
-
-        #Distances
-
-        DistanceMatrix = matrix(NA, ncol = 2, nrow = (dim(dissimilarityMatrixLoess)[1]-1))
-
-        for (p in 1:(dim(dissimilarityMatrixLoess)[1]-1)){
-
-          distdata = vegdist(dissimilarityMatrixLoess[p:(p+1),],method=method,na.rm = T)
-
-          DistanceMatrix[p,2] = distdata
-          DistanceMatrix[p,1] = as.numeric(rownames(dissimilarityMatrixLoess)[p])
-
-        }
-      }
-
-      #Second Loess for best distribution to Cut. To make the Pionier Phase visible
-
-      ROC_Loess_after_interplating = 0.4 #<- Fix value. Seems to be the best fit after some testing for 0-20.000 years
-
-      #Loess
-      ValuesLoess=loess(DistanceMatrix[,2] ~ DistanceMatrix[,1], span=ROC_Loess_after_interplating)
-      DistanceMatrixLoess = cbind(DistanceMatrix[,1],ValuesLoess$fitted)
-
-      #Check for Pionier Phase
+      SplitTTest = t.test(SplitStart,SplitEnd)
 
       p_value = 0.05
 
-      SpliValue = dim(DistanceMatrixLoess)[1]
-      SplitStart = DistanceMatrixLoess[(SpliValue-1):SpliValue,2]
-      SplitEnd = DistanceMatrixLoess[1:(SpliValue-1),2]
-      SplitTTest = t.test(SplitStart,SplitEnd)
-
-      #correction
-      #Find Pionier Phase in the interpolation
+      PionierFreeSRS = data$Diatom[[DiatomNames[z]]]$SRS_data
 
       if(SplitTTest$p.value > p_value){
 
-        SplitvalueNotFound = TRUE
+        PionierFreeSRS = PionierFreeSRS[PionierFreeSRS[,1] <= PionierAge,]
 
-        while (SplitvalueNotFound){
+      }else{
 
-          SpliValue = SpliValue-1
-          SplitStart = DistanceMatrixLoess[(SpliValue-1):SpliValue,2]
-          SplitEnd = DistanceMatrixLoess[1:(SpliValue-1),2]
+        PionierAge = DistanceMatrix[dim(DistanceMatrix)[1],1]-AgeBuffer2
 
-          SplitTTest = t.test(SplitStart,SplitEnd)
+        SplitStart = DistanceMatrix[DistanceMatrix[,1] <= PionierAge,]
+        SplitEnd =  DistanceMatrix[DistanceMatrix[,1] > PionierAge,]
 
-          if(SplitTTest$p.value <= p_value){
+        SplitTTest = t.test(SplitStart,SplitEnd)
 
-            SplitvalueNotFound = FALSE
+        p_value = 0.05
 
-          }
+        if(SplitTTest$p.value > p_value){
+
+          PionierFreeSRS = PionierFreeSRS[PionierFreeSRS[,1] <= PionierAge,]
+
         }
       }
 
-      #Find the next value of the raw data
-
-      PionierLoess = DistanceMatrixLoess[SpliValue,1]
-
-      PionierFreeSRS = data$Diatom[[DiatomNames[z]]]$SRS_data
-
-      PionierFreeSRS = PionierFreeSRS[PionierFreeSRS[,1] <= PionierLoess,]
-
       data$Diatom[[DiatomNames[z]]][["Cut_SRS_data"]] = PionierFreeSRS
+
+    }
 
       #Printer
       cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
           z,"/",length(ls(data[["Diatom"]]))," Cut SRS Data",sep="")
-    }
+
   }
 
   return(data)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

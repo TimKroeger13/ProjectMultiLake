@@ -2213,6 +2213,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
     }
   }
 
+
+  ##############################################################################
+  ############################## Correction Output #############################
+  ##############################################################################
+
+  CorrectionPlots(data = data,minimumRowsAfterCutOutMaxAge = minimumRowsAfterCutOutMaxAge,
+                  MaxAge = MaxAge, AllDiatomsNames = AllDiatomsNames, Allcolor = Allcolor)
+
   ##############################################################################
   ############################ Inverse Simpson Solo ############################
   ##############################################################################

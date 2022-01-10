@@ -4,12 +4,24 @@
 \alias{RateOfChangeAsyncTabel}
 \title{RateOfChangeAsyncTabel}
 \usage{
-RateOfChangeAsyncTabel(data, intervallBy = 100)
+RateOfChangeAsyncTabel(
+  data,
+  intervallBy = 100,
+  Importname = "",
+  Exportname = "",
+  CreateVector = FALSE
+)
 }
 \arguments{
 \item{data}{List of data generates by the Multivar function.}
 
 \item{intervallBy}{Intervalls by to interpolate to.}
+
+\item{Importname}{importname after data$Diatom$DiatomNames$}
+
+\item{Exportname}{data$Diatom$DiatomNames$}
+
+\item{CreateVector}{Shuld the vector plot build on this dataset.}
 }
 \value{
 Returns the same List but with new added parameters.

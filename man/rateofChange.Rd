@@ -9,7 +9,9 @@ rateofChange(
   intervallBy = 100,
   allLoessSpans = 0.8,
   minimumRowsAfterInterpolating = 0,
-  method = "bray"
+  method = "bray",
+  Importname = "",
+  Exportname = ""
 )
 }
 \arguments{
@@ -22,6 +24,10 @@ rateofChange(
 \item{minimumRowsAfterInterpolating}{alue for the minimum rows after filtering.}
 
 \item{method}{Method for calculation Dissimilarity Indices for Community Ecologists.}
+
+\item{Importname}{importname after data$Diatom$DiatomNames$}
+
+\item{Exportname}{data$Diatom$DiatomNames$}
 }
 \value{
 Returns the same List but with new added parameters.

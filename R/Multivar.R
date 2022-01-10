@@ -259,7 +259,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
   data = CutOutPionierPhase(data = data, intervallBy = 100,
                             allLoessSpans = allLoessSpans,
                             minimumRowsAfterInterpolating = minimumRowsAfterFiltering,
-                            method = method)
+                            method = method, AgeBuffer = 2000, AgeBuffer2 = 1000)
 
   #Main Loop
   for (i in 1:length(ls(data[["Diatom"]]))){

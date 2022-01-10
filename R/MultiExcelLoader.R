@@ -444,6 +444,7 @@ MultiExcelLoader = function(){
   FileNamesJJA_temp=FileNames[grep("_JJA_temp_",FileNames)]
   FileNamesDJF_temp=FileNames[grep("_DJF_temp_",FileNames)]
   FileNameshydrological_year_temp=FileNames[grep("_hydrological_year_temp_",FileNames)]
+  CorrectionPoints=FileNames[grep("CorrectionPoint",FileNames)]
 
   if(identical(FileNamesAge, character(0))){
 
@@ -498,6 +499,14 @@ MultiExcelLoader = function(){
     setwd(orginalWorkingDirectoryPath)
 
     stop("No files named hydrological_year_temp founded")
+
+  }
+
+  if(identical(CorrectionPoints, character(0))){
+
+    setwd(orginalWorkingDirectoryPath)
+
+    stop("No files named CorrectionPoints.csv founded")
 
   }
 
@@ -661,6 +670,11 @@ MultiExcelLoader = function(){
         i,"/",length(list.files()[grep("data.xlsx",list.files())])," Loading CSV from ",getwd(),sep="")
 
   }
+
+  #CorrectionPoints
+
+  CorrectionPoints=read.table(CorrectionPoints,sep=";",header = T)
+  Folder[["CorrectionPoints"]]=CorrectionPoints
 
   #CoreList
 
