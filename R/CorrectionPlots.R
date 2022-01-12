@@ -238,14 +238,16 @@ CorrectionPlots = function(data, minimumRowsAfterCutOutMaxAge, MaxAge, AllDiatom
 
           PinoeerPoint = CorrectionPoints[which(CorrectionPoints[,2] == RID),3]
 
-          if(PinoeerPoint>0){
+          if(!length(PinoeerPoint)==0){
+            if(PinoeerPoint>0){
 
-            abline(v = Values[(length(Values[,1])-(PinoeerPoint-1)),1],lty = 3)
+              abline(v = Values[(length(Values[,1])-(PinoeerPoint-1)),1],lty = 3)
 
-            points(Values[length(Values[,1]):(length(Values[,1])-(PinoeerPoint-1)),1],
-                  Values[length(Values[,1]):(length(Values[,1])-(PinoeerPoint-1)),2],
-                  col="red", lwd=1,type = "p", pch = 19)
+              points(Values[length(Values[,1]):(length(Values[,1])-(PinoeerPoint-1)),1],
+                     Values[length(Values[,1]):(length(Values[,1])-(PinoeerPoint-1)),2],
+                     col="red", lwd=1,type = "p", pch = 19)
 
+            }
           }
 
           dev.off()
