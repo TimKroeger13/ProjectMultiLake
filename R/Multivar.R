@@ -13,7 +13,7 @@
 #'@importFrom stats prcomp loess median predict qt quantile approx
 #'@export
 #'@return Returns the same List but with new added parameters.
-#'@author Tim Kroeger
+#'@author Tim Kroeger.
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
@@ -256,10 +256,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   data = SrsFilter(data)
 
-  data = CutOutPionierPhase(data = data, intervallBy = 100,
-                            allLoessSpans = allLoessSpans,
-                            minimumRowsAfterInterpolating = minimumRowsAfterFiltering,
-                            method = method, AgeBuffer = 2000, AgeBuffer2 = 1000)
+  data = CutOutPionierPhase(data = data)
 
   #Main Loop
   for (i in 1:length(ls(data[["Diatom"]]))){

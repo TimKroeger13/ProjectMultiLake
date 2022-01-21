@@ -154,7 +154,7 @@ CorrectionPlots = function(data, minimumRowsAfterCutOutMaxAge, MaxAge, AllDiatom
   ##############################################################################
 
   CorrectionPoints = data$CorrectionPoints
-  CorrectionPoints[is.na(CorrectionPoints[,3]),3] = 0
+  CorrectionPoints[is.na(CorrectionPoints[,2]),2] = 0
 
   Xmax=0
   Ymax=0
@@ -236,7 +236,7 @@ CorrectionPlots = function(data, minimumRowsAfterCutOutMaxAge, MaxAge, AllDiatom
 
           #Show CorrectionPoints
 
-          PinoeerPoint = CorrectionPoints[which(CorrectionPoints[,2] == RID),3]
+          PinoeerPoint = CorrectionPoints[which(CorrectionPoints[,1] == DiatomsNames),2]
 
           if(!length(PinoeerPoint)==0){
             if(PinoeerPoint>0){

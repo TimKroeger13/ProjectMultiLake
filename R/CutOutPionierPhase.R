@@ -3,19 +3,13 @@
 #'Cut out the Pionier Phase of the Lake data.
 #'\cr The new stating value is the first Value that passes the T.test that for two samples with a P_value <=0.05.
 #'@param data List of data generates by the Multivar function.
-#'@param intervallBy Intervals by to interpolate to.
-#'@param allLoessSpans span value for all Loess calculations made by Multivar.
-#'@param minimumRowsAfterInterpolating Value for the minimum rows after filtering.
-#'@param method The method for the dissimilarity calculation.
-#'@param AgeBuffer How much age get Cut away.
-#'@param AgeBuffer2 How much age get Cut away as the second value.
 #'@export
 #'@return Returns the same List but with new added parameters.
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-CutOutPionierPhase = function(data,intervallBy = 100,allLoessSpans = 0.3, minimumRowsAfterInterpolating = 12,method = "bray", AgeBuffer = 1000, AgeBuffer2 = 500){
+CutOutPionierPhase = function(data){
 
   deleteDoubles = function(doublData){
 
@@ -38,74 +32,38 @@ CutOutPionierPhase = function(data,intervallBy = 100,allLoessSpans = 0.3, minimu
 
   }
 
-  DiatomNames = ls(data$Diatom)
+  AllDiatomsNames = ls(data$Diatom)
+  CorrectionPoints = data$CorrectionPoints
+  CorrectionPoints[is.na(CorrectionPoints[,2]),2] = 0
 
-  for (z in 1:length(DiatomNames)){
+  for (z in 1:length(AllDiatomsNames)){
 
-    rateOfChangeData = data$Diatom[[DiatomNames[z]]]$SRS_data
+    PionierFreeSRS = data$Diatom[[AllDiatomsNames[z]]]$SRS_data
+    rateOfChangeData = data$Diatom[[AllDiatomsNames[z]]]$SRS_data
 
     if(!is.null(rateOfChangeData)){
 
-      TempDatarateOfChangeData = rateOfChangeData[,4:dim(rateOfChangeData)[2]]
+      DiatomNames = AllDiatomsNames[z]
 
-      RateofChangeAge = rateOfChangeData[,1]
+      PinoeerPoint = CorrectionPoints[which(CorrectionPoints[,1] == DiatomNames),2]
 
-      DistanceMatrix = matrix(NA, ncol = 2, nrow = (dim(TempDatarateOfChangeData)[1]-1))
+      if(PinoeerPoint>0){
 
-      for (p in 1:(dim(TempDatarateOfChangeData)[1]-1)){
-
-        distdata = vegdist(TempDatarateOfChangeData[p:(p+1),],method=method,na.rm = T)
-
-        DistanceMatrix[p,2] = distdata
-        DistanceMatrix[p,1] = rateOfChangeData[,1][p]
+        PionierFreeSRS = PionierFreeSRS[-(dim(rateOfChangeData)[1]-PinoeerPoint+1):-(dim(rateOfChangeData)[1]),]
 
       }
 
-      PionierAge = DistanceMatrix[dim(DistanceMatrix)[1],1]-AgeBuffer
-
-      SplitStart = DistanceMatrix[DistanceMatrix[,1] <= PionierAge,]
-      SplitEnd =  DistanceMatrix[DistanceMatrix[,1] > PionierAge,]
-
-      SplitTTest = t.test(SplitStart,SplitEnd)
-
-      p_value = 0.05
-
-      PionierFreeSRS = data$Diatom[[DiatomNames[z]]]$SRS_data
-
-      if(SplitTTest$p.value > p_value){
-
-        PionierFreeSRS = PionierFreeSRS[PionierFreeSRS[,1] <= PionierAge,]
-
-      }else{
-
-        PionierAge = DistanceMatrix[dim(DistanceMatrix)[1],1]-AgeBuffer2
-
-        SplitStart = DistanceMatrix[DistanceMatrix[,1] <= PionierAge,]
-        SplitEnd =  DistanceMatrix[DistanceMatrix[,1] > PionierAge,]
-
-        SplitTTest = t.test(SplitStart,SplitEnd)
-
-        p_value = 0.05
-
-        if(SplitTTest$p.value > p_value){
-
-          PionierFreeSRS = PionierFreeSRS[PionierFreeSRS[,1] <= PionierAge,]
-
-        }
-      }
-
-      data$Diatom[[DiatomNames[z]]][["Cut_SRS_data"]] = PionierFreeSRS
+      data$Diatom[[AllDiatomsNames[z]]][["Cut_SRS_data"]] = PionierFreeSRS
 
     }
 
-      #Printer
-      cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-          z,"/",length(ls(data[["Diatom"]]))," Cut SRS Data",sep="")
+    #Printer
+    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        z,"/",length(ls(data[["Diatom"]]))," Cut SRS Data",sep="")
 
   }
 
   return(data)
 
 }
-
 

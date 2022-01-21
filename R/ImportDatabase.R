@@ -12,6 +12,7 @@
 ImportDatabase = function(directory=NULL){
 
   MacPath = "/Volumes/projects/p_arclakes"
+  ArlakesDirect = "//smb.isipd.dmawi.de/projects/p_arclakes/"
   PathDatabase = "/ArcLakesDB/xxxHIGHLIGHT-LAKES-DATASHEETCOPYxxx/standardized_datasheets/"
   PathMetadata = "/ArcLakesDB/LAKEDATA/00-METADATA/"
   PathJJA_Mean_Temp = "/TraCE/Data-Output/JJA_Mean_Temp/"
@@ -62,6 +63,19 @@ ImportDatabase = function(directory=NULL){
     if(!class(getwdTry) == "try-error"){
 
       directory = MacPath
+
+    }
+  }
+
+
+  if(is.null(directory)){
+
+    getwdTry <-  try(setwd(ArlakesDirect),
+                     silent = TRUE)
+
+    if(!class(getwdTry) == "try-error"){
+
+      directory = ArlakesDirect
 
     }
   }

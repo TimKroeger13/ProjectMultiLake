@@ -4,30 +4,10 @@
 \alias{CutOutPionierPhase}
 \title{CutOutPionierPhase}
 \usage{
-CutOutPionierPhase(
-  data,
-  intervallBy = 100,
-  allLoessSpans = 0.3,
-  minimumRowsAfterInterpolating = 12,
-  method = "bray",
-  AgeBuffer = 1000,
-  AgeBuffer2 = 500
-)
+CutOutPionierPhase(data)
 }
 \arguments{
 \item{data}{List of data generates by the Multivar function.}
-
-\item{intervallBy}{Intervals by to interpolate to.}
-
-\item{allLoessSpans}{span value for all Loess calculations made by Multivar.}
-
-\item{minimumRowsAfterInterpolating}{Value for the minimum rows after filtering.}
-
-\item{method}{The method for the dissimilarity calculation.}
-
-\item{AgeBuffer}{How much age get Cut away.}
-
-\item{AgeBuffer2}{How much age get Cut away as the second value.}
 }
 \value{
 Returns the same List but with new added parameters.
