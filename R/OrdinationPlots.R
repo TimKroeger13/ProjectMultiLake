@@ -6,7 +6,7 @@
 #'@param allspan The span for all loess functions.
 #'@param MaxAge The max Age where to cut the Data.
 #'@importFrom grDevices rainbow
-#'@importFrom graphics lines points text legend barplot par
+#'@importFrom graphics lines points text legend barplot par axis
 #'@importFrom stats na.omit
 #'@importFrom grDevices dev.off pdf
 #'@export
