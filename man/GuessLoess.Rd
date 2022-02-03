@@ -4,7 +4,7 @@
 \alias{GuessLoess}
 \title{GuessLoess}
 \usage{
-GuessLoess(intervall, values, overspan = 20)
+GuessLoess(intervall, values, overspan = 30)
 }
 \arguments{
 \item{intervall}{Intervall for the x-Achxes.}
@@ -17,7 +17,7 @@ GuessLoess(intervall, values, overspan = 20)
 Returns the same List but with new added parameters.
 }
 \description{
-Guess the best span for any function. Resolution for span = 0.01
+Guess the best span for any function. Resolution for span = 0.001
 }
 \note{
 This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.

@@ -149,6 +149,13 @@ CorrectionPlots = function(data, AllDiatomsNames, Allcolor, MaxAge){
         lines(ROCvalues[,1],ROCvalues[,2],col="black", lwd=1,type = "l", pch = 1, lty=2)
         lines(ROCvalues[,1],ROCvalues[,2],col="black", lwd=1,type = "p", pch = 8)
 
+        #Show advanced loess
+
+        GuessSpan = GuessLoess(intervall = ROCvalues[,1],values = ROCvalues[,2],overspan = 100)
+
+        ROCLoess = predict(loess(ROCvalues[,2] ~ ROCvalues[,1], span = GuessSpan))
+
+        lines(ROCvalues[,1],ROCLoess,col="black", lwd=2,type = "l", pch = 1, lty=1)
 
         dev.off()
 
