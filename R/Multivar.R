@@ -380,15 +380,18 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
   }
 
 
-  data = rateofChange(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method,
+  data = rateofChange(data = data, intervallBy = 100, allLoessSpans = allLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method,
                       Importname = "SRS_data", Exportname = "RoC")
-  data = rateofChange(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method,
-                      Importname = "Cut_SRS_data", Exportname = "Cut_RoC")
+  #data = rateofChange(data = data, intervallBy = 100, allLoessSpans = allLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method,
+  #                    Importname = "Cut_SRS_data", Exportname = "Cut_RoC")
 
   data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
-                                Importname = "RoC", Exportname = "RocMatrix", CreateVector = F)
-  data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
-                                Importname = "Cut_RoC", Exportname = "Cut_RocMatrix", CreateVector = T)
+                                Importname = "RoC", Exportname = "RocMatrix", CreateVector = T)
+  #data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
+  #                              Importname = "Cut_RoC", Exportname = "Cut_RocMatrix", CreateVector = T)
+
+
+
 
   data = evenness(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
 

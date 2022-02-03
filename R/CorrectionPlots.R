@@ -2,10 +2,9 @@
 #'@description
 #'Plots Ordinations Plots for the Pinoeer correction
 #'@param data List of data generates by the Ordination function.
-#'@param minimumRowsAfterCutOutMaxAge minimum rows count from the Ordination function.
-#'@param MaxAge MayAge from the Ordination function.
 #'@param AllDiatomsNames All Diatom names from the Ordination function.
 #'@param Allcolor The color from the Ordination function.
+#'@param MaxAge MayAge from the Ordination function.
 #'@importFrom grDevices dev.off pdf
 #'@importFrom graphics abline
 #'@export
@@ -13,24 +12,7 @@
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 
-CorrectionPlots = function(data, minimumRowsAfterCutOutMaxAge, MaxAge, AllDiatomsNames, Allcolor){
-
-  CutOutMaxAgeForInterpolatedData = function(DataVector, Cutage, minimumRowsAfterCutOutMaxAge){
-
-    FittingAges = as.numeric(DataVector[,1])<=Cutage
-
-    if(sum(FittingAges)>minimumRowsAfterCutOutMaxAge){
-
-      DataVector=cbind(DataVector[FittingAges,1],DataVector[FittingAges,2])
-
-      return(DataVector)
-
-    }else{
-
-      return(NULL)
-
-    }
-  }
+CorrectionPlots = function(data, AllDiatomsNames, Allcolor, MaxAge){
 
   #Set folder
 
@@ -46,219 +28,135 @@ CorrectionPlots = function(data, minimumRowsAfterCutOutMaxAge, MaxAge, AllDiatom
 
   }
 
-  Xmax=0
-  Ymax=0
-  Xmin=Inf
-  Ymin=Inf
+  deleteDoubles = function(doublData){
 
-  pdf("RoC Control Plot All.pdf",width=15,height=10)
+    counter = 0
 
-  for (i in 1:length(data$Diatom)){
+    for (h in 1:(dim(doublData)[1]-1)){
 
-    DiatomsNames = AllDiatomsNames[i]
-    Values = data$Diatom[[DiatomsNames]]$RoC
-    RID = which(data$CoreList[,1]==DiatomsNames)
+      counter = counter+1
 
-    if(!is.null(Values)){
-      if(dim(Values)[1]>0){
+      if(doublData[counter,1]==doublData[(counter+1),1]){
 
-        Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+        doublData=doublData[-counter,]
 
-        if(!is.null(Values)){
+        counter = counter-1
 
-          if(max(Values[,2])>Xmax){
-            Xmax=max(Values[,2])
-          }
-          if(min(Values[,2])<Xmin){
-            Xmin=min(Values[,2])
-          }
-          if(max(Values[,1])>Ymax){
-            Ymax=max(Values[,1])
-          }
-          if(min(Values[,1])<Ymin){
-            Ymin=min(Values[,1])
-          }
-        }
       }
     }
+
+    return(doublData)
+
   }
 
-  plot(NA,
-       ylim=c(Xmin,Xmax),
-       xlim=c(Ymax,Ymin),
-       ylab="Value",
-       xlab="Age",
-       main=paste("RoC Control Plot All",sep="")
-  )
-
-  for (i in 1:length(data$Diatom)){
-
-    DiatomsNames = AllDiatomsNames[i]
-    Values = data$Diatom[[DiatomsNames]]$RoC
-    RID = which(data$CoreList[,1]==DiatomsNames)
-
-    if(!is.null(Values)){
-      if(dim(Values)[1]>0){
-
-        Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
-
-        if(!is.null(Values)){
-
-          lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1,type = "p", pch = 1)
-          lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1,type = "l", pch = 1)
-
-        }
-      }
-    }
-  }
-
-  #Plot Numbers
-
-  for (i in 1:length(data$Diatom)){
-
-    DiatomsNames = AllDiatomsNames[i]
-    Values = data$Diatom[[DiatomsNames]]$RoC
-    RID = which(data$CoreList[,1]==DiatomsNames)
-
-    if(!is.null(Values)){
-      if(dim(Values)[1]>0){
-
-        Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
-
-        if(!is.null(Values)){
-
-          distance = 120
-
-          if(i>=10){distance = 200}
-
-          text(Values[dim(Values)[1],1]+distance,
-               Values[dim(Values)[1],2],
-               label=RID,
-               col="white",
-               cex=1.2)
-
-          text(Values[dim(Values)[1],1]+distance,
-               Values[dim(Values)[1],2],
-               label=RID,
-               col=Allcolor[RID])
-
-        }
-      }
-    }
-  }
-
-  dev.off()
-
-  ##############################################################################
-  ######################## Single plots with indicator #########################
-  ##############################################################################
-
+  DiatomNames = ls(data$Diatom)
   CorrectionPoints = data$CorrectionPoints
   CorrectionPoints[is.na(CorrectionPoints[,2]),2] = 0
 
-  Xmax=0
-  Ymax=0
-  Xmin=Inf
-  Ymin=Inf
+  for (z in 1:length(DiatomNames)){
 
-
-  for (i in 1:length(data$Diatom)){
-
-    DiatomsNames = AllDiatomsNames[i]
-    Values = data$Diatom[[DiatomsNames]]$RoC
+    rateOfChangeData = data$Diatom[[DiatomNames[z]]]$SRS_data
+    DiatomsNames = AllDiatomsNames[z]
     RID = which(data$CoreList[,1]==DiatomsNames)
 
-    if(!is.null(Values)){
-      if(dim(Values)[1]>0){
+    #Loess values
 
-        Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+    ROCvalues = data$Diatom[[DiatomsNames]]$RoC
+    ROCvalues[,2] = ROCvalues[,2]# / 100
 
-        if(!is.null(Values)){
+    if(!is.null(rateOfChangeData)){
 
-          if(max(Values[,2])>Xmax){
-            Xmax=max(Values[,2])
-          }
-          if(min(Values[,2])<Xmin){
-            Xmin=min(Values[,2])
-          }
-          if(max(Values[,1])>Ymax){
-            Ymax=max(Values[,1])
-          }
-          if(min(Values[,1])<Ymin){
-            Ymin=min(Values[,1])
-          }
-        }
-      }
-    }
-  }
+        #Delete Doubles
+        rateOfChangeData = deleteDoubles(rateOfChangeData)
 
-  for (i in 1:length(data$Diatom)){
+        depthVectorOfData = rateOfChangeData[,1]
 
-    DiatomsNames = AllDiatomsNames[i]
-    Values = data$Diatom[[DiatomsNames]]$RoC
-    RID = which(data$CoreList[,1]==DiatomsNames)
+        dissimilarityMatrix = rateOfChangeData[4:dim(rateOfChangeData)[2]]
 
-    if(!is.null(Values)){
-      if(dim(Values)[1]>0){
+        rownames(dissimilarityMatrix) = depthVectorOfData
 
-        Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
-
-        if(!is.null(Values)){
-
-          pdf(paste(RID,"_",DiatomsNames,".pdf",sep=""),width=15,height=10)
-
-          plot(NA,
-               ylim=c(Xmin,Xmax),
-               xlim=c(Ymax,Ymin),
-               ylab="Value",
-               xlab="Age",
-               main=paste("RoC | ",RID," | ",DiatomsNames,sep="")
-          )
+        #check this minRows of the interpolated data
 
 
-          lines(Values[,1],Values[,2],col="black", lwd=1,type = "p", pch = 1)
-          lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1,type = "l", pch = 1)
+        #Sqrt transform
+        # Got cut. Because of the interpolation values can be between 0 and 1.
+        # This causes some values to grow instead of shrinking.
 
-          distance = 120
+        #Distances
 
-          if(i>=10){distance = 200}
+        DistanceMatrix = matrix(NA, ncol = 2, nrow = (dim(dissimilarityMatrix)[1]-1))
 
-          text(Values[dim(Values)[1],1]+distance,
-               Values[dim(Values)[1],2],
-               label=RID,
-               col="white",
-               cex=1.2)
+        for (p in 1:(dim(dissimilarityMatrix)[1]-1)){
 
-          text(Values[dim(Values)[1],1]+distance,
-               Values[dim(Values)[1],2],
-               label=RID,
-               col=Allcolor[RID])
+          TimeDifference = depthVectorOfData[p+1] - depthVectorOfData[p]
 
-          #Show CorrectionPoints
+          distdata = vegdist(dissimilarityMatrix[p:(p+1),],method="bray",na.rm = T) / TimeDifference
 
-          PinoeerPoint = CorrectionPoints[which(CorrectionPoints[,1] == DiatomsNames),2]
-
-          if(!length(PinoeerPoint)==0){
-            if(PinoeerPoint>0){
-
-              abline(v = Values[(length(Values[,1])-(PinoeerPoint-1)),1],lty = 3)
-
-              points(Values[length(Values[,1]):(length(Values[,1])-(PinoeerPoint-1)),1],
-                     Values[length(Values[,1]):(length(Values[,1])-(PinoeerPoint-1)),2],
-                     col="red", lwd=1,type = "p", pch = 19)
-
-            }
-          }
-
-          dev.off()
+          DistanceMatrix[p,2] = distdata
+          DistanceMatrix[p,1] = (as.numeric(rownames(dissimilarityMatrix)[p]) + as.numeric(rownames(dissimilarityMatrix)[p+1])) /2
 
         }
-      }
+
+
+        #Plot
+
+        pdf(paste(RID,"_",DiatomsNames,".pdf",sep=""),width=15,height=10)
+
+        plot(NA,
+             ylim=c(min(min(DistanceMatrix[,2]),min(ROCvalues[,2])),max(max(DistanceMatrix[,2]),max(ROCvalues[,2]))),
+             xlim=c(max(max(DistanceMatrix[,1]),max(max(ROCvalues[,1]))),min(min(DistanceMatrix[,1]),min(min(ROCvalues[,1])))),
+             ylab="Value",
+             xlab="Age",
+             main=paste("RoC | ",RID," | ",DiatomsNames,sep="")
+        )
+
+        lines(DistanceMatrix[,1],DistanceMatrix[,2],col="black", lwd=1,type = "p", pch = 1)
+        lines(DistanceMatrix[,1],DistanceMatrix[,2],col=Allcolor[RID], lwd=1,type = "l", pch = 1)
+
+        distance = 120
+
+        if(RID>=10){distance = 200}
+
+        text(DistanceMatrix[dim(DistanceMatrix)[1],1]+distance,
+             DistanceMatrix[dim(DistanceMatrix)[1],2],
+             label=RID,
+             col="white",
+             cex=1.2)
+
+        text(DistanceMatrix[dim(DistanceMatrix)[1],1]+distance,
+             DistanceMatrix[dim(DistanceMatrix)[1],2],
+             label=RID,
+             col=Allcolor[RID])
+
+        #Show CorrectionPoints
+
+        PinoeerPoint = CorrectionPoints[which(CorrectionPoints[,1] == DiatomsNames),2]
+
+        abline(v = MaxAge,lty = 3)
+
+        if(!length(PinoeerPoint)==0){
+          if(PinoeerPoint>0){
+
+            points(DistanceMatrix[length(DistanceMatrix[,1]):(length(DistanceMatrix[,1])-(PinoeerPoint-1)),1],
+                   DistanceMatrix[length(DistanceMatrix[,1]):(length(DistanceMatrix[,1])-(PinoeerPoint-1)),2],
+                   col="red", lwd=1,type = "p", pch = 19)
+
+          }
+        }
+
+        #Plot Real Rate of change
+
+        lines(ROCvalues[,1],ROCvalues[,2],col="black", lwd=1,type = "l", pch = 1, lty=2)
+        lines(ROCvalues[,1],ROCvalues[,2],col="black", lwd=1,type = "p", pch = 8)
+
+
+        dev.off()
+
+
     }
   }
 
   setwd(orginalWorkingDirectoryPath)
-
 
 }
 

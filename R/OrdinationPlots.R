@@ -1372,25 +1372,6 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   ################################################################################
   ###################################### RoC #####################################
   ################################################################################
@@ -2055,7 +2036,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   ################################################################################
 
 
-  ImportVersions = c("RoC","Cut_RoC")
+  #  ImportVersions = c("RoC","Cut_RoC")
+  ImportVersions = c("RoC")
 
   for (IV in ImportVersions){
 
@@ -2218,8 +2200,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   ############################## Correction Output #############################
   ##############################################################################
 
-  CorrectionPlots(data = data,minimumRowsAfterCutOutMaxAge = minimumRowsAfterCutOutMaxAge,
-                  MaxAge = MaxAge, AllDiatomsNames = AllDiatomsNames, Allcolor = Allcolor)
+  CorrectionPlots(data = data, AllDiatomsNames = AllDiatomsNames, Allcolor = Allcolor, MaxAge = MaxAge)
 
   ##############################################################################
   ############################ Inverse Simpson Solo ############################
@@ -2996,6 +2977,85 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   par(mfrow = c(1,1))
 
   dev.off()
+
+  #Distribution of measurements
+
+  #Diatom
+
+  pdf(paste("Diatom_DistributionOfMeasurements",".pdf",sep=""),width=15,height=15)
+
+  par(mar = c(5, 9, 5, 5))
+  par(mfrow = c(1,1))
+
+  plot(NA,
+       ylim=c(0,length(data$Diatom)),
+       xlim=c(20000,0),
+       ylab="",
+       xlab="Age",
+       main="Diatom | Distribution of measurements",
+       yaxt = "n"
+  )
+
+  axis(2, at = seq(0,length(data$Diatom)-1),
+       labels = AllDiatomsNames, las=2)
+
+  par(mar = c(5, 5, 5, 5))
+  par(mfrow = c(1,1))
+
+
+  for (i in 1:length(data$Diatom)){
+
+    DiatomsNames = AllDiatomsNames[i]
+    RawData = data$Diatom[[DiatomsNames]]$rawData
+
+    Occurence = RawData[,1]
+    Occurence = Occurence[Occurence <= 20000]
+
+    points(Occurence,seq((i-1), (i-1), length.out=length(Occurence)),col="black", lwd=1,pch = 20)
+
+  }
+
+  dev.off()
+
+  #Carbon
+
+  pdf(paste("Carbon_DistributionOfMeasurements",".pdf",sep=""),width=15,height=15)
+
+  par(mar = c(5, 9, 5, 5))
+  par(mfrow = c(1,1))
+
+  plot(NA,
+       ylim=c(0,length(data$Carbon)),
+       xlim=c(20000,0),
+       ylab="",
+       xlab="Age",
+       main="Carbon | Distribution of measurement",
+       yaxt = "n"
+  )
+
+  axis(2, at = seq(0,length(data$Carbon)-1),
+       labels = AllCarbonsNames, las=2)
+
+  par(mar = c(5, 5, 5, 5))
+  par(mfrow = c(1,1))
+
+
+  for (i in 1:length(data$Carbon)){
+
+    DiatomsNames = AllCarbonsNames[i]
+    RawData = data$Carbon[[DiatomsNames]]$rawData
+
+    RawData = RawData[!is.na(RawData$TOC),]
+
+    Occurence = RawData[,1]
+    Occurence = Occurence[Occurence <= 20000]
+
+    points(Occurence,seq((i-1), (i-1), length.out=length(Occurence)),col="black", lwd=1,pch = 20)
+
+  }
+
+  dev.off()
+
 
 
 

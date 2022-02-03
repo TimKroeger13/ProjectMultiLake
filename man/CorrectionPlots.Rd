@@ -4,24 +4,16 @@
 \alias{CorrectionPlots}
 \title{CorrectionPlots}
 \usage{
-CorrectionPlots(
-  data,
-  minimumRowsAfterCutOutMaxAge,
-  MaxAge,
-  AllDiatomsNames,
-  Allcolor
-)
+CorrectionPlots(data, AllDiatomsNames, Allcolor, MaxAge)
 }
 \arguments{
 \item{data}{List of data generates by the Ordination function.}
 
-\item{minimumRowsAfterCutOutMaxAge}{minimum rows count from the Ordination function.}
-
-\item{MaxAge}{MayAge from the Ordination function.}
-
 \item{AllDiatomsNames}{All Diatom names from the Ordination function.}
 
 \item{Allcolor}{The color from the Ordination function.}
+
+\item{MaxAge}{MayAge from the Ordination function.}
 }
 \value{
 nothing.

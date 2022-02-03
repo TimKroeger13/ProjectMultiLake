@@ -45,10 +45,10 @@ rateofChange = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRow
 
     if(!is.null(rateOfChangeData)){
 
-      depthVectorOfData = rateOfChangeData[,1]
-
       #Delete Doubles
       rateOfChangeData = deleteDoubles(rateOfChangeData)
+
+      depthVectorOfData = rateOfChangeData[,1]
 
 
       lowerBoundry = ceiling(min(depthVectorOfData)/intervallBy)*intervallBy
@@ -84,30 +84,20 @@ rateofChange = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRow
 
       if(dim(dissimilarityMatrix)[1]>minimumRowsAfterInterpolating){
 
-        dissimilarityMatrixLoess = dissimilarityMatrix
-        dissimilarityMatrixLoess[]=NA
-
-        for (i in 1:dim(dissimilarityMatrix)[2]){
-
-          dissimilarityMatrixLoess[,i] = predict(loess(dissimilarityMatrix[,i] ~ dissimilarityMatrixRowNames, span = allLoessSpans))
-
-        }
-
-        dissimilarityMatrixLoess[dissimilarityMatrixLoess<0]=0
-
         #Sqrt transform
-        dissimilarityMatrixLoess = sqrt(dissimilarityMatrixLoess)
+        # Got cut. Because of the interpolation values can be between 0 and 1.
+        # This causes some values to grow instead of shrinking.
 
         #Distances
 
-        DistanceMatrix = matrix(NA, ncol = 2, nrow = (dim(dissimilarityMatrixLoess)[1]-1))
+        DistanceMatrix = matrix(NA, ncol = 2, nrow = (dim(dissimilarityMatrix)[1]-1))
 
-        for (p in 1:(dim(dissimilarityMatrixLoess)[1]-1)){
+        for (p in 1:(dim(dissimilarityMatrix)[1]-1)){
 
-          distdata = vegdist(dissimilarityMatrixLoess[p:(p+1),],method=method,na.rm = T)
+          distdata = vegdist(dissimilarityMatrix[p:(p+1),],method=method,na.rm = T) / intervallBy
 
           DistanceMatrix[p,2] = distdata
-          DistanceMatrix[p,1] = as.numeric(rownames(dissimilarityMatrixLoess)[p])
+          DistanceMatrix[p,1] = (as.numeric(rownames(dissimilarityMatrix)[p]) + as.numeric(rownames(dissimilarityMatrix)[p+1])) /2
 
         }
       }

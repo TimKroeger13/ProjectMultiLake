@@ -43,5 +43,5 @@ This function has only been developed for the Alfred Wegener Institute Helmholtz
 \cr Comma numbers are rounded up.
 }
 \author{
-Tim Kroeger
+Tim Kroeger.
 }

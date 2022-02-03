@@ -44,13 +44,13 @@ DataSignalAfterTable = function(DataAllInOneTabel, BasicAsyncTable, ValueCantBeS
 
     }else{
 
-      if(sum(!is.na(VectorAllInOneTabel[i,]))==1){
+      if(sum(!is.na(VectorAllInOneTabel[i,]))<=2){
 
-        DirectionVectorTable[i,2] = as.numeric(na.omit(VectorAllInOneTabel[i,]))
-        DirectionVectorTable[i,3] = as.numeric(na.omit(VectorAllInOneTabel[i,]))
-        DirectionVectorTable[i,4] = as.numeric(na.omit(VectorAllInOneTabel[i,]))
+        DirectionVectorTable[i,2] = mean(as.numeric(na.omit(VectorAllInOneTabel[i,])))
+        DirectionVectorTable[i,3] = mean(as.numeric(na.omit(VectorAllInOneTabel[i,])))
+        DirectionVectorTable[i,4] = mean(as.numeric(na.omit(VectorAllInOneTabel[i,])))
         DirectionVectorTable[i,5] = 999
-        DirectionVectorTable[i,6] = 1
+        DirectionVectorTable[i,6] = i
 
       }else{
 

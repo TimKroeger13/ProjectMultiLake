@@ -5,7 +5,7 @@
 #'When no Sub directory is give, this function will create the folder.
 #'\cr When age data is given, all depth will be given a corresponding age.
 #'@import compositions vegan readxl
-#'@importFrom utils read.csv read.table
+#'@importFrom utils read.csv read.table read.csv2
 #'@export
 #'@return Retruns a List of all excel sheets.
 #'@author Tim Kroeger
@@ -275,6 +275,10 @@ MultiExcelLoader = function(){
 
         Diatom=DeleteNullRows(Diatom)
 
+        #Sort to correct false ordert cores
+        Diatom = Diatom[order(Diatom[,1]),]
+
+
         Folder[["Diatom"]][[FilenameKey]][["rawData"]]=Diatom
 
         #Discription
@@ -317,6 +321,9 @@ MultiExcelLoader = function(){
 
         Carbon=cbind(Carbon,matrix(NA,ncol = 1, nrow = dim(Carbon)[1]))
         colnames(Carbon)=c("depth","Nitrogen","TC","TOC","LOI","d13c","WaterContent","Br")
+
+        #Sort to correct false ordert cores
+        Carbon = Carbon[order(Carbon[,1]),]
 
         Folder[["Carbon"]][[FilenameKey]][["rawData"]]=Carbon
 
@@ -368,9 +375,8 @@ MultiExcelLoader = function(){
           colnames(Element)=enc2native(TempColName)
           Element[,1]=AddAgges(Element[,1],Folder[["ages"]][[Folder[["Description"]][[FilenameKey]][1,2]]])
 
-          #Add Brom
-
-          Element$Br_Area
+          #Sort to correct false ordert cores
+          Element = Element[order(Element[,1]),]
 
           Folder[["Element"]][[FilenameKey]][["rawData"]] = Element
 
@@ -521,38 +527,27 @@ MultiExcelLoader = function(){
 
   if(identical(FileNamesFixAge, character(0))){
 
-    age=read.csv(file = paste(getwd(),"/",FileNamesAge,sep=""))
+    age=read.csv2(file = paste(getwd(),"/",FileNamesAge,sep=""))
 
-    if(dim(age)[2]==1){
+    RawFixedAges = strsplit(age[,1]," ")
+    FixedAges = NULL
 
-      colnames=unlist(strsplit(colnames(age),","))
-      AmountofCollums=as.numeric(lengths(regmatches(age[1,1],gregexpr(",", age[1,1]))))+1
-      age=data.frame(matrix(unlist(strsplit(unlist(age), ',')), ncol = AmountofCollums, byrow = TRUE))
-      colnames(age)=colnames
+    for (p in 1:dim(age)[1]){
 
-    }else{
+      FixedAges = c(FixedAges,RawFixedAges[[p]][1])
 
-      RawFixedAges = strsplit(age[,1]," ")
-      FixedAges = NULL
+      if(p %% 1000 == 0){
 
-      for (p in 1:dim(age)[1]){
+        cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+            p,"/",dim(age)[1]," Fixing age Names ",sep="")
 
-        FixedAges = c(FixedAges,RawFixedAges[[p]][1])
-
-        if(p %% 1000 == 0){
-
-          cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-              p,"/",dim(age)[1]," Fixing age Names ",sep="")
-
-        }
       }
-
-      age[,1]=FixedAges
-
-      write.table(age,file = paste(getwd(),"/","FixedAge",".csv",sep=""),
-                  append = FALSE,na = "", sep = "; ", row.names = F, col.names = T,quote = F)
-
     }
+
+    age[,1]=FixedAges
+
+    write.table(age,file = paste(getwd(),"/","FixedAge",".csv",sep=""),
+                append = FALSE,na = "", sep = "; ", row.names = F, col.names = T,quote = F)
 
   }else{ #FixAges
 
