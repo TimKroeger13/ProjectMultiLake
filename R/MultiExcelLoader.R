@@ -668,7 +668,7 @@ MultiExcelLoader = function(){
 
   #CorrectionPoints
 
-  CorrectionPoints=read.table(CorrectionPoints,sep=";",header = T)
+  CorrectionPoints=read.table(CorrectionPoints,sep=",",header = T)
   Folder[["CorrectionPoints"]]=CorrectionPoints
 
   #CoreList

@@ -2200,7 +2200,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   ############################## Correction Output #############################
   ##############################################################################
 
-  CorrectionPlots(data = data, AllDiatomsNames = AllDiatomsNames, Allcolor = Allcolor, MaxAge = MaxAge)
+  CorrectionPlots(data = data, AllDiatomsNames = AllDiatomsNames, Allcolor = Allcolor, MaxAge = MaxAge, NonNegative = TRUE, intervallBy = 100, MinAgeIntervall = 1)
 
   ##############################################################################
   ############################ Inverse Simpson Solo ############################

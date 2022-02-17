@@ -252,8 +252,6 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   data = filterDataForMinimumRows(data)
 
-  #data=StandadizeData(data, standardize, percentFilterWeight) #<---------------- Outdated Diatom calculation
-
   data = SrsFilter(data)
 
   data = CutOutPionierPhase(data = data)
@@ -264,7 +262,7 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
     #MDS
 
-    MDSData=data[["Diatom"]][[i]][["SRS_data"]] #StandadizedData
+    MDSData=data[["Diatom"]][[i]][["SRS_data"]]
 
     if(!is.null(MDSData)){
 

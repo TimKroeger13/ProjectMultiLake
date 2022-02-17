@@ -5,6 +5,9 @@
 #'@param AllDiatomsNames All Diatom names from the Ordination function.
 #'@param Allcolor The color from the Ordination function.
 #'@param MaxAge MayAge from the Ordination function.
+#'@param NonNegative Creates Positive Values after Loess calculation.
+#'@param intervallBy Intervalls by to interpolate to.
+#'@param MinAgeIntervall Minimal Intervall to interpolate to "Data Resolution".
 #'@importFrom grDevices dev.off pdf
 #'@importFrom graphics abline
 #'@export
@@ -12,7 +15,7 @@
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 
-CorrectionPlots = function(data, AllDiatomsNames, Allcolor, MaxAge){
+CorrectionPlots = function(data, AllDiatomsNames, Allcolor, MaxAge, NonNegative = TRUE, intervallBy = 100, MinAgeIntervall = 1){
 
   #Set folder
 
@@ -49,116 +52,256 @@ CorrectionPlots = function(data, AllDiatomsNames, Allcolor, MaxAge){
 
   }
 
-  DiatomNames = ls(data$Diatom)
+  GetOneAgeOverMaxAge = function(MaxAgeData, MaxAge){
+
+    CutbyAge = length(MaxAgeData[,1][sort(MaxAgeData[,1])<=MaxAge]) + 1
+
+    if(dim(MaxAgeData)[1] > CutbyAge){
+
+      MaxAgeData = MaxAgeData[1:CutbyAge,]
+
+    }
+
+    return(MaxAgeData)
+
+  }
+
   CorrectionPoints = data$CorrectionPoints
   CorrectionPoints[is.na(CorrectionPoints[,2]),2] = 0
 
-  for (z in 1:length(DiatomNames)){
+  for (z in 1:length(AllDiatomsNames)){
 
-    rateOfChangeData = data$Diatom[[DiatomNames[z]]]$SRS_data
+    rateOfChangeData = data$Diatom[[AllDiatomsNames[z]]]$SRS_data
     DiatomsNames = AllDiatomsNames[z]
     RID = which(data$CoreList[,1]==DiatomsNames)
 
-    #Loess values
+    if(!is.null(rateOfChangeData)){
 
-    ROCvalues = data$Diatom[[DiatomsNames]]$RoC
-    ROCvalues[,2] = ROCvalues[,2]# / 100
+      #Delete Doubles
+      rateOfChangeData = deleteDoubles(rateOfChangeData)
+
+      rateOfChangeData = GetOneAgeOverMaxAge(rateOfChangeData, MaxAge)
+
+      depthVectorOfData = rateOfChangeData[,1]
+
+      ROC_calculation = rateOfChangeData[4:dim(rateOfChangeData)[2]]
+
+      #Sqrt transformation
+
+      ROC_calculation = sqrt(ROC_calculation)
+
+      #MinAgeIntervall
+
+      lowerBoundry = min(depthVectorOfData)
+
+      upperBoundry = max(depthVectorOfData)
+
+      SuperInterpolatedDataRowNames =  seq(from = lowerBoundry, to = upperBoundry, by = MinAgeIntervall)
+
+      SuperInterpolatedMatrix = matrix(NA, nrow = length(SuperInterpolatedDataRowNames), ncol = dim(ROC_calculation)[2])
+
+      #Minimal Interpolation
+
+      for (l in 1:dim(ROC_calculation)[2]){
+
+        CaclualtionValue = ROC_calculation[,l]
+
+        #Interpolation
+
+        SuperInterpolatedMatrix[,l] =  approx (x = depthVectorOfData,
+                                               y = CaclualtionValue,
+                                               xout = SuperInterpolatedDataRowNames,
+                                               method = "linear",
+                                               n = 50)[[2]]
+      }
+
+      rownames(SuperInterpolatedMatrix) = SuperInterpolatedDataRowNames
+
+      #Calculate Dissimilarity Matrix
+
+      DistanceMatrix = matrix(NA, ncol = 2, nrow = (dim(SuperInterpolatedMatrix)[1]-1))
+
+      for (p in 1:(dim(SuperInterpolatedMatrix)[1]-1)){
+
+        distdata = vegdist(SuperInterpolatedMatrix[p:(p+1),],method="euclidean",na.rm = T)
+
+        DistanceMatrix[p,2] = distdata
+        DistanceMatrix[p,1] = (as.numeric(SuperInterpolatedDataRowNames[p]) + as.numeric(SuperInterpolatedDataRowNames[p+1])) /2
+
+      }
+
+      #Cluster them Back to wanted Time intervals
+
+      lowerBoundry = ceiling(min(depthVectorOfData)/intervallBy)*intervallBy
+
+      upperBoundry = floor(max(depthVectorOfData)/intervallBy)*intervallBy
+
+      ClusterRowNames =  seq(from = lowerBoundry, to = upperBoundry, by = intervallBy)
+
+      ClusteryMatrix = matrix(NA, ncol = 2, nrow = length(ClusterRowNames)-1)
+
+      for (p in 1:length(ClusterRowNames)-1){
+
+        ClusterLocation = which((DistanceMatrix[,1] > ClusterRowNames[p]) + (DistanceMatrix[,1] < ClusterRowNames[p+1]) == 2)
+
+        ClusterData = mean(DistanceMatrix[ClusterLocation,2])
+
+        ClusteryMatrix[p,2] = ClusterData
+        ClusteryMatrix[p,1] = (ClusterRowNames[p] + ClusterRowNames[p+1]) / 2
+
+      }
+
+      #Get Correct Span
+
+      GuessSpan = GuessLoess(intervall = ClusteryMatrix[,1],values = ClusteryMatrix[,2], overspan = 100)
+
+      #Get Loess
+
+      RocLoess = predict(loess(ClusteryMatrix[,2] ~  ClusteryMatrix[,1], span = GuessSpan))
+
+      #Ingnore negative values
+
+      if (NonNegative){
+
+        RocLoess[RocLoess<0] = 0
+
+      }
+
+      RocLoessMatrix = matrix(NA, ncol = 2, nrow = length(RocLoess))
+      RocLoessMatrix[,1] = ClusteryMatrix[,1]
+      RocLoessMatrix[,2] = RocLoess
+
+    }
+
+    #Calculate ROC for Cut Data
+
+    rateOfChangeData = data$Diatom[[AllDiatomsNames[z]]]$Cut_SRS_data
+    DiatomsNames = AllDiatomsNames[z]
+    RID = which(data$CoreList[,1]==DiatomsNames)
+
 
     if(!is.null(rateOfChangeData)){
 
-        #Delete Doubles
-        rateOfChangeData = deleteDoubles(rateOfChangeData)
+      #Delete Doubles
+      rateOfChangeData = deleteDoubles(rateOfChangeData)
 
-        depthVectorOfData = rateOfChangeData[,1]
+      rateOfChangeData = GetOneAgeOverMaxAge(rateOfChangeData, MaxAge)
 
-        dissimilarityMatrix = rateOfChangeData[4:dim(rateOfChangeData)[2]]
+      cutdepthVectorOfData = rateOfChangeData[,1]
 
-        rownames(dissimilarityMatrix) = depthVectorOfData
+      ROC_calculation = rateOfChangeData[4:dim(rateOfChangeData)[2]]
 
-        #check this minRows of the interpolated data
+      #Sqrt transformation
+
+      ROC_calculation = sqrt(ROC_calculation)
+
+      #MinAgeIntervall
+
+      lowerBoundry = min(cutdepthVectorOfData)
+
+      upperBoundry = max(cutdepthVectorOfData)
+
+      SuperInterpolatedDataRowNames =  seq(from = lowerBoundry, to = upperBoundry, by = MinAgeIntervall)
+
+      SuperInterpolatedMatrix = matrix(NA, nrow = length(SuperInterpolatedDataRowNames), ncol = dim(ROC_calculation)[2])
+
+      #Minimal Interpolation
+
+      for (l in 1:dim(ROC_calculation)[2]){
+
+        CaclualtionValue = ROC_calculation[,l]
+
+        #Interpolation
+
+        SuperInterpolatedMatrix[,l] =  approx (x = cutdepthVectorOfData,
+                                               y = CaclualtionValue,
+                                               xout = SuperInterpolatedDataRowNames,
+                                               method = "linear",
+                                               n = 50)[[2]]
+      }
+
+      rownames(SuperInterpolatedMatrix) = SuperInterpolatedDataRowNames
+
+      #Calculate Dissimilarity Matrix
+
+      DistanceMatrix = matrix(NA, ncol = 2, nrow = (dim(SuperInterpolatedMatrix)[1]-1))
+
+      for (p in 1:(dim(SuperInterpolatedMatrix)[1]-1)){
+
+        distdata = vegdist(SuperInterpolatedMatrix[p:(p+1),],method="euclidean",na.rm = T)
+
+        DistanceMatrix[p,2] = distdata
+        DistanceMatrix[p,1] = (as.numeric(SuperInterpolatedDataRowNames[p]) + as.numeric(SuperInterpolatedDataRowNames[p+1])) /2
+
+      }
+
+      #Cluster them Back to wanted Time intervals
+
+      lowerBoundry = ceiling(min(cutdepthVectorOfData)/intervallBy)*intervallBy
+
+      upperBoundry = floor(max(cutdepthVectorOfData)/intervallBy)*intervallBy
+
+      ClusterRowNames =  seq(from = lowerBoundry, to = upperBoundry, by = intervallBy)
+
+      ClusteryMatrix = matrix(NA, ncol = 2, nrow = length(ClusterRowNames)-1)
+
+      for (p in 1:length(ClusterRowNames)-1){
+
+        ClusterLocation = which((DistanceMatrix[,1] > ClusterRowNames[p]) + (DistanceMatrix[,1] < ClusterRowNames[p+1]) == 2)
+
+        ClusterData = mean(DistanceMatrix[ClusterLocation,2])
+
+        ClusteryMatrix[p,2] = ClusterData
+        ClusteryMatrix[p,1] = (ClusterRowNames[p] + ClusterRowNames[p+1]) / 2
+
+      }
+
+      #Get Correct Span
+
+      GuessSpan = GuessLoess(intervall = ClusteryMatrix[,1],values = ClusteryMatrix[,2], overspan = 100)
+
+      #Get Loess
+
+      RocLoess = predict(loess(ClusteryMatrix[,2] ~  ClusteryMatrix[,1], span = GuessSpan))
+
+      #Ingnore negative values
+
+      if (NonNegative){
+
+        RocLoess[RocLoess<0] = 0
+
+      }
+
+      CutRocLoessMatrix = matrix(NA, ncol = 2, nrow = length(RocLoess))
+      CutRocLoessMatrix[,1] = ClusteryMatrix[,1]
+      CutRocLoessMatrix[,2] = RocLoess
+
+      #Create Plots
+
+      pdf(paste(RID,"_",DiatomsNames,".pdf",sep=""),width=15,height=10)
+
+      plot(NA,
+           ylim=c(min(min(RocLoessMatrix[,2]),min(CutRocLoessMatrix[,2])),
+                  max(max(RocLoessMatrix[,2]),max(CutRocLoessMatrix[,2]))),
+           xlim=c(max(depthVectorOfData),min(depthVectorOfData)),
+           ylab="Value",
+           xlab="Age",
+           main=paste(RID," | ",DiatomsNames," | Rate of change control",sep="")
+      )
 
 
-        #Sqrt transform
-        # Got cut. Because of the interpolation values can be between 0 and 1.
-        # This causes some values to grow instead of shrinking.
+      lines(CutRocLoessMatrix[,1],CutRocLoessMatrix[,2],col="red", lwd=3,type = "l", pch = 1)
 
-        #Distances
+      lines(RocLoessMatrix[,1],RocLoessMatrix[,2],col="black", lwd=2,type = "l", pch = 1, lty=2)
 
-        DistanceMatrix = matrix(NA, ncol = 2, nrow = (dim(dissimilarityMatrix)[1]-1))
+      abline(v = intersect(depthVectorOfData,cutdepthVectorOfData),lty = 3, col = "black")
 
-        for (p in 1:(dim(dissimilarityMatrix)[1]-1)){
+      abline(v = setdiff(depthVectorOfData,cutdepthVectorOfData),lty = 1, col = "red")
 
-          TimeDifference = depthVectorOfData[p+1] - depthVectorOfData[p]
+      cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          z,"/",length(ls(data[["Diatom"]]))," calculating Rate of change Control Plots",sep="")
 
-          distdata = vegdist(dissimilarityMatrix[p:(p+1),],method="bray",na.rm = T) / TimeDifference
-
-          DistanceMatrix[p,2] = distdata
-          DistanceMatrix[p,1] = (as.numeric(rownames(dissimilarityMatrix)[p]) + as.numeric(rownames(dissimilarityMatrix)[p+1])) /2
-
-        }
-
-
-        #Plot
-
-        pdf(paste(RID,"_",DiatomsNames,".pdf",sep=""),width=15,height=10)
-
-        plot(NA,
-             ylim=c(min(min(DistanceMatrix[,2]),min(ROCvalues[,2])),max(max(DistanceMatrix[,2]),max(ROCvalues[,2]))),
-             xlim=c(max(max(DistanceMatrix[,1]),max(max(ROCvalues[,1]))),min(min(DistanceMatrix[,1]),min(min(ROCvalues[,1])))),
-             ylab="Value",
-             xlab="Age",
-             main=paste("RoC | ",RID," | ",DiatomsNames,sep="")
-        )
-
-        lines(DistanceMatrix[,1],DistanceMatrix[,2],col="black", lwd=1,type = "p", pch = 1)
-        lines(DistanceMatrix[,1],DistanceMatrix[,2],col=Allcolor[RID], lwd=1,type = "l", pch = 1)
-
-        distance = 120
-
-        if(RID>=10){distance = 200}
-
-        text(DistanceMatrix[dim(DistanceMatrix)[1],1]+distance,
-             DistanceMatrix[dim(DistanceMatrix)[1],2],
-             label=RID,
-             col="white",
-             cex=1.2)
-
-        text(DistanceMatrix[dim(DistanceMatrix)[1],1]+distance,
-             DistanceMatrix[dim(DistanceMatrix)[1],2],
-             label=RID,
-             col=Allcolor[RID])
-
-        #Show CorrectionPoints
-
-        PinoeerPoint = CorrectionPoints[which(CorrectionPoints[,1] == DiatomsNames),2]
-
-        abline(v = MaxAge,lty = 3)
-
-        if(!length(PinoeerPoint)==0){
-          if(PinoeerPoint>0){
-
-            points(DistanceMatrix[length(DistanceMatrix[,1]):(length(DistanceMatrix[,1])-(PinoeerPoint-1)),1],
-                   DistanceMatrix[length(DistanceMatrix[,1]):(length(DistanceMatrix[,1])-(PinoeerPoint-1)),2],
-                   col="red", lwd=1,type = "p", pch = 19)
-
-          }
-        }
-
-        #Plot Real Rate of change
-
-        lines(ROCvalues[,1],ROCvalues[,2],col="black", lwd=1,type = "l", pch = 1, lty=2)
-        lines(ROCvalues[,1],ROCvalues[,2],col="black", lwd=1,type = "p", pch = 8)
-
-        #Show advanced loess
-
-        GuessSpan = GuessLoess(intervall = ROCvalues[,1],values = ROCvalues[,2],overspan = 100)
-
-        ROCLoess = predict(loess(ROCvalues[,2] ~ ROCvalues[,1], span = GuessSpan))
-
-        lines(ROCvalues[,1],ROCLoess,col="black", lwd=2,type = "l", pch = 1, lty=1)
-
-        dev.off()
-
+      dev.off()
 
     }
   }
@@ -166,11 +309,6 @@ CorrectionPlots = function(data, AllDiatomsNames, Allcolor, MaxAge){
   setwd(orginalWorkingDirectoryPath)
 
 }
-
-
-
-
-
 
 
 

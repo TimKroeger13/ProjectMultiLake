@@ -32,6 +32,20 @@ CutOutPionierPhase = function(data){
 
   }
 
+  GetOneAgeOverMaxAge = function(MaxAgeData, MaxAge){
+
+    CutbyAge = length(MaxAgeData[,1][sort(MaxAgeData[,1])<=MaxAge]) + 1
+
+    if(dim(MaxAgeData)[1] > CutbyAge){
+
+      MaxAgeData = MaxAgeData[1:CutbyAge,]
+
+    }
+
+    return(MaxAgeData)
+
+  }
+
   AllDiatomsNames = ls(data$Diatom)
   CorrectionPoints = data$CorrectionPoints
   CorrectionPoints[is.na(CorrectionPoints[,2]),2] = 0
@@ -42,6 +56,12 @@ CutOutPionierPhase = function(data){
     rateOfChangeData = data$Diatom[[AllDiatomsNames[z]]]$SRS_data
 
     if(!is.null(rateOfChangeData)){
+
+      PionierFreeSRS = deleteDoubles(PionierFreeSRS)
+      rateOfChangeData = deleteDoubles(rateOfChangeData)
+
+      PionierFreeSRS = GetOneAgeOverMaxAge(PionierFreeSRS, 20000)                 #Fixed Age
+      rateOfChangeData = GetOneAgeOverMaxAge(rateOfChangeData, 20000)
 
       DiatomNames = AllDiatomsNames[z]
 
