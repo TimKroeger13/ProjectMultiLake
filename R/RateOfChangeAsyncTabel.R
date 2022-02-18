@@ -86,10 +86,6 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Expo
     }
   }
 
-  AsyncTabel[which(AsyncTabel[,3]<0),3] = 0
-
-  data[[Exportname]] = AsyncTabel
-
   if(CreateVector){
 
     #VectorMatrix
@@ -99,6 +95,10 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Expo
     data[["Vector_RocMatrix"]] = VectorTable
 
   }
+
+  AsyncTabel[which(AsyncTabel[,3]<0),3] = 0
+
+  data[[Exportname]] = AsyncTabel
 
   return(data)
 

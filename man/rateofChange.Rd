@@ -7,9 +7,10 @@
 rateofChange(
   data,
   intervallBy = 100,
-  allLoessSpans = 0.8,
   minimumRowsAfterInterpolating = 0,
   method = "bray",
+  MinAgeIntervall = 1,
+  NonNegative = TRUE,
   Importname = "",
   Exportname = ""
 )
@@ -19,11 +20,13 @@ rateofChange(
 
 \item{intervallBy}{Intervalls by to interpolate to.}
 
-\item{allLoessSpans}{span value for all Loess calculations made by Multivar.}
-
 \item{minimumRowsAfterInterpolating}{alue for the minimum rows after filtering.}
 
 \item{method}{Method for calculation Dissimilarity Indices for Community Ecologists.}
+
+\item{MinAgeIntervall}{Minimal Intervall to interpolate to "Data Resolution".}
+
+\item{NonNegative}{Creates Positive Values after Loess calculation.}
 
 \item{Importname}{importname after data$Diatom$DiatomNames$}
 

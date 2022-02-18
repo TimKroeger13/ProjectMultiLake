@@ -4,30 +4,14 @@
 \alias{CorrectionPlots}
 \title{CorrectionPlots}
 \usage{
-CorrectionPlots(
-  data,
-  AllDiatomsNames,
-  Allcolor,
-  MaxAge,
-  NonNegative = TRUE,
-  intervallBy = 100,
-  MinAgeIntervall = 1
-)
+CorrectionPlots(data, AllDiatomsNames, MaxAge)
 }
 \arguments{
 \item{data}{List of data generates by the Ordination function.}
 
 \item{AllDiatomsNames}{All Diatom names from the Ordination function.}
 
-\item{Allcolor}{The color from the Ordination function.}
-
 \item{MaxAge}{MayAge from the Ordination function.}
-
-\item{NonNegative}{Creates Positive Values after Loess calculation.}
-
-\item{intervallBy}{Intervalls by to interpolate to.}
-
-\item{MinAgeIntervall}{Minimal Intervall to interpolate to "Data Resolution".}
 }
 \value{
 nothing.

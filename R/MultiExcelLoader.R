@@ -450,7 +450,7 @@ MultiExcelLoader = function(){
   FileNamesJJA_temp=FileNames[grep("_JJA_temp_",FileNames)]
   FileNamesDJF_temp=FileNames[grep("_DJF_temp_",FileNames)]
   FileNameshydrological_year_temp=FileNames[grep("_hydrological_year_temp_",FileNames)]
-  CorrectionPoints=FileNames[grep("CorrectionPoint",FileNames)]
+  CorrectionPointsName=FileNames[grep("CorrectionPoint",FileNames)]
 
   if(identical(FileNamesAge, character(0))){
 
@@ -508,7 +508,7 @@ MultiExcelLoader = function(){
 
   }
 
-  if(identical(CorrectionPoints, character(0))){
+  if(identical(CorrectionPointsName, character(0))){
 
     setwd(orginalWorkingDirectoryPath)
 
@@ -668,7 +668,14 @@ MultiExcelLoader = function(){
 
   #CorrectionPoints
 
-  CorrectionPoints=read.table(CorrectionPoints,sep=",",header = T)
+  CorrectionPoints=read.table(CorrectionPointsName,sep=";",header = T)
+
+  if(dim(CorrectionPoints)[2]==1){
+
+    CorrectionPoints=read.table(CorrectionPointsName,sep=",",header = T)
+
+  }
+
   Folder[["CorrectionPoints"]]=CorrectionPoints
 
   #CoreList
