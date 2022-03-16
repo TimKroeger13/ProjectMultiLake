@@ -529,6 +529,12 @@ MultiExcelLoader = function(){
 
     age=read.csv2(file = paste(getwd(),"/",FileNamesAge,sep=""))
 
+    if(dim(age)[2]==1){
+
+      age=read.csv(file = paste(getwd(),"/",FileNamesAge,sep=""))
+
+    }
+
     RawFixedAges = strsplit(age[,1]," ")
     FixedAges = NULL
 
@@ -552,6 +558,13 @@ MultiExcelLoader = function(){
   }else{ #FixAges
 
     age=read.csv(file = paste(getwd(),"/",FileNamesFixAge,sep=""),sep = ";")
+
+    if(dim(age)[2]==1){
+
+      age=read.csv(file = paste(getwd(),"/",FileNamesFixAge,sep=""),sep = ",")
+
+    }
+
 
   }
 

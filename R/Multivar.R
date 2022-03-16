@@ -379,14 +379,19 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
 
   data = rateofChange(data = data, intervallBy = 100, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method,
-                      MinAgeIntervall = 1, NonNegative = TRUE, Importname = "SRS_data", Exportname = "RoC")
+                      MinAgeIntervall = 1, NonNegative = F, Importname = "SRS_data", Exportname = "RoC")
   data = rateofChange(data = data, intervallBy = 100, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method,
-                      MinAgeIntervall = 1, NonNegative = TRUE, Importname = "Cut_SRS_data", Exportname = "Cut_RoC")
+                      MinAgeIntervall = 1, NonNegative = F, Importname = "Cut_SRS_data", Exportname = "Cut_RoC")
 
   data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
-                                Importname = "RoC", Exportname = "RocMatrix", CreateVector = F)
+                                Importname = "RoC", Exportname = "RocMatrix", CreateVector = F, TransformAllData = FALSE, ValueCantBeSamlerThanZero = TRUE)
   data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
-                                Importname = "Cut_RoC", Exportname = "Cut_RocMatrix", CreateVector = T)
+                                Importname = "Cut_RoC", Exportname = "Cut_RocMatrix", CreateVector = T, TransformAllData = FALSE,
+                                vectorName = "Vector_RocMatrix", ValueCantBeSamlerThanZero = TRUE)
+  data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
+                                Importname = "Cut_RoC", Exportname = "Cut_RocMatrix_Transfrom", CreateVector = T, TransformAllData = TRUE,
+                                vectorName = "Vector_RocMatrix_transform", ValueCantBeSamlerThanZero = TRUE)
+
 
   data = evenness(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
 

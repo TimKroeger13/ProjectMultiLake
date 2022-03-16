@@ -3,7 +3,7 @@
 #'Calculates the vector orientation of a data Table.
 #'@param DataAllInOneTabel Tabel of all data where Rows are the Time and columns are the variabels.
 #'@param BasicAsyncTable An AsyncTable based on the mean value.
-#'@param ValueCantBeSamlerThanZero If true, values smaler than 0 become 0.
+#'@param ValueCantBeSamlerThanZero If true, values smaller than 0 become 0.
 #'@export
 #'@return nothing.
 #'@author Tim Kroeger
@@ -35,7 +35,6 @@ DataSignalAfterTable = function(DataAllInOneTabel, BasicAsyncTable, ValueCantBeS
   colnames(DirectionVectorTable) = c("Depth","MeanValue","ConfDown","ConfUp","P_value","n")
   DirectionVectorTable[,1] = as.numeric(rownames(DataAllInOneTabel))
 
-
   for (i in 1:dim(DirectionVectorTable)[1]){
 
     if(i==1){
@@ -46,11 +45,11 @@ DataSignalAfterTable = function(DataAllInOneTabel, BasicAsyncTable, ValueCantBeS
 
       if(sum(!is.na(VectorAllInOneTabel[i,]))<=2){
 
-        DirectionVectorTable[i,2] = mean(as.numeric(na.omit(VectorAllInOneTabel[i,])))
-        DirectionVectorTable[i,3] = mean(as.numeric(na.omit(VectorAllInOneTabel[i,])))
-        DirectionVectorTable[i,4] = mean(as.numeric(na.omit(VectorAllInOneTabel[i,])))
+        DirectionVectorTable[i,2] = mean(as.numeric(na.omit(VectorAllInOneTabel[i,]))) + DirectionVectorTable[(i-1),2]
+        DirectionVectorTable[i,3] = mean(as.numeric(na.omit(VectorAllInOneTabel[i,]))) + DirectionVectorTable[(i-1),2]
+        DirectionVectorTable[i,4] = mean(as.numeric(na.omit(VectorAllInOneTabel[i,]))) + DirectionVectorTable[(i-1),2]
         DirectionVectorTable[i,5] = 999
-        DirectionVectorTable[i,6] = i
+        DirectionVectorTable[i,6] = sum(!is.na(VectorAllInOneTabel[i,]))
 
       }else{
 
@@ -117,6 +116,7 @@ DataSignalAfterTable = function(DataAllInOneTabel, BasicAsyncTable, ValueCantBeS
 
     }
 
+    AdjustedDirectionVectorTable[AdjustedDirectionVectorTable[,2]<0,2] = 0
     AdjustedDirectionVectorTable[AdjustedDirectionVectorTable[,3]<0,3] = 0
     AdjustedDirectionVectorTable[AdjustedDirectionVectorTable[,4]<0,4] = 0
 

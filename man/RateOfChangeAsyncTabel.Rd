@@ -9,7 +9,8 @@ RateOfChangeAsyncTabel(
   intervallBy = 100,
   Importname = "",
   Exportname = "",
-  CreateVector = FALSE
+  CreateVector = FALSE,
+  TransformAllData = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ RateOfChangeAsyncTabel(
 \item{Exportname}{data$Diatom$DiatomNames$}
 
 \item{CreateVector}{Shuld the vector plot build on this dataset.}
+
+\item{TransformAllData}{Z Transformas all Data.}
 }
 \value{
 Returns the same List but with new added parameters.

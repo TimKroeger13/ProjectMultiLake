@@ -6,6 +6,9 @@
 #'@param Importname importname after data$Diatom$DiatomNames$
 #'@param Exportname data$Diatom$DiatomNames$
 #'@param CreateVector Shuld the vector plot build on this dataset.
+#'@param TransformAllData Z Transformas all Data.
+#'@param vectorName Outpurname for the vector data.
+#'@param ValueCantBeSamlerThanZero If true, values smaller than 0 become 0.
 #'@importFrom stats t.test
 #'@export
 #'@return Returns the same List but with new added parameters.
@@ -13,12 +16,12 @@
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Exportname = "", CreateVector = FALSE){
+RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Exportname = "", CreateVector = FALSE, TransformAllData = FALSE, vectorName = "Vector_RocMatrix",
+                                  ValueCantBeSamlerThanZero = FALSE){
 
   #Printer
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
       "Calculating rate of change Table ...",sep="")
-
 
   DiatomNames = ls(data$Diatom)
 
@@ -57,6 +60,14 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Expo
     }
   }
 
+  #TransformAllData
+
+  if(TransformAllData){
+
+    RocAllInOneTabel = scale(RocAllInOneTabel,center = T, scale = T)
+
+  }
+
   #Create RateOfChangeAsyncTabel
 
   AsyncTabel = matrix(NA, ncol = 6, nrow = ((max(MaxRoC)-min(MinRoC))/intervallBy)+1)
@@ -65,13 +76,13 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Expo
 
   for (i in 1:(((max(MaxRoC)-min(MinRoC))/intervallBy)+1)){
 
-    if(sum(!is.na(RocAllInOneTabel[i,]))==1){
+    if(sum(!is.na(RocAllInOneTabel[i,]))<4){
 
-      AsyncTabel[i,2] = as.numeric(na.omit(RocAllInOneTabel[i,]))
-      AsyncTabel[i,3] = as.numeric(na.omit(RocAllInOneTabel[i,]))
-      AsyncTabel[i,4] = as.numeric(na.omit(RocAllInOneTabel[i,]))
+      AsyncTabel[i,2] = mean(as.numeric(na.omit(RocAllInOneTabel[i,])))
+      AsyncTabel[i,3] = NA
+      AsyncTabel[i,4] = NA
       AsyncTabel[i,5] = 999
-      AsyncTabel[i,6] = 1
+      AsyncTabel[i,6] = sum(!is.na(RocAllInOneTabel[i,]))
 
     }else{
 
@@ -90,13 +101,21 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Expo
 
     #VectorMatrix
 
-    VectorTable = DataSignalAfterTable(DataAllInOneTabel = RocAllInOneTabel,BasicAsyncTable = AsyncTabel,ValueCantBeSamlerThanZero = TRUE)
+    VectorTable = DataSignalAfterTable(DataAllInOneTabel = RocAllInOneTabel,BasicAsyncTable = AsyncTabel,ValueCantBeSamlerThanZero = ValueCantBeSamlerThanZero)
 
-    data[["Vector_RocMatrix"]] = VectorTable
+    data[[vectorName]] = VectorTable
 
   }
 
-  AsyncTabel[which(AsyncTabel[,3]<0),3] = 0
+  if (ValueCantBeSamlerThanZero){
+
+    AsyncTabel[which(AsyncTabel[,2]<0),2] = 0
+    AsyncTabel[which(AsyncTabel[,3]<0),3] = 0
+    AsyncTabel[which(AsyncTabel[,4]<0),4] = 0
+
+  }
+
+  #
 
   data[[Exportname]] = AsyncTabel
 

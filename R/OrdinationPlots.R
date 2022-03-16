@@ -1360,18 +1360,6 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
   ################################################################################
   ###################################### RoC #####################################
   ################################################################################
@@ -1391,8 +1379,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   Xmin = min(RocMatrix[,1])
   Xmax = max(RocMatrix[,1])
-  Ymin = min(RocMatrix[,3])
-  Ymax = max(RocMatrix[,4])
+  Ymin = min(RocMatrix[,3], na.rm = T)
+  Ymax = max(RocMatrix[,4], na.rm = T)
 
   #Create Color after p Value from
   P_value = 0.05
@@ -1426,7 +1414,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   ################################################################################
   #################################     RoC     ##################################
-  ############################### SpeciesRichness ################################
+  ###############################     vector      ################################
   ################################################################################
 
   pdf("Vector_RoC.pdf",width=15,height=10)
@@ -1460,11 +1448,60 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
        xlim=c(Xmax,Xmin),
        ylab="Value",
        xlab="Age",
-       main=paste("RoC Mean",sep="")
+       main=paste("Vector RoC Mean",sep="")
   )
 
-  #lines(RocMatrix[,1],RocMatrix[,2], col= "blue")
-  #points(RocMatrix[,1],RocMatrix[,2], pch = 19, cex = 0.1, col= "black")
+  for (i in 1:(dim(RocMatrix)[1]-1)){
+
+    lines(RocMatrix[i:(i+1),1],RocMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(RocMatrix[,1],RocMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(RocMatrix[,1],RocMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+
+  ################################################################################
+  #################################     RoC     ##################################
+  ###############################     vector      ################################
+  #################################  transform  ##################################
+  ################################################################################
+
+  pdf("Vector_RoC_transform.pdf",width=15,height=10)
+
+  RocMatrix = data$Vector_RocMatrix_transform
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  RocMatrix=RocMatrix[RocMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  RocMatrix = DeleteMeanNAS(RocMatrix)
+
+  Xmin = min(RocMatrix[,1])
+  Xmax = max(RocMatrix[,1])
+  Ymin = min(na.omit(RocMatrix[,3]))
+  Ymax = max(na.omit(RocMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(RocMatrix)[1])
+  P_color[] = "red"
+  P_color[RocMatrix[,5]<P_value] = "green"
+  P_color[RocMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector | Transform - RoC Mean",sep="")
+  )
 
   for (i in 1:(dim(RocMatrix)[1]-1)){
 
