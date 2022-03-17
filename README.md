@@ -11,4 +11,4 @@ It is both centerd and rescaled.
 5. Vector in the name of a dataset indicated that the data is vector based. That means that only the slope between the the interpolated points where used as values and not the values itself. Its therefore relationbased Data.
 6. Means are ALWAYS based on the Cutted data!
 7. When Vector data is transformed the data get first transforment and then the vectors get calculated.
-8. When somethink is called Z_old... its really outdated and not good for using it. Should not be incorrect but not accurate.
+8. When something is called Z_old... its really outdated and not good for using it. Should not be incorrect but not accurate.
