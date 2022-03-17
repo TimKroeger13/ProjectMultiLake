@@ -7,7 +7,8 @@
 DataSignalAfterTable(
   DataAllInOneTabel,
   BasicAsyncTable,
-  ValueCantBeSamlerThanZero = FALSE
+  ValueCantBeSamlerThanZero = FALSE,
+  UntransformedTable
 )
 }
 \arguments{
@@ -15,7 +16,9 @@ DataSignalAfterTable(
 
 \item{BasicAsyncTable}{An AsyncTable based on the mean value.}
 
-\item{ValueCantBeSamlerThanZero}{If true, values smaler than 0 become 0.}
+\item{ValueCantBeSamlerThanZero}{If true, values smaller than 0 become 0.}
+
+\item{UntransformedTable}{Tabel of all data where Rows are the Time and columns are the variabels, which is not transformed.}
 }
 \value{
 nothing.

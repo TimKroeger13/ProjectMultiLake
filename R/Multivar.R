@@ -256,74 +256,95 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
   data = CutOutPionierPhase(data = data)
 
-  #Main Loop
-  for (i in 1:length(ls(data[["Diatom"]]))){
-    #for (i in 1:10){
 
-    #MDS
+  ImportVersions = c("SRS_data","Cut_SRS_data")
+  SRS_Names = c("Dim1","Dim2","Stress")
+  Cut_SRS_Names = c("Cut_Dim1","Cut_Dim2","Cut_Stress")
+  namesInUse = NULL
 
-    MDSData=data[["Diatom"]][[i]][["SRS_data"]]
+  for (IV in ImportVersions){
 
-    if(!is.null(MDSData)){
+    if(IV == "SRS_data"){namesInUse = SRS_Names}
+    if(IV == "Cut_SRS_data"){namesInUse = Cut_SRS_Names}
 
-    MDSData=DeleteRowWithoutTimestamp(MDSData)
+    #MDS Loop
+    for (i in 1:length(ls(data[["Diatom"]]))){
 
-    MDSAges=MDSData[,1]
-    MDSData=MDSData[,4:dim(MDSData)[2]]
-    MDSData=DeleteNullCollums(MDSData)
-    RowDeletedData=DeleteNulRows(MDSData,MDSAges)
+      MDSData=data[["Diatom"]][[i]][[IV]]
 
-    MDSAges=RowDeletedData$age
-    MDSData=RowDeletedData$data
+      if(!is.null(MDSData)){
+        if(dim(MDSData)[1]>2){
 
+        MDSData=DeleteRowWithoutTimestamp(MDSData)
 
-    dissimilarityData=dissimilarityIndex(MDSData,method)
+        MDSAges=MDSData[,1]
+        MDSData=MDSData[,4:dim(MDSData)[2]]
+        MDSData=DeleteNullCollums(MDSData)
+        RowDeletedData=DeleteNulRows(MDSData,MDSAges)
 
-    monoMDSData=suppressWarnings(metaMDS(dissimilarityData, k=2, autotransform = FALSE))
-
-    ExternalCalibrator = data[["GlobalInsolation"]]
-
-    ExternalCalibrator = approx(y = as.numeric(ExternalCalibrator),
-                                x = as.numeric(row.names(ExternalCalibrator)),
-                                xout = MDSAges, method = "linear")
-
-    MDSrotation = MDSrotate(monoMDSData, vec = ExternalCalibrator$y)
+        MDSAges=RowDeletedData$age
+        MDSData=RowDeletedData$data
 
 
-    #MDSrotation=monoMDSData #<--------------------------------------------------- Just for Testing delete later!
+        dissimilarityData=dissimilarityIndex(MDSData,method)
 
-    MDS1=MDSrotation$points[, 1]
-    MDS2=MDSrotation$points[, 2]
+        monoMDSData=suppressWarnings(metaMDS(dissimilarityData, k=2, autotransform = FALSE))
 
-    MDS1=matrix(MDS1,ncol = 1)
-    row.names(MDS1)=as.character(MDSAges)
-    colnames(MDS1)="nMDS_Dim1"
-    data[["Diatom"]][[i]][["nMDS"]][["Dim1"]]=MDS1
+        ExternalCalibrator = data[["GlobalInsolation"]]
+
+        ExternalCalibrator = approx(y = as.numeric(ExternalCalibrator),
+                                    x = as.numeric(row.names(ExternalCalibrator)),
+                                    xout = MDSAges, method = "linear")
+
+        MDSrotation = MDSrotate(monoMDSData, vec = ExternalCalibrator$y)
 
 
-    MDS2=matrix(MDS2,ncol = 1)
-    row.names(MDS2)=as.character(MDSAges)
-    colnames(MDS2)="nMDS_Dim2"
-    data[["Diatom"]][[i]][["nMDS"]][["Dim2"]]=MDS2
+        #MDSrotation=monoMDSData #<--------------------------------------------------- Just for Testing delete later!
 
-    #Stress
-    data[["Diatom"]][[i]][["nMDS"]][["Stress"]]=MDSrotation$stress
+        MDS1=MDSrotation$points[, 1]
+        MDS2=MDSrotation$points[, 2]
 
+        MDS1=matrix(MDS1,ncol = 1)
+        row.names(MDS1)=as.character(MDSAges)
+        colnames(MDS1)="nMDS_Dim1"
+        data[["Diatom"]][[i]][["nMDS"]][[namesInUse[1]]]=MDS1
+
+
+        MDS2=matrix(MDS2,ncol = 1)
+        row.names(MDS2)=as.character(MDSAges)
+        colnames(MDS2)="nMDS_Dim2"
+        data[["Diatom"]][[i]][["nMDS"]][[namesInUse[2]]]=MDS2
+
+        #Stress
+        data[["Diatom"]][[i]][["nMDS"]][[namesInUse[3]]]=MDSrotation$stress
+
+      }
+      }
     }
   }
 
 
-  #Main Loop
-  for (i in 1:length(ls(data[["Diatom"]]))){
+  ImportVersions = c("SRS_data","Cut_SRS_data")
+  SRS_Names = c("richness","shannon","invsimpson")
+  Cut_SRS_Names = c("Cut_richness","Cut_shannon","Cut_invsimpson")
+  namesInUse = NULL
 
+  for (IV in ImportVersions){
 
-    Tempdata=data[["Diatom"]][[i]][["SRS_data"]]
+    if(IV == "SRS_data"){namesInUse = SRS_Names}
+    if(IV == "Cut_SRS_data"){namesInUse = Cut_SRS_Names}
 
-    TempdataForCalculation=try(data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]],silent = T)
+    #Richness Loop
+    for (i in 1:length(ls(data[["Diatom"]]))){
 
-    if(!class(TempdataForCalculation)[1] == "try-error"){
+      Tempdata=data[["Diatom"]][[i]][[IV]]
 
-        TempdataForCalculation=data[["Diatom"]][[i]][["SRS_data"]][,4:dim(data[["Diatom"]][[i]][["SRS_data"]])[2]]
+      TempdataForCalculation=try(data[["Diatom"]][[i]][[IV]][,4:dim(data[["Diatom"]][[i]][[IV]])[2]],silent = T)
+
+      if(!class(TempdataForCalculation)[1] == "try-error"){
+        if(dim(TempdataForCalculation)[1]>2){
+
+        TempdataForCalculation=data[["Diatom"]][[i]][[IV]][,4:dim(data[["Diatom"]][[i]][[IV]])[2]]
         TempdataForCalculation=round(TempdataForCalculation)
 
         #Richness
@@ -340,18 +361,22 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
         invsimpson=cbind(invsimpson)
         row.names(invsimpson)=Tempdata[,1]
 
-        data[["Diatom"]][[i]][["Species_richness"]][[paste("richness")]]=richness
-        data[["Diatom"]][[i]][["Species_richness"]][[paste("shannon")]]=shannon
-        data[["Diatom"]][[i]][["Species_richness"]][[paste("invsimpson")]]=invsimpson
+        data[["Diatom"]][[i]][["Species_richness"]][[namesInUse[1]]]=richness
+        data[["Diatom"]][[i]][["Species_richness"]][[namesInUse[2]]]=shannon
+        data[["Diatom"]][[i]][["Species_richness"]][[namesInUse[3]]]=invsimpson
 
 
         # Loess Predictor
-        for (r in c("richness","shannon","invsimpson")){
+        for (r in c(namesInUse[1],namesInUse[2],namesInUse[3])){
 
           y=as.numeric(row.names(data[["Diatom"]][[i]][["Species_richness"]][[r]]))
           x=data[["Diatom"]][[i]][["Species_richness"]][[r]]
 
-          loessValues=predict(loess(x ~ y, span=allLoessSpans), se=T,newdata = as.numeric(y)) #Critical Span value
+          #GuessLoess
+
+          span = GuessLoess(intervall = y,values = x,overspan = 100)
+
+          loessValues=predict(loess(x ~ y, span=span), se=T,newdata = as.numeric(y)) #Critical Span value
 
           LoessMean = loessValues$fit
           LoessConfUp = loessValues$fit + qt(1-(0.05/2),loessValues$df)*loessValues$se.fit
@@ -369,49 +394,109 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
         data[["Diatom"]][[i]][["DCA_Gradient_Length"]]=round(max(dca$rproj[,1:4]),digits = 3)
 
+      }
     }
 
-    #Printer
-    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-        i,"/",length(ls(data[["Diatom"]]))," calculating species richness",sep="")
+      #Printer
+      cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          i,"/",length(ls(data[["Diatom"]]))," calculating species richness",sep="")
 
+    }
   }
 
+  #ROC
 
   data = rateofChange(data = data, intervallBy = 100, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method,
-                      MinAgeIntervall = 1, NonNegative = F, Importname = "SRS_data", Exportname = "RoC")
+                      MinAgeIntervall = 1, NonNegative = TRUE, Importname = "SRS_data", Exportname = "RoC")
   data = rateofChange(data = data, intervallBy = 100, minimumRowsAfterInterpolating = minimumRowsAfterFiltering, method = method,
-                      MinAgeIntervall = 1, NonNegative = F, Importname = "Cut_SRS_data", Exportname = "Cut_RoC")
+                      MinAgeIntervall = 1, NonNegative = TRUE, Importname = "Cut_SRS_data", Exportname = "Cut_RoC")
 
-  data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
-                                Importname = "RoC", Exportname = "RocMatrix", CreateVector = F, TransformAllData = FALSE, ValueCantBeSamlerThanZero = TRUE)
-  data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
-                                Importname = "Cut_RoC", Exportname = "Cut_RocMatrix", CreateVector = T, TransformAllData = FALSE,
-                                vectorName = "Vector_RocMatrix", ValueCantBeSamlerThanZero = TRUE)
-  data = RateOfChangeAsyncTabel(data = data, intervallBy = 100,
-                                Importname = "Cut_RoC", Exportname = "Cut_RocMatrix_Transfrom", CreateVector = T, TransformAllData = TRUE,
-                                vectorName = "Vector_RocMatrix_transform", ValueCantBeSamlerThanZero = TRUE)
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "RoC", Exportname = "RocMatrix", CreateVector = F, TransformAllData = FALSE, ValueCantBeSamlerThanZero = TRUE)
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "Cut_RoC", Exportname = "Cut_RocMatrix", CreateVector = T, TransformAllData = FALSE,
+                    vectorName = "Vector_RocMatrix", ValueCantBeSamlerThanZero = TRUE)
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "Cut_RoC", Exportname = "Cut_RocMatrix_Transfrom", CreateVector = T, TransformAllData = TRUE,
+                    vectorName = "Vector_RocMatrix_transform", ValueCantBeSamlerThanZero = FALSE)
+
+  #Eveness
+
+  data = evenness(data = data, intervallBy = 100,
+                  NonNegative = TRUE, Importname = "SRS_data", Exportname = "evenness")
+  data = evenness(data = data, intervallBy = 100,
+                  NonNegative = TRUE, Importname = "Cut_SRS_data", Exportname = "Cut_evenness")
+
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "evenness", Exportname = "EvennessMatrix", CreateVector = F, TransformAllData = FALSE, ValueCantBeSamlerThanZero = TRUE)
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "Cut_evenness", Exportname = "Cut_EvennessMatrix", CreateVector = T, TransformAllData = FALSE, ValueCantBeSamlerThanZero = TRUE,
+                    vectorName = "Vector_Evenness")
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "Cut_evenness", Exportname = "Cut_EvennessMatrix_Transfrom", CreateVector = T, TransformAllData = TRUE, ValueCantBeSamlerThanZero = FALSE,
+                    vectorName = "Vector_Evenness_transform")
 
 
-  data = evenness(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+  #speciesRichness
 
-  data = EvennessAsyncTabel(data = data, intervallBy = 100)
+  data = CalculateBaseValues(data = data, intervallBy = 100,
+                         NonNegative = TRUE, Importname1 = "Species_richness", Importname2 = "richness", Exportname = "speciesRichnessData")
+  data = CalculateBaseValues(data = data, intervallBy = 100,
+                         NonNegative = TRUE, Importname1 = "Species_richness", Importname2 = "Cut_richness", Exportname = "Cut_speciesRichnessData")
 
-  data = inverseSimpsion(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "speciesRichnessData", Exportname = "SpeciesRichnessMatrix", CreateVector = F, TransformAllData = FALSE, ValueCantBeSamlerThanZero = TRUE)
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "Cut_speciesRichnessData", Exportname = "Cut_SpeciesRichnessMatrix", CreateVector = T, TransformAllData = FALSE, ValueCantBeSamlerThanZero = TRUE,
+                    vectorName = "Vector_SpeciesRichness")
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "Cut_speciesRichnessData", Exportname = "Cut_SpeciesRichnessMatrix_Transform", CreateVector = T, TransformAllData = TRUE, ValueCantBeSamlerThanZero = FALSE,
+                    vectorName = "Vector_SpeciesRichness_transform")
 
-  data = InverseSimpsionAsyncTabel(data = data, intervallBy = 100)
+  #inverseSimpson
 
-  data = speciesRichness(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+  data = CalculateBaseValues(data = data, intervallBy = 100,
+                             NonNegative = TRUE, Importname1 = "Species_richness", Importname2 = "invsimpson", Exportname = "inverseSimpsionData")
+  data = CalculateBaseValues(data = data, intervallBy = 100,
+                             NonNegative = TRUE, Importname1 = "Species_richness", Importname2 = "Cut_invsimpson", Exportname = "Cut_inverseSimpsionData")
 
-  data = SpeciesRichnessAsyncTabel(data = data, intervallBy = 100)
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "inverseSimpsionData", Exportname = "InverseSimpsionMatrix", CreateVector = F, TransformAllData = FALSE, ValueCantBeSamlerThanZero = TRUE)
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "Cut_inverseSimpsionData", Exportname = "Cut_InverseSimpsionMatrix", CreateVector = T, TransformAllData = FALSE, ValueCantBeSamlerThanZero = TRUE,
+                    vectorName = "Vector_InverseSimpsion")
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "Cut_inverseSimpsionData", Exportname = "Cut_InverseSimpsionMatrix_Transform", CreateVector = T, TransformAllData = TRUE, ValueCantBeSamlerThanZero = FALSE,
+                    vectorName = "Vector_InverseSimpsion_transform")
 
-  data = MDS(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+  #MDS
 
-  data = MDSAsyncTabel(data = data, intervallBy = 100)
+  data = CalculateBaseValues(data = data, intervallBy = 100,
+                             NonNegative = FALSE, Importname1 = "nMDS", Importname2 = "Dim1", Exportname = "MDS")
+  data = CalculateBaseValues(data = data, intervallBy = 100,
+                             NonNegative = FALSE, Importname1 = "nMDS", Importname2 = "Cut_Dim1", Exportname = "Cut_MDS")
 
-  data = TOC(data = data, intervallBy = 100, allLoessSpans = InterpolationLoessSpans, minimumRowsAfterInterpolating = minimumRowsAfterFiltering)
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "MDS", Exportname = "MDSMatrix", CreateVector = F, TransformAllData = FALSE, ValueCantBeSamlerThanZero = FALSE)
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "Cut_MDS", Exportname = "Cut_MDSMatrix", CreateVector = T, TransformAllData = FALSE, ValueCantBeSamlerThanZero = FALSE,
+                    vectorName = "Vector_MDS")
+  data = AsyncTabel(data = data, intervallBy = 100,
+                    Importname = "Cut_MDS", Exportname = "Cut_MDSMatrix_Transform", CreateVector = T, TransformAllData = TRUE, ValueCantBeSamlerThanZero = FALSE,
+                    vectorName = "Vector_MDS_transform")
 
-  data = TOCAsyncTabel(data = data, intervallBy = 100)
+  #TOC
+
+  data = TOC(data = data, intervallBy = 100, NonNegative = TRUE, Importname1 = "rawData", Importname2 = "TOC", Exportname = "TOC")
+
+  data = TOCAsyncTabel(data = data, intervallBy = 100,
+                    Importname = "TOC", Exportname = "TOCMatrix", CreateVector = T, TransformAllData = FALSE, ValueCantBeSamlerThanZero = FALSE,
+                    vectorName = "Vector_TOC")
+  data = TOCAsyncTabel(data = data, intervallBy = 100,
+                       Importname = "TOC", Exportname = "TOCMatrix_Transform", CreateVector = T, TransformAllData = TRUE, ValueCantBeSamlerThanZero = FALSE,
+                       vectorName = "Vector_TOC_transform")
+
+  #TRACE
 
   data = TRACETabel(data = data, TraceName = "JJA")
 

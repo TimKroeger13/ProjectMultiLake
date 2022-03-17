@@ -3,15 +3,17 @@
 #'Calculates the TOC for the multivar function.
 #'@param data List of data generates by the Multivar function.
 #'@param intervallBy Intervals by to interpolate to.
-#'@param allLoessSpans span value for all Loess calculations made by Multivar.
-#'@param minimumRowsAfterInterpolating Value for the minimum rows after filtering.
+#'@param NonNegative Creates Positive Values after Loess calculation.
+#'@param Importname1 importname 1.
+#'@param Importname2 importname 2.
+#'@param Exportname data$Diatom$DiatomNames$
 #'@export
 #'@return Returns the same List but with new added parameters.
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-TOC = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRowsAfterInterpolating = 0){
+TOC = function(data, intervallBy = 100, NonNegative = TRUE, Importname1 = "", Importname2 = "", Exportname = ""){
 
   deleteDoubles = function(doublData){
 
@@ -66,10 +68,11 @@ TOC = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRowsAfterInt
 
   for (z in 1:length(CarbonNames)){
 
-    TOCData = matrix(data$Carbon[[CarbonNames[z]]]$rawData$TOC, ncol = 1)
-    rownames(TOCData) = data$Carbon[[CarbonNames[z]]]$rawData$depth
+    TOCData = matrix(data$Carbon[[CarbonNames[z]]][[Importname1]][[Importname2]], ncol = 1)
 
-    if(sum(is.na(TOCData))==0){
+    rownames(TOCData) = data$Carbon[[CarbonNames[z]]][[Importname1]]$depth
+
+    if(sum(!is.na(TOCData))>4){ #(sum(is.na(TOCData))==0)
       if(!is.null(TOCData)){
 
         #Delete Doubles
@@ -101,27 +104,31 @@ TOC = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRowsAfterInt
 
         #check this minRows of the interpolated data
 
-        if(dim(InterpolationMatrix)[1]>minimumRowsAfterInterpolating){
-
           InterpolationMatrixLoess = InterpolationMatrix
           InterpolationMatrixLoess[]=NA
 
-          InterpolationMatrixLoess[,1] = predict(loess(InterpolationMatrix ~ InterpolationMatrixRowNames, span = allLoessSpans))
+          span = GuessLoess(intervall = InterpolationMatrixRowNames, values = InterpolationMatrix, overspan = 100)
 
-          InterpolationMatrixLoess[InterpolationMatrixLoess<0]=0 #<--------------- Not for MDS
+          InterpolationMatrixLoess[,1] = predict(loess(InterpolationMatrix ~ InterpolationMatrixRowNames, span = span))
+
+          #NonNegative
+
+          if (NonNegative){
+
+            InterpolationMatrixLoess[InterpolationMatrixLoess<0] = 0
+
+          }
 
           TOCMatrix = matrix(NA, ncol = 2, nrow = dim(InterpolationMatrixLoess)[1])
 
           TOCMatrix[,1] = InterpolationMatrixRowNames
           TOCMatrix[,2] = InterpolationMatrixLoess
 
-        }
-
-        data[["Carbon"]][[CarbonNames[z]]][["TOC"]] = TOCMatrix
+        data[["Carbon"]][[CarbonNames[z]]][[Exportname]] = TOCMatrix
 
         #Printer
         cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-            z,"/",length(ls(data[["Carbon"]]))," calculating TOC",sep="")
+            z,"/",length(ls(data[["Diatom"]]))," calculating ",Exportname,sep="")
 
       }
     }

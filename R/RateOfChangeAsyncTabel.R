@@ -16,7 +16,7 @@
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Exportname = "", CreateVector = FALSE, TransformAllData = FALSE, vectorName = "Vector_RocMatrix",
+RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Exportname = "", CreateVector = FALSE, TransformAllData = FALSE, vectorName,
                                   ValueCantBeSamlerThanZero = FALSE){
 
   #Printer
@@ -60,6 +60,8 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Expo
     }
   }
 
+  UntransformedTable = RocAllInOneTabel
+
   #TransformAllData
 
   if(TransformAllData){
@@ -101,7 +103,8 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Expo
 
     #VectorMatrix
 
-    VectorTable = DataSignalAfterTable(DataAllInOneTabel = RocAllInOneTabel,BasicAsyncTable = AsyncTabel,ValueCantBeSamlerThanZero = ValueCantBeSamlerThanZero)
+    VectorTable = DataSignalAfterTable(DataAllInOneTabel = RocAllInOneTabel,BasicAsyncTable = AsyncTabel,ValueCantBeSamlerThanZero = ValueCantBeSamlerThanZero,
+                                       UntransformedTable = UntransformedTable)
 
     data[[vectorName]] = VectorTable
 
@@ -114,8 +117,6 @@ RateOfChangeAsyncTabel = function(data, intervallBy = 100, Importname = "", Expo
     AsyncTabel[which(AsyncTabel[,4]<0),4] = 0
 
   }
-
-  #
 
   data[[Exportname]] = AsyncTabel
 

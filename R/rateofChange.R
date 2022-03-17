@@ -57,7 +57,7 @@ rateofChange = function(data, intervallBy = 100, minimumRowsAfterInterpolating =
 
         #Sqrt transformation
 
-        ROC_calculation = sqrt(ROC_calculation)
+        #ROC_calculation = sqrt(ROC_calculation)
 
         #MinAgeIntervall
 
@@ -147,7 +147,7 @@ rateofChange = function(data, intervallBy = 100, minimumRowsAfterInterpolating =
 
     #Printer
     cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-        z,"/",length(ls(data[["Diatom"]]))," calculating ",Importname," - Rate of change",sep="")
+        z,"/",length(ls(data[["Diatom"]]))," calculating ",Exportname,sep="")
 
   }
 

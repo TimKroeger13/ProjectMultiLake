@@ -1448,7 +1448,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
        xlim=c(Xmax,Xmin),
        ylab="Value",
        xlab="Age",
-       main=paste("Vector RoC Mean",sep="")
+       main=paste("Vector | Normal - RoC Mean",sep="")
   )
 
   for (i in 1:(dim(RocMatrix)[1]-1)){
@@ -1469,7 +1469,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   #################################  transform  ##################################
   ################################################################################
 
-  pdf("Vector_RoC_transform.pdf",width=15,height=10)
+  pdf("Vector_RoC_Transform.pdf",width=15,height=10)
 
   RocMatrix = data$Vector_RocMatrix_transform
 
@@ -1567,6 +1567,106 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   dev.off()
 
+  ################################################################################
+  ##############################     Evenness     ################################
+  ###############################     vector      ################################
+  ################################################################################
+
+  pdf("Vector_Evenness.pdf",width=15,height=10)
+
+  EvennessMatrix = data$Vector_Evenness
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  EvennessMatrix=EvennessMatrix[EvennessMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  EvennessMatrix = DeleteMeanNAS(EvennessMatrix)
+
+  Xmin = min(EvennessMatrix[,1])
+  Xmax = max(EvennessMatrix[,1])
+  Ymin = min(na.omit(EvennessMatrix[,3]))
+  Ymax = max(na.omit(EvennessMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(EvennessMatrix)[1])
+  P_color[] = "red"
+  P_color[EvennessMatrix[,5]<P_value] = "green"
+  P_color[EvennessMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector | normal - evenness Mean",sep="")
+  )
+
+  for (i in 1:(dim(EvennessMatrix)[1]-1)){
+
+    lines(EvennessMatrix[i:(i+1),1],EvennessMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(EvennessMatrix[,1],EvennessMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(EvennessMatrix[,1],EvennessMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+  ################################################################################
+  ##############################     Evenness     ################################
+  ###############################     vector      ################################
+  #################################  transform  ##################################
+  ################################################################################
+
+  pdf("Vector_Evenness_Transform.pdf",width=15,height=10)
+
+  EvennessMatrix = data$Vector_Evenness_transform
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  EvennessMatrix=EvennessMatrix[EvennessMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  EvennessMatrix = DeleteMeanNAS(EvennessMatrix)
+
+  Xmin = min(EvennessMatrix[,1])
+  Xmax = max(EvennessMatrix[,1])
+  Ymin = min(na.omit(EvennessMatrix[,3]))
+  Ymax = max(na.omit(EvennessMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(EvennessMatrix)[1])
+  P_color[] = "red"
+  P_color[EvennessMatrix[,5]<P_value] = "green"
+  P_color[EvennessMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector | Transform - evenness Mean",sep="")
+  )
+
+  for (i in 1:(dim(EvennessMatrix)[1]-1)){
+
+    lines(EvennessMatrix[i:(i+1),1],EvennessMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(EvennessMatrix[,1],EvennessMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(EvennessMatrix[,1],EvennessMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
 
   ################################################################################
   ############################### InverseSimpsion ################################
@@ -1622,6 +1722,107 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
 
   ################################################################################
+  ##########################     InverseSimpsion     #############################
+  ###############################     vector      ################################
+  ################################################################################
+
+  pdf("Vector_InverseSimpsion.pdf",width=15,height=10)
+
+  InverseSimpsionMatrix = data$Vector_InverseSimpsion
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  InverseSimpsionMatrix=InverseSimpsionMatrix[InverseSimpsionMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  InverseSimpsionMatrix = DeleteMeanNAS(InverseSimpsionMatrix)
+
+  Xmin = min(InverseSimpsionMatrix[,1])
+  Xmax = max(InverseSimpsionMatrix[,1])
+  Ymin = min(na.omit(InverseSimpsionMatrix[,3]))
+  Ymax = max(na.omit(InverseSimpsionMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(InverseSimpsionMatrix)[1])
+  P_color[] = "red"
+  P_color[InverseSimpsionMatrix[,5]<P_value] = "green"
+  P_color[InverseSimpsionMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector | normal - InverseSimpsion Mean",sep="")
+  )
+
+  for (i in 1:(dim(InverseSimpsionMatrix)[1]-1)){
+
+    lines(InverseSimpsionMatrix[i:(i+1),1],InverseSimpsionMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(InverseSimpsionMatrix[,1],InverseSimpsionMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(InverseSimpsionMatrix[,1],InverseSimpsionMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+  ################################################################################
+  ##########################     InverseSimpsion     #############################
+  ###############################     vector      ################################
+  #################################  transform  ##################################
+  ################################################################################
+
+  pdf("Vector_InverseSimpsion_Transform.pdf",width=15,height=10)
+
+  InverseSimpsionMatrix = data$Vector_InverseSimpsion_transform
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  InverseSimpsionMatrix=InverseSimpsionMatrix[InverseSimpsionMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  InverseSimpsionMatrix = DeleteMeanNAS(InverseSimpsionMatrix)
+
+  Xmin = min(InverseSimpsionMatrix[,1])
+  Xmax = max(InverseSimpsionMatrix[,1])
+  Ymin = min(na.omit(InverseSimpsionMatrix[,3]))
+  Ymax = max(na.omit(InverseSimpsionMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(InverseSimpsionMatrix)[1])
+  P_color[] = "red"
+  P_color[InverseSimpsionMatrix[,5]<P_value] = "green"
+  P_color[InverseSimpsionMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector | Transform - InverseSimpsion Mean",sep="")
+  )
+
+  for (i in 1:(dim(InverseSimpsionMatrix)[1]-1)){
+
+    lines(InverseSimpsionMatrix[i:(i+1),1],InverseSimpsionMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(InverseSimpsionMatrix[,1],InverseSimpsionMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(InverseSimpsionMatrix[,1],InverseSimpsionMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+  ################################################################################
   ############################### SpeciesRichness ################################
   ################################################################################
 
@@ -1670,15 +1871,14 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   dev.off()
 
-
   ################################################################################
-  ################################     Vector     ################################
-  ############################### SpeciesRichness ################################
+  ##########################     SpeciesRichness     #############################
+  ###############################     vector      ################################
   ################################################################################
 
   pdf("Vector_SpeciesRichness.pdf",width=15,height=10)
 
-  SpeciesRichnessMatrix = data$Vector_SpeciesRichnessMatrix
+  SpeciesRichnessMatrix = data$Vector_SpeciesRichness
 
   #Cut Data after x years
   CutValue = MaxAge
@@ -1707,7 +1907,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
        xlim=c(Xmax,Xmin),
        ylab="Value",
        xlab="Age",
-       main=paste("Vector SpeciesRichness Mean",CutValue,sep="")
+       main=paste("Vector | normal - SpeciesRichness Mean",sep="")
   )
 
   for (i in 1:(dim(SpeciesRichnessMatrix)[1]-1)){
@@ -1721,6 +1921,56 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   dev.off()
 
+  ################################################################################
+  ##########################     SpeciesRichness     #############################
+  ###############################     vector      ################################
+  #################################  transform  ##################################
+  ################################################################################
+
+  pdf("Vector_SpeciesRichness_Transform.pdf",width=15,height=10)
+
+  SpeciesRichnessMatrix = data$Vector_SpeciesRichness_transform
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  SpeciesRichnessMatrix=SpeciesRichnessMatrix[SpeciesRichnessMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  SpeciesRichnessMatrix = DeleteMeanNAS(SpeciesRichnessMatrix)
+
+  Xmin = min(SpeciesRichnessMatrix[,1])
+  Xmax = max(SpeciesRichnessMatrix[,1])
+  Ymin = min(na.omit(SpeciesRichnessMatrix[,3]))
+  Ymax = max(na.omit(SpeciesRichnessMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(SpeciesRichnessMatrix)[1])
+  P_color[] = "red"
+  P_color[SpeciesRichnessMatrix[,5]<P_value] = "green"
+  P_color[SpeciesRichnessMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector | Transform - SpeciesRichness Mean",sep="")
+  )
+
+  for (i in 1:(dim(SpeciesRichnessMatrix)[1]-1)){
+
+    lines(SpeciesRichnessMatrix[i:(i+1),1],SpeciesRichnessMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(SpeciesRichnessMatrix[,1],SpeciesRichnessMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(SpeciesRichnessMatrix[,1],SpeciesRichnessMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
 
   ################################################################################
   ##################################### MDS ######################################
@@ -1774,6 +2024,106 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   dev.off()
 
+  ################################################################################
+  ################################     MDS     ###################################
+  ###############################     vector      ################################
+  ################################################################################
+
+  pdf("Vector_MDS.pdf",width=15,height=10)
+
+  MDSMatrix = data$Vector_MDS
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  MDSMatrix=MDSMatrix[MDSMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  MDSMatrix = DeleteMeanNAS(MDSMatrix)
+
+  Xmin = min(MDSMatrix[,1])
+  Xmax = max(MDSMatrix[,1])
+  Ymin = min(na.omit(MDSMatrix[,3]))
+  Ymax = max(na.omit(MDSMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(MDSMatrix)[1])
+  P_color[] = "red"
+  P_color[MDSMatrix[,5]<P_value] = "green"
+  P_color[MDSMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector | normal - MDS Mean",sep="")
+  )
+
+  for (i in 1:(dim(MDSMatrix)[1]-1)){
+
+    lines(MDSMatrix[i:(i+1),1],MDSMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(MDSMatrix[,1],MDSMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(MDSMatrix[,1],MDSMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+  ################################################################################
+  #################################     MDS     ##################################
+  ###############################     vector      ################################
+  #################################  transform  ##################################
+  ################################################################################
+
+  pdf("Vector_MDS_Transform.pdf",width=15,height=10)
+
+  MDSMatrix = data$Vector_MDS_transform
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  MDSMatrix=MDSMatrix[MDSMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  MDSMatrix = DeleteMeanNAS(MDSMatrix)
+
+  Xmin = min(MDSMatrix[,1])
+  Xmax = max(MDSMatrix[,1])
+  Ymin = min(na.omit(MDSMatrix[,3]))
+  Ymax = max(na.omit(MDSMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(MDSMatrix)[1])
+  P_color[] = "red"
+  P_color[MDSMatrix[,5]<P_value] = "green"
+  P_color[MDSMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector | Transform - MDS Mean",sep="")
+  )
+
+  for (i in 1:(dim(MDSMatrix)[1]-1)){
+
+    lines(MDSMatrix[i:(i+1),1],MDSMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(MDSMatrix[,1],MDSMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(MDSMatrix[,1],MDSMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
 
   ################################################################################
   ##################################### TOC ######################################
@@ -1815,6 +2165,107 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
   #lines(TOCMatrix[,1],TOCMatrix[,2], col= "blue")
   #points(TOCMatrix[,1],TOCMatrix[,2], pch = 19, cex = 0.1, col= "black")
+
+  for (i in 1:(dim(TOCMatrix)[1]-1)){
+
+    lines(TOCMatrix[i:(i+1),1],TOCMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(TOCMatrix[,1],TOCMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(TOCMatrix[,1],TOCMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+  ################################################################################
+  #################################     TOC     ##################################
+  ###############################     vector      ################################
+  ################################################################################
+
+  pdf("Vector_TOC.pdf",width=15,height=10)
+
+  TOCMatrix = data$Vector_TOC
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  TOCMatrix=TOCMatrix[TOCMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  TOCMatrix = DeleteMeanNAS(TOCMatrix)
+
+  Xmin = min(TOCMatrix[,1])
+  Xmax = max(TOCMatrix[,1])
+  Ymin = min(na.omit(TOCMatrix[,3]))
+  Ymax = max(na.omit(TOCMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(TOCMatrix)[1])
+  P_color[] = "red"
+  P_color[TOCMatrix[,5]<P_value] = "green"
+  P_color[TOCMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector | normal - TOC Mean",sep="")
+  )
+
+  for (i in 1:(dim(TOCMatrix)[1]-1)){
+
+    lines(TOCMatrix[i:(i+1),1],TOCMatrix[i:(i+1),2], col= P_color[i],lwd=2)
+
+  }
+
+  lines(TOCMatrix[,1],TOCMatrix[,3], col= "black",lty=3,lwd=2)
+  lines(TOCMatrix[,1],TOCMatrix[,4], col= "black",lty=3,lwd=2)
+
+  dev.off()
+
+  ################################################################################
+  #################################     TOC     ##################################
+  ###############################     vector      ################################
+  #################################  transform  ##################################
+  ################################################################################
+
+  pdf("Vector_TOC_Transform.pdf",width=15,height=10)
+
+  TOCMatrix = data$Vector_TOC_transform
+
+  #Cut Data after x years
+  CutValue = MaxAge
+
+  TOCMatrix=TOCMatrix[TOCMatrix[,1]<=CutValue,]
+
+  #Plot Mean Rat of change
+
+  TOCMatrix = DeleteMeanNAS(TOCMatrix)
+
+  Xmin = min(TOCMatrix[,1])
+  Xmax = max(TOCMatrix[,1])
+  Ymin = min(na.omit(TOCMatrix[,3]))
+  Ymax = max(na.omit(TOCMatrix[,4]))
+
+  #Create Color after p Value from
+  P_value = 0.05
+
+  P_color <- vector( "character" , dim(TOCMatrix)[1])
+  P_color[] = "red"
+  P_color[TOCMatrix[,5]<P_value] = "green"
+  P_color[TOCMatrix[,6]==1] = "black"
+
+  plot(NA,
+       ylim=c(Ymin,Ymax),
+       xlim=c(Xmax,Xmin),
+       ylab="Value",
+       xlab="Age",
+       main=paste("Vector | Transform - TOC Mean",sep="")
+  )
 
   for (i in 1:(dim(TOCMatrix)[1]-1)){
 
@@ -1876,29 +2327,6 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
     }
 
-    '
-    Xmin = 0
-
-    lowerBoundry = ceiling(Xmin/ConvIntervall)*ConvIntervall
-    upperBoundry = floor(Xmax/ConvIntervall)*ConvIntervall
-
-    ConvNumbers = seq(from = lowerBoundry, to = upperBoundry, by = ConvIntervall)
-
-
-    AgeMean = vector(mode="numeric", length=(length(ConvNumbers)-1))
-    ValueMeanLower = vector(mode="numeric", length=(length(ConvNumbers)-1))
-    ValueMeanUpper = vector(mode="numeric", length=(length(ConvNumbers)-1))
-
-
-    for (k in 1:(length(ConvNumbers)-1)){
-
-      AgeMean[k] = mean(TRACEMatrix[ConvNumbers[k]:ConvNumbers[k+1],1])
-      ValueMeanLower[k] = mean(TRACEMatrix[ConvNumbers[k]:ConvNumbers[k+1],3])
-      ValueMeanUpper[k] = mean(TRACEMatrix[ConvNumbers[k]:ConvNumbers[k+1],4])
-
-    }
-
-    '
     lines(TRACEMatrix[,1],TRACEMatrix[,3], col= "black",lty=3,lwd=2)
     lines(TRACEMatrix[,1],TRACEMatrix[,4], col= "black",lty=3,lwd=2)
 
@@ -1914,156 +2342,161 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   ################################ Evenness Solo #################################
   ################################################################################
 
-  PlotsVariantsLoess = c("Normal","Loess") # "Normal","Loess"
-  PlotsVariantsTransform = c("Non Transformed","Transformed")
+  ImportVersions = c("evenness","Cut_evenness")
 
-  for (VariantsLoess in PlotsVariantsLoess){
-    for (VariantsTransform in PlotsVariantsTransform){
+  for (IV in ImportVersions){
 
-      Xmax=0
-      Ymax=0
-      Xmin=Inf
-      Ymin=Inf
+    PlotsVariantsLoess = c("Normal","Loess") # "Normal","Loess"
+    PlotsVariantsTransform = c("Non Transformed","Transformed")
 
-      pdf(paste("Evenness_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+    for (VariantsLoess in PlotsVariantsLoess){
+      for (VariantsTransform in PlotsVariantsTransform){
 
-      for (i in 1:length(data$Diatom)){
+        Xmax=0
+        Ymax=0
+        Xmin=Inf
+        Ymin=Inf
 
-        DiatomsNames = AllDiatomsNames[i]
-        Values = data$Diatom[[DiatomsNames]]$evenness
-        RID = which(data$CoreList[,1]==DiatomsNames)
+        pdf(paste(IV,"_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
-        if(!is.null(Values)){
-          if(dim(Values)[1]>0){
+        for (i in 1:length(data$Diatom)){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+          DiatomsNames = AllDiatomsNames[i]
+          Values = data$Diatom[[DiatomsNames]][[IV]]
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
-            if(!is.null(Values)){
+          if(!is.null(Values)){
+            if(dim(Values)[1]>0){
 
-              if(VariantsTransform=="Transformed"){
+              Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-                Values[,2] = scale(Values[,2],center = T, scale = T)
+              if(!is.null(Values)){
 
-              }
+                if(VariantsTransform=="Transformed"){
 
-              if(VariantsLoess == "Loess"){
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
 
-                #Loess
-                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
-                Values = cbind(Values[,1],ValuesLoess$fitted)
+                }
 
-              }
+                if(VariantsLoess == "Loess"){
 
-              if(max(Values[,2])>Xmax){
-                Xmax=max(Values[,2])
-              }
-              if(min(Values[,2])<Xmin){
-                Xmin=min(Values[,2])
-              }
-              if(max(Values[,1])>Ymax){
-                Ymax=max(Values[,1])
-              }
-              if(min(Values[,1])<Ymin){
-                Ymin=min(Values[,1])
+                  #Loess
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                  Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                }
+
+                if(max(Values[,2])>Xmax){
+                  Xmax=max(Values[,2])
+                }
+                if(min(Values[,2])<Xmin){
+                  Xmin=min(Values[,2])
+                }
+                if(max(Values[,1])>Ymax){
+                  Ymax=max(Values[,1])
+                }
+                if(min(Values[,1])<Ymin){
+                  Ymin=min(Values[,1])
+                }
               }
             }
           }
         }
-      }
 
-      plot(NA,
-           ylim=c(Xmin,Xmax),
-           xlim=c(Ymax,Ymin),
-           ylab="Value",
-           xlab="Age",
-           main=paste("Evenness | ",VariantsLoess, " | ",VariantsTransform,sep="")
-      )
+        plot(NA,
+             ylim=c(Xmin,Xmax),
+             xlim=c(Ymax,Ymin),
+             ylab="Value",
+             xlab="Age",
+             main=paste(IV," | ",VariantsLoess, " | ",VariantsTransform,sep="")
+        )
 
-      for (i in 1:length(data$Diatom)){
+        for (i in 1:length(data$Diatom)){
 
-        DiatomsNames = AllDiatomsNames[i]
-        Values = data$Diatom[[DiatomsNames]]$evenness
-        RID = which(data$CoreList[,1]==DiatomsNames)
+          DiatomsNames = AllDiatomsNames[i]
+          Values = data$Diatom[[DiatomsNames]][[IV]]
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
-        if(!is.null(Values)){
-          if(dim(Values)[1]>0){
+          if(!is.null(Values)){
+            if(dim(Values)[1]>0){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+              Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-            if(!is.null(Values)){
+              if(!is.null(Values)){
 
-              if(VariantsTransform=="Transformed"){
+                if(VariantsTransform=="Transformed"){
 
-                Values[,2] = scale(Values[,2],center = T, scale = T)
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
+
+                }
+
+                if(VariantsLoess == "Loess"){
+
+                  #Loess
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                  Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                }
+
+                lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
               }
-
-              if(VariantsLoess == "Loess"){
-
-                #Loess
-                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
-                Values = cbind(Values[,1],ValuesLoess$fitted)
-
-              }
-
-              lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
-
             }
           }
         }
-      }
 
-      #Plot Numbers
+        #Plot Numbers
 
-      for (i in 1:length(data$Diatom)){
+        for (i in 1:length(data$Diatom)){
 
-        DiatomsNames = AllDiatomsNames[i]
-        Values = data$Diatom[[DiatomsNames]]$evenness
-        RID = which(data$CoreList[,1]==DiatomsNames)
+          DiatomsNames = AllDiatomsNames[i]
+          Values = data$Diatom[[DiatomsNames]][[IV]]
+          RID = which(data$CoreList[,1]==DiatomsNames)
 
-        if(!is.null(Values)){
-          if(dim(Values)[1]>0){
+          if(!is.null(Values)){
+            if(dim(Values)[1]>0){
 
-            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+              Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-            if(!is.null(Values)){
+              if(!is.null(Values)){
 
-              if(VariantsTransform=="Transformed"){
+                if(VariantsTransform=="Transformed"){
 
-                Values[,2] = scale(Values[,2],center = T, scale = T)
+                  Values[,2] = scale(Values[,2],center = T, scale = T)
+
+                }
+
+                if(VariantsLoess == "Loess"){
+
+                  #Loess
+                  ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
+                  Values = cbind(Values[,1],ValuesLoess$fitted)
+
+                }
+
+                distance = 120
+
+                if(i>=10){distance = 200}
+
+                text(Values[dim(Values)[1],1]+distance,
+                     Values[dim(Values)[1],2],
+                     label=RID,
+                     col="white",
+                     cex=1.2)
+
+                text(Values[dim(Values)[1],1]+distance,
+                     Values[dim(Values)[1],2],
+                     label=RID,
+                     col=Allcolor[RID])
 
               }
-
-              if(VariantsLoess == "Loess"){
-
-                #Loess
-                ValuesLoess=loess(Values[,2] ~ Values[,1], span=allspan)
-                Values = cbind(Values[,1],ValuesLoess$fitted)
-
-              }
-
-              distance = 120
-
-              if(i>=10){distance = 200}
-
-              text(Values[dim(Values)[1],1]+distance,
-                   Values[dim(Values)[1],2],
-                   label=RID,
-                   col="white",
-                   cex=1.2)
-
-              text(Values[dim(Values)[1],1]+distance,
-                   Values[dim(Values)[1],2],
-                   label=RID,
-                   col=Allcolor[RID])
-
             }
           }
         }
+
+        dev.off()
+
       }
-
-      dev.off()
-
     }
   }
 
@@ -2072,9 +2505,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   ################################### RoC Solo ###################################
   ################################################################################
 
-
   ImportVersions = c("RoC","Cut_RoC")
-  #ImportVersions = c("RoC")
 
   for (IV in ImportVersions){
 
@@ -2243,404 +2674,419 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
   ############################ Inverse Simpson Solo ############################
   ##############################################################################
 
-  PlotsVariantsTransform = c("Non Transformed","Transformed")
+  ImportVersions = c("inverseSimpsionData","Cut_inverseSimpsionData")
 
-  for (VariantsTransform in PlotsVariantsTransform){
+  for (IV in ImportVersions){
 
-    Xmax=0
-    Ymax=0
-    Xmin=Inf
-    Ymin=Inf
+    PlotsVariantsTransform = c("Non Transformed","Transformed")
 
-    pdf(paste("InverseSimpsion_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+    for (VariantsTransform in PlotsVariantsTransform){
 
-    for (i in 1:length(data$Diatom)){
+      Xmax=0
+      Ymax=0
+      Xmin=Inf
+      Ymin=Inf
 
-      DiatomsNames = AllDiatomsNames[i]
-      Values = data$Diatom[[DiatomsNames]]$inverseSimpsion
-      RID = which(data$CoreList[,1]==DiatomsNames)
+      pdf(paste(IV,"_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
-      if(!is.null(Values)){
-        if(dim(Values)[1]>0){
+      for (i in 1:length(data$Diatom)){
 
-          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]][[IV]]
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
-          if(!is.null(Values)){
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
 
-            if(VariantsTransform=="Transformed"){
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-              Values[,2] = scale(Values[,2],center = T, scale = T)
+            if(!is.null(Values)){
 
-            }
+              if(VariantsTransform=="Transformed"){
 
-            if(max(Values[,2])>Xmax){
-              Xmax=max(Values[,2])
-            }
-            if(min(Values[,2])<Xmin){
-              Xmin=min(Values[,2])
-            }
-            if(max(Values[,1])>Ymax){
-              Ymax=max(Values[,1])
-            }
-            if(min(Values[,1])<Ymin){
-              Ymin=min(Values[,1])
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              if(max(Values[,2])>Xmax){
+                Xmax=max(Values[,2])
+              }
+              if(min(Values[,2])<Xmin){
+                Xmin=min(Values[,2])
+              }
+              if(max(Values[,1])>Ymax){
+                Ymax=max(Values[,1])
+              }
+              if(min(Values[,1])<Ymin){
+                Ymin=min(Values[,1])
+              }
             }
           }
         }
       }
-    }
 
-    plot(NA,
-         ylim=c(Xmin,Xmax),
-         xlim=c(Ymax,Ymin),
-         ylab="Value",
-         xlab="Age",
-         main=paste("InverseSimpsion | ",VariantsTransform,sep="")
-    )
+      plot(NA,
+           ylim=c(Xmin,Xmax),
+           xlim=c(Ymax,Ymin),
+           ylab="Value",
+           xlab="Age",
+           main=paste(IV," | ",VariantsLoess, " | ",VariantsTransform,sep="")
+      )
 
-    for (i in 1:length(data$Diatom)){
+      for (i in 1:length(data$Diatom)){
 
-      DiatomsNames = AllDiatomsNames[i]
-      Values = data$Diatom[[DiatomsNames]]$inverseSimpsion
-      RID = which(data$CoreList[,1]==DiatomsNames)
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]][[IV]]
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
-      PointValues = data$Diatom[[DiatomsNames]]$Species_richness$invsimpson
+        PointValues = data$Diatom[[DiatomsNames]]$Species_richness$invsimpson
 
-      if(!is.null(Values)){
-        if(dim(Values)[1]>0){
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
 
-          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-          if(!is.null(Values)){
+            if(!is.null(Values)){
 
-            if(VariantsTransform=="Transformed"){
+              if(VariantsTransform=="Transformed"){
 
-              Values[,2] = scale(Values[,2],center = T, scale = T)
-              PointValues = scale(PointValues,center = T, scale = T)
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+                PointValues = scale(PointValues,center = T, scale = T)
+
+              }
+
+              lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
+
+              points(as.numeric(row.names(PointValues)),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
 
             }
-
-            lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
-
-            points(as.numeric(row.names(PointValues)),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
-
           }
         }
       }
-    }
 
-    #Plot Numbers
+      #Plot Numbers
 
-    for (i in 1:length(data$Diatom)){
+      for (i in 1:length(data$Diatom)){
 
-      DiatomsNames = AllDiatomsNames[i]
-      Values = data$Diatom[[DiatomsNames]]$inverseSimpsion
-      RID = which(data$CoreList[,1]==DiatomsNames)
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]][[IV]]
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
-      if(!is.null(Values)){
-        if(dim(Values)[1]>0){
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
 
-          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-          if(!is.null(Values)){
+            if(!is.null(Values)){
 
-            if(VariantsTransform=="Transformed"){
+              if(VariantsTransform=="Transformed"){
 
-              Values[,2] = scale(Values[,2],center = T, scale = T)
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              distance = 120
+
+              if(i>=10){distance = 200}
+
+              text(Values[dim(Values)[1],1]+distance,
+                   Values[dim(Values)[1],2],
+                   label=RID,
+                   col="white",
+                   cex=1.2)
+
+              text(Values[dim(Values)[1],1]+distance,
+                   Values[dim(Values)[1],2],
+                   label=RID,
+                   col=Allcolor[RID])
 
             }
-
-            distance = 120
-
-            if(i>=10){distance = 200}
-
-            text(Values[dim(Values)[1],1]+distance,
-                 Values[dim(Values)[1],2],
-                 label=RID,
-                 col="white",
-                 cex=1.2)
-
-            text(Values[dim(Values)[1],1]+distance,
-                 Values[dim(Values)[1],2],
-                 label=RID,
-                 col=Allcolor[RID])
-
           }
         }
       }
+
+      dev.off()
+
     }
-
-    dev.off()
-
   }
 
   ##############################################################################
   ########################### Species Richness Solo ############################
   ##############################################################################
 
-  PlotsVariantsTransform = c("Non Transformed","Transformed")
+  ImportVersions = c("speciesRichnessData","Cut_speciesRichnessData")
 
-  for (VariantsTransform in PlotsVariantsTransform){
+  for (IV in ImportVersions){
 
-    Xmax=0
-    Ymax=0
-    Xmin=Inf
-    Ymin=Inf
+    PlotsVariantsTransform = c("Non Transformed","Transformed")
 
-    pdf(paste("SpeciesRichness_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+    for (VariantsTransform in PlotsVariantsTransform){
 
-    for (i in 1:length(data$Diatom)){
+      Xmax=0
+      Ymax=0
+      Xmin=Inf
+      Ymin=Inf
 
-      DiatomsNames = AllDiatomsNames[i]
-      Values = data$Diatom[[DiatomsNames]]$speciesRichness
-      RID = which(data$CoreList[,1]==DiatomsNames)
+      pdf(paste(IV,"_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
-      if(!is.null(Values)){
-        if(dim(Values)[1]>0){
+      for (i in 1:length(data$Diatom)){
 
-          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]][[IV]]
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
-          if(!is.null(Values)){
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
 
-            if(VariantsTransform=="Transformed"){
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-              Values[,2] = scale(Values[,2],center = T, scale = T)
+            if(!is.null(Values)){
 
-            }
+              if(VariantsTransform=="Transformed"){
 
-            if(max(Values[,2])>Xmax){
-              Xmax=max(Values[,2])
-            }
-            if(min(Values[,2])<Xmin){
-              Xmin=min(Values[,2])
-            }
-            if(max(Values[,1])>Ymax){
-              Ymax=max(Values[,1])
-            }
-            if(min(Values[,1])<Ymin){
-              Ymin=min(Values[,1])
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              if(max(Values[,2])>Xmax){
+                Xmax=max(Values[,2])
+              }
+              if(min(Values[,2])<Xmin){
+                Xmin=min(Values[,2])
+              }
+              if(max(Values[,1])>Ymax){
+                Ymax=max(Values[,1])
+              }
+              if(min(Values[,1])<Ymin){
+                Ymin=min(Values[,1])
+              }
             }
           }
         }
       }
-    }
 
-    plot(NA,
-         ylim=c(Xmin,Xmax),
-         xlim=c(Ymax,Ymin),
-         ylab="Value",
-         xlab="Age",
-         main=paste("SpeciesRichness | ",VariantsTransform,sep="")
-    )
+      plot(NA,
+           ylim=c(Xmin,Xmax),
+           xlim=c(Ymax,Ymin),
+           ylab="Value",
+           xlab="Age",
+           main=paste(IV," | ",VariantsLoess, " | ",VariantsTransform,sep="")
+      )
 
-    for (i in 1:length(data$Diatom)){
+      for (i in 1:length(data$Diatom)){
 
-      DiatomsNames = AllDiatomsNames[i]
-      Values = data$Diatom[[DiatomsNames]]$speciesRichness
-      RID = which(data$CoreList[,1]==DiatomsNames)
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]][[IV]]
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
-      PointValues = data$Diatom[[DiatomsNames]]$Species_richness$richness
+        PointValues = data$Diatom[[DiatomsNames]]$Species_richness$richness
 
-      if(!is.null(Values)){
-        if(dim(Values)[1]>0){
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
 
-          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-          if(!is.null(Values)){
+            if(!is.null(Values)){
 
-            if(VariantsTransform=="Transformed"){
+              if(VariantsTransform=="Transformed"){
 
-              Values[,2] = scale(Values[,2],center = T, scale = T)
-              PointValues = scale(PointValues,center = T, scale = T)
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+                PointValues = scale(PointValues,center = T, scale = T)
+
+              }
+
+              lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
+              points(as.numeric(row.names(PointValues)),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
 
             }
-
-            lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
-            points(as.numeric(row.names(PointValues)),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
-
           }
         }
       }
-    }
 
-    #Plot Numbers
+      #Plot Numbers
 
-    for (i in 1:length(data$Diatom)){
+      for (i in 1:length(data$Diatom)){
 
-      DiatomsNames = AllDiatomsNames[i]
-      Values = data$Diatom[[DiatomsNames]]$speciesRichness
-      RID = which(data$CoreList[,1]==DiatomsNames)
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]][[IV]]
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
-      if(!is.null(Values)){
-        if(dim(Values)[1]>0){
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
 
-          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-          if(!is.null(Values)){
+            if(!is.null(Values)){
 
-            if(VariantsTransform=="Transformed"){
+              if(VariantsTransform=="Transformed"){
 
-              Values[,2] = scale(Values[,2],center = T, scale = T)
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              distance = 120
+
+              if(i>=10){distance = 200}
+
+              text(Values[dim(Values)[1],1]+distance,
+                   Values[dim(Values)[1],2],
+                   label=RID,
+                   col="white",
+                   cex=1.2)
+
+              text(Values[dim(Values)[1],1]+distance,
+                   Values[dim(Values)[1],2],
+                   label=RID,
+                   col=Allcolor[RID])
 
             }
-
-            distance = 120
-
-            if(i>=10){distance = 200}
-
-            text(Values[dim(Values)[1],1]+distance,
-                 Values[dim(Values)[1],2],
-                 label=RID,
-                 col="white",
-                 cex=1.2)
-
-            text(Values[dim(Values)[1],1]+distance,
-                 Values[dim(Values)[1],2],
-                 label=RID,
-                 col=Allcolor[RID])
-
           }
         }
       }
+
+      dev.off()
+
     }
-
-    dev.off()
-
   }
 
   ##############################################################################
   ################################## MDS Solo ##################################
   ##############################################################################
 
-  PlotsVariantsTransform = c("Non Transformed","Transformed")
+  ImportVersions = c("MDS","Cut_MDS")
 
-  for (VariantsTransform in PlotsVariantsTransform){
+  for (IV in ImportVersions){
 
-    Xmax=0
-    Ymax=0
-    Xmin=Inf
-    Ymin=Inf
+    PlotsVariantsTransform = c("Non Transformed","Transformed")
 
-    pdf(paste("MDS_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+    for (VariantsTransform in PlotsVariantsTransform){
 
-    for (i in 1:length(data$Diatom)){
+      Xmax=0
+      Ymax=0
+      Xmin=Inf
+      Ymin=Inf
 
-      DiatomsNames = AllDiatomsNames[i]
-      Values = data$Diatom[[DiatomsNames]]$MDS
-      RID = which(data$CoreList[,1]==DiatomsNames)
+      pdf(paste(IV,"_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
-      if(!is.null(Values)){
-        if(dim(Values)[1]>0){
+      for (i in 1:length(data$Diatom)){
 
-          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]][[IV]]
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
-          if(!is.null(Values)){
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
 
-            if(VariantsTransform=="Transformed"){
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-              Values[,2] = scale(Values[,2],center = T, scale = T)
+            if(!is.null(Values)){
 
-            }
+              if(VariantsTransform=="Transformed"){
 
-            if(max(Values[,2])>Xmax){
-              Xmax=max(Values[,2])
-            }
-            if(min(Values[,2])<Xmin){
-              Xmin=min(Values[,2])
-            }
-            if(max(Values[,1])>Ymax){
-              Ymax=max(Values[,1])
-            }
-            if(min(Values[,1])<Ymin){
-              Ymin=min(Values[,1])
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              if(max(Values[,2])>Xmax){
+                Xmax=max(Values[,2])
+              }
+              if(min(Values[,2])<Xmin){
+                Xmin=min(Values[,2])
+              }
+              if(max(Values[,1])>Ymax){
+                Ymax=max(Values[,1])
+              }
+              if(min(Values[,1])<Ymin){
+                Ymin=min(Values[,1])
+              }
             }
           }
         }
       }
-    }
 
-    plot(NA,
-         ylim=c(Xmin,Xmax),
-         xlim=c(Ymax,Ymin),
-         ylab="Value",
-         xlab="Age",
-         main=paste("MDS | ",VariantsTransform,sep="")
-    )
+      plot(NA,
+           ylim=c(Xmin,Xmax),
+           xlim=c(Ymax,Ymin),
+           ylab="Value",
+           xlab="Age",
+           main=paste(IV," | ",VariantsLoess, " | ",VariantsTransform,sep="")
+      )
 
-    for (i in 1:length(data$Diatom)){
+      for (i in 1:length(data$Diatom)){
 
-      DiatomsNames = AllDiatomsNames[i]
-      Values = data$Diatom[[DiatomsNames]]$MDS
-      RID = which(data$CoreList[,1]==DiatomsNames)
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]][[IV]]
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
-      PointValues = data$Diatom[[DiatomsNames]]$nMDS$Dim1
+        PointValues = data$Diatom[[DiatomsNames]]$nMDS$Dim1
 
-      if(!is.null(Values)){
-        if(dim(Values)[1]>0){
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
 
-          Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values,MaxAge, minimumRowsAfterCutOutMaxAge)
 
-          if(!is.null(Values)){
+            if(!is.null(Values)){
 
-            if(VariantsTransform=="Transformed"){
+              if(VariantsTransform=="Transformed"){
 
-              Values[,2] = scale(Values[,2],center = T, scale = T)
-              PointValues = scale(PointValues,center = T, scale = T)
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+                PointValues = scale(PointValues,center = T, scale = T)
+
+              }
+
+              lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
+
+              points(as.numeric(row.names(PointValues)),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
 
             }
-
-            lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
-
-            points(as.numeric(row.names(PointValues)),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
-
           }
         }
       }
-    }
 
-    #Plot Numbers
+      #Plot Numbers
 
-    for (i in 1:length(data$Diatom)){
+      for (i in 1:length(data$Diatom)){
 
-      DiatomsNames = AllDiatomsNames[i]
-      Values = data$Diatom[[DiatomsNames]]$MDS
-      RID = which(data$CoreList[,1]==DiatomsNames)
+        DiatomsNames = AllDiatomsNames[i]
+        Values = data$Diatom[[DiatomsNames]][[IV]]
+        RID = which(data$CoreList[,1]==DiatomsNames)
 
-      if(!is.null(Values)){
-        if(dim(Values)[1]>0){
+        if(!is.null(Values)){
+          if(dim(Values)[1]>0){
 
-          Values = CutOutMaxAgeForInterpolatedData(Values, MaxAge, minimumRowsAfterCutOutMaxAge)
+            Values = CutOutMaxAgeForInterpolatedData(Values, MaxAge, minimumRowsAfterCutOutMaxAge)
 
-          if(!is.null(Values)){
+            if(!is.null(Values)){
 
-            if(VariantsTransform=="Transformed"){
+              if(VariantsTransform=="Transformed"){
 
-              Values[,2] = scale(Values[,2],center = T, scale = T)
+                Values[,2] = scale(Values[,2],center = T, scale = T)
+
+              }
+
+              distance = 120
+
+              if(i>=10){distance = 200}
+
+              text(Values[dim(Values)[1],1]+distance,
+                   Values[dim(Values)[1],2],
+                   label=RID,
+                   col="white",
+                   cex=1.2)
+
+              text(Values[dim(Values)[1],1]+distance,
+                   Values[dim(Values)[1],2],
+                   label=RID,
+                   col=Allcolor[RID])
 
             }
-
-            distance = 120
-
-            if(i>=10){distance = 200}
-
-            text(Values[dim(Values)[1],1]+distance,
-                 Values[dim(Values)[1],2],
-                 label=RID,
-                 col="white",
-                 cex=1.2)
-
-            text(Values[dim(Values)[1],1]+distance,
-                 Values[dim(Values)[1],2],
-                 label=RID,
-                 col=Allcolor[RID])
-
           }
         }
       }
+
+      dev.off()
+
     }
-
-    dev.off()
-
   }
 
   ##############################################################################
@@ -2656,7 +3102,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
     Xmin=Inf
     Ymin=Inf
 
-    pdf(paste("TOC_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+    pdf(paste("TOC__",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
     for (i in 1:length(data$Carbon)){
 
@@ -2699,7 +3145,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
          xlim=c(Ymax,Ymin),
          ylab="Value",
          xlab="Age",
-         main=paste("TOC | ",VariantsTransform,sep="")
+         main=paste("TOC | ",VariantsLoess, " | ",VariantsTransform,sep="")
     )
 
     for (i in 1:length(data$Carbon)){
@@ -2949,8 +3395,8 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
       if(!is.null(StressValue)){
 
-      LakeType[counter] = data$LakeDat$LakeType[which(data$LakeData$CoreID==DiatomNames[counter])]
-      Stress[counter] = StressValue
+        LakeType[counter] = data$LakeDat$LakeType[which(data$LakeData$CoreID==DiatomNames[counter])]
+        Stress[counter] = StressValue
 
       }else{
 

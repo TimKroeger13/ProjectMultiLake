@@ -98,6 +98,7 @@ SaveOutput = function(data){
 
   MacPath = "/Volumes/projects/p_arclakes"
   PathMetadata = "/ArcLakesDB/COREDATA/METADATA/"
+  ArlakesDirect = "//smb.isipd.dmawi.de/projects/p_arclakes/"
 
   directory = NULL
 
@@ -124,6 +125,18 @@ SaveOutput = function(data){
     if(!class(getwdTry) == "try-error"){
 
       directory = MacPath
+
+    }
+  }
+
+  if(is.null(directory)){
+
+    getwdTry <-  try(setwd(ArlakesDirect),
+                     silent = TRUE)
+
+    if(!class(getwdTry) == "try-error"){
+
+      directory = ArlakesDirect
 
     }
   }

@@ -10,7 +10,9 @@ RateOfChangeAsyncTabel(
   Importname = "",
   Exportname = "",
   CreateVector = FALSE,
-  TransformAllData = FALSE
+  TransformAllData = FALSE,
+  vectorName,
+  ValueCantBeSamlerThanZero = FALSE
 )
 }
 \arguments{
@@ -25,6 +27,10 @@ RateOfChangeAsyncTabel(
 \item{CreateVector}{Shuld the vector plot build on this dataset.}
 
 \item{TransformAllData}{Z Transformas all Data.}
+
+\item{vectorName}{Outpurname for the vector data.}
+
+\item{ValueCantBeSamlerThanZero}{If true, values smaller than 0 become 0.}
 }
 \value{
 Returns the same List but with new added parameters.

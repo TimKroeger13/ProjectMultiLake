@@ -67,10 +67,12 @@ CutOutPionierPhase = function(data){
 
       PinoeerPoint = CorrectionPoints[which(CorrectionPoints[,1] == DiatomNames),2]
 
-      if(PinoeerPoint>0){
+      if(length(PinoeerPoint)!=0){
+        if(PinoeerPoint>0){
 
-        PionierFreeSRS = PionierFreeSRS[-(dim(rateOfChangeData)[1]-PinoeerPoint+1):-(dim(rateOfChangeData)[1]),]
+          PionierFreeSRS = PionierFreeSRS[-(dim(rateOfChangeData)[1]-PinoeerPoint+1):-(dim(rateOfChangeData)[1]),]
 
+        }
       }
 
       data$Diatom[[AllDiatomsNames[z]]][["Cut_SRS_data"]] = PionierFreeSRS

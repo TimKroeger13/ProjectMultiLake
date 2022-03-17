@@ -7,8 +7,9 @@
 evenness(
   data,
   intervallBy = 100,
-  allLoessSpans = 0.8,
-  minimumRowsAfterInterpolating = 0
+  NonNegative = TRUE,
+  Importname = "",
+  Exportname = ""
 )
 }
 \arguments{
@@ -16,9 +17,11 @@ evenness(
 
 \item{intervallBy}{Intervalls by to interpolate to.}
 
-\item{allLoessSpans}{span value for all Loess calculations made by Multivar.}
+\item{NonNegative}{Creates Positive Values after Loess calculation.}
 
-\item{minimumRowsAfterInterpolating}{alue for the minimum rows after filtering.}
+\item{Importname}{importname after data$Diatom$DiatomNames$}
+
+\item{Exportname}{data$Diatom$DiatomNames$}
 }
 \value{
 Returns the same List but with new added parameters.

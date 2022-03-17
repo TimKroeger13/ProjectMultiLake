@@ -3,6 +3,12 @@
 #'Calculates the TOC as a Table given by the TOC function.
 #'@param data List of data generates by the Multivar function.
 #'@param intervallBy Intervalls by to interpolate to.
+#'@param Importname importname after data$Diatom$DiatomNames$
+#'@param Exportname data$Diatom$DiatomNames$
+#'@param CreateVector Shuld the vector plot build on this dataset.
+#'@param TransformAllData Z Transformas all Data.
+#'@param vectorName Outpurname for the vector data.
+#'@param ValueCantBeSamlerThanZero If true, values smaller than 0 become 0.
 #'@importFrom stats t.test
 #'@export
 #'@return Returns the same List but with new added parameters.
@@ -10,7 +16,8 @@
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-TOCAsyncTabel = function(data, intervallBy = 100){
+TOCAsyncTabel = function(data, intervallBy = 100, Importname = "", Exportname = "", CreateVector = FALSE, TransformAllData = FALSE, vectorName,
+                         ValueCantBeSamlerThanZero = FALSE){
 
   #Printer
   cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
@@ -23,7 +30,7 @@ TOCAsyncTabel = function(data, intervallBy = 100){
 
   for (main in 1:length(TOCNames)){
 
-    TOCData = data$Carbon[[TOCNames[main]]][["TOC"]]
+    TOCData = data$Carbon[[TOCNames[main]]][[Importname]]
 
     if(!is.null(TOCData)){
 
@@ -41,7 +48,7 @@ TOCAsyncTabel = function(data, intervallBy = 100){
 
   for (main in 1:length(TOCNames)){
 
-    TOCData = data$Carbon[[TOCNames[main]]][["TOC"]]
+    TOCData = data$Carbon[[TOCNames[main]]][[Importname]]
 
     if(!is.null(TOCData)){
 
@@ -53,7 +60,17 @@ TOCAsyncTabel = function(data, intervallBy = 100){
     }
   }
 
-  #Create RTOCAsyncTabel
+  UntransformedTable = TOCAllInOneTabel
+
+  #TransformAllData
+
+  if(TransformAllData){
+
+    TOCAllInOneTabel = scale(TOCAllInOneTabel,center = T, scale = T)
+
+  }
+
+  #Async Table
 
   AsyncTabel = matrix(NA, ncol = 6, nrow = ((max(MaxEv)-min(MinEv))/intervallBy)+1)
   colnames(AsyncTabel) = c("Depth","MeanValue","ConfDown","ConfUp","P_value","n")
@@ -61,30 +78,47 @@ TOCAsyncTabel = function(data, intervallBy = 100){
 
   for (i in 1:(((max(MaxEv)-min(MinEv))/intervallBy)+1)){
 
-    if(sum(!is.na(TOCAllInOneTabel[i,]))==1){
+    if(sum(!is.na(TOCAllInOneTabel[i,]))<4){
 
-      AsyncTabel[i,2] = as.numeric(na.omit(TOCAllInOneTabel[i,]))
-      AsyncTabel[i,3] = as.numeric(na.omit(TOCAllInOneTabel[i,]))
-      AsyncTabel[i,4] = as.numeric(na.omit(TOCAllInOneTabel[i,]))
+      AsyncTabel[i,2] = mean(as.numeric(na.omit(TOCAllInOneTabel[i,])))
+      AsyncTabel[i,3] = NA
+      AsyncTabel[i,4] = NA
       AsyncTabel[i,5] = 999
-      AsyncTabel[i,6] = 1
+      AsyncTabel[i,6] = sum(!is.na(TOCAllInOneTabel[i,]))
 
     }else{
 
-      TOCtest = t.test(TOCAllInOneTabel[i,])
+      AsyncTest = t.test(TOCAllInOneTabel[i,])
 
-      AsyncTabel[i,2] = TOCtest$estimate
-      AsyncTabel[i,3] = TOCtest$conf.int[1]
-      AsyncTabel[i,4] = TOCtest$conf.int[2]
-      AsyncTabel[i,5] = TOCtest$p.value
+      AsyncTabel[i,2] = AsyncTest$estimate
+      AsyncTabel[i,3] = AsyncTest$conf.int[1]
+      AsyncTabel[i,4] = AsyncTest$conf.int[2]
+      AsyncTabel[i,5] = AsyncTest$p.value
       AsyncTabel[i,6] = sum(!is.na(TOCAllInOneTabel[i,]))
 
     }
   }
 
-  #AsyncTabel[which(AsyncTabel[,3]<0),3] = 0 #<---------------------------------- Not for TOC
+  if(CreateVector){
 
-  data[["TOCMatrix"]] = AsyncTabel
+    #VectorMatrix
+
+    VectorTable = DataSignalAfterTable(DataAllInOneTabel = TOCAllInOneTabel, BasicAsyncTable = AsyncTabel, ValueCantBeSamlerThanZero = ValueCantBeSamlerThanZero,
+                                       UntransformedTable = UntransformedTable)
+
+    data[[vectorName]] = VectorTable
+
+  }
+
+  if (ValueCantBeSamlerThanZero){
+
+    AsyncTabel[which(AsyncTabel[,2]<0),2] = 0
+    AsyncTabel[which(AsyncTabel[,3]<0),3] = 0
+    AsyncTabel[which(AsyncTabel[,4]<0),4] = 0
+
+  }
+
+  data[[Exportname]] = AsyncTabel
 
   return(data)
 

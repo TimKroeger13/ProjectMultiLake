@@ -53,6 +53,8 @@ SpeciesRichnessAsyncTabel = function(data, intervallBy = 100){
     }
   }
 
+  UntransformedTable = speciesRichnessAllInOneTabel
+
   #Create RspeciesRichnessAsyncTabel
 
   AsyncTabel = matrix(NA, ncol = 6, nrow = ((max(MaxEv)-min(MinEv))/intervallBy)+1)
@@ -88,7 +90,8 @@ SpeciesRichnessAsyncTabel = function(data, intervallBy = 100){
 
   #VectorMatrix
 
-  VectorTable = DataSignalAfterTable(DataAllInOneTabel = speciesRichnessAllInOneTabel,BasicAsyncTable = AsyncTabel,ValueCantBeSamlerThanZero = TRUE)
+  VectorTable = DataSignalAfterTable(DataAllInOneTabel = speciesRichnessAllInOneTabel,BasicAsyncTable = AsyncTabel,ValueCantBeSamlerThanZero = TRUE,
+                                     UntransformedTable = UntransformedTable)
 
   data[["Vector_SpeciesRichnessMatrix"]] = VectorTable
 

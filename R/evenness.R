@@ -3,15 +3,16 @@
 #'Calculates the evenness for the multivar function.
 #'@param data List of data generates by the Multivar function.
 #'@param intervallBy Intervalls by to interpolate to.
-#'@param allLoessSpans span value for all Loess calculations made by Multivar.
-#'@param minimumRowsAfterInterpolating alue for the minimum rows after filtering.
+#'@param NonNegative Creates Positive Values after Loess calculation.
+#'@param Importname importname after data$Diatom$DiatomNames$
+#'@param Exportname data$Diatom$DiatomNames$
 #'@export
 #'@return Returns the same List but with new added parameters.
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 #'\cr Comma numbers are rounded up.
 
-evenness = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRowsAfterInterpolating = 0){
+evenness = function(data, intervallBy = 100, NonNegative = TRUE, Importname = "", Exportname = ""){
 
   deleteDoubles = function(doublData){
 
@@ -38,85 +39,98 @@ evenness = function(data, intervallBy = 100, allLoessSpans = 0.8, minimumRowsAft
 
   for (z in 1:length(DiatomNames)){
 
-    evennessData = data$Diatom[[DiatomNames[z]]]$SRS_data
+    evennessData = data$Diatom[[DiatomNames[z]]][[Importname]]
 
     if(!is.null(evennessData)){
+      if(dim(evennessData)[1]>2){
 
-      depthVectorOfData = evennessData[,1]
+        #Delete Doubles
+        evennessData = deleteDoubles(evennessData)
 
-      #Delete Doubles
-      evennessData = deleteDoubles(evennessData)
+        depthVectorOfData = evennessData[,1]
 
-      lowerBoundry = ceiling(min(depthVectorOfData)/intervallBy)*intervallBy
+        #Calculation Data
+        evennessData_calculation = evennessData[4:dim(evennessData)[2]]
 
-      upperBoundry = floor(max(depthVectorOfData)/intervallBy)*intervallBy
+        #Sqrt transformation
 
-      InterpolationMatrixRowNames =   approx (x = evennessData[,1],
-                                              y = NULL,
-                                              xout = seq(from = lowerBoundry, to = upperBoundry, by = intervallBy),
-                                              method = "linear",
-                                              n = 50)[[1]]
+        evennessData_calculation = sqrt(evennessData_calculation)
 
-      InterpolationMatrix = matrix(NA, nrow = length(InterpolationMatrixRowNames), ncol = dim(evennessData)[2]-3)
+        #interpolation
 
-      matrixCounter = 0
+        lowerBoundry = ceiling(min(depthVectorOfData)/intervallBy)*intervallBy
 
-      for (i in 4:dim(evennessData)[2]){
+        upperBoundry = floor(max(depthVectorOfData)/intervallBy)*intervallBy
 
-        matrixCounter = matrixCounter+1
+        InterpolationMatrixRowNames =   approx (x = evennessData[,1],
+                                                y = NULL,
+                                                xout = seq(from = lowerBoundry, to = upperBoundry, by = intervallBy),
+                                                method = "linear",
+                                                n = 50)[[1]]
 
-        InterpolationMatrix[,matrixCounter] =  approx (x = evennessData[,1],
-                                                       y = evennessData[,i],
-                                                       xout = seq(from = lowerBoundry, to = upperBoundry, by = intervallBy),
-                                                       method = "linear",
-                                                       n = 50)[[2]]
+        InterpolationMatrix = matrix(NA, nrow = length(InterpolationMatrixRowNames), ncol = dim(evennessData)[2]-3)
 
-      }
+        matrixCounter = 0
 
-      colnames(InterpolationMatrix) = colnames(evennessData)[4:dim(evennessData)[2]]
-      rownames(InterpolationMatrix) = InterpolationMatrixRowNames
+        for (i in 1:dim(evennessData_calculation)[2]){
 
+          matrixCounter = matrixCounter+1
 
+          InterpolationMatrix[,matrixCounter] =  approx (x = evennessData[,1],
+                                                         y = evennessData_calculation[,i],
+                                                         xout = seq(from = lowerBoundry, to = upperBoundry, by = intervallBy),
+                                                         method = "linear",
+                                                         n = 50)[[2]]
 
-    #check this minRows of the interpolated data
+        }
 
-    if(dim(InterpolationMatrix)[1]>minimumRowsAfterInterpolating){
+        colnames(InterpolationMatrix) = colnames(evennessData)[4:dim(evennessData)[2]]
+        rownames(InterpolationMatrix) = InterpolationMatrixRowNames
 
-      InterpolationMatrixLoess = InterpolationMatrix
-      InterpolationMatrixLoess[]=NA
+        #Calculations
 
-      for (i in 1:dim(InterpolationMatrix)[2]){
+        evennessMatrix = matrix(NA, ncol = 2, nrow = dim(InterpolationMatrix)[1])
 
-        InterpolationMatrixLoess[,i] = predict(loess(InterpolationMatrix[,i] ~ InterpolationMatrixRowNames, span = allLoessSpans))
+        for (p in 1:dim(InterpolationMatrix)[1]){
 
-      }
+          evennessVector = InterpolationMatrix[p,]
 
-      InterpolationMatrixLoess[InterpolationMatrixLoess<0]=0
+          evennessMatrix[p,1] = as.numeric(rownames(InterpolationMatrix)[p])
+          evennessMatrix[p,2] = diversity(evennessVector)/log(specnumber(evennessVector))
 
-      #Sqrt transform
-      #InterpolationMatrixLoess = sqrt(InterpolationMatrixLoess)
+        }
 
-      #evenness
+        #Get Correct Span
 
-      evennessMatrix = matrix(NA, ncol = 2, nrow = dim(InterpolationMatrixLoess)[1])
+        GuessSpan = GuessLoess(intervall = evennessMatrix[,1],values = evennessMatrix[,2], overspan = 100)
 
-      for (p in 1:dim(InterpolationMatrixLoess)[1]){
+        #Get Loess
 
-        evennessVector = InterpolationMatrixLoess[p,]
+        evennessLoess = predict(loess(evennessMatrix[,2] ~  evennessMatrix[,1], span = GuessSpan))
 
-        evennessMatrix[p,1] = as.numeric(rownames(InterpolationMatrixLoess)[p])
-        evennessMatrix[p,2] = diversity(evennessVector)/log(specnumber(evennessVector))
+        #NonNegative
+
+        if (NonNegative){
+
+          evennessLoess[evennessLoess<0] = 0
+
+        }
+
+        #At Data
+
+        evennessMatrixLoess = evennessMatrix
+        evennessMatrixLoess[,2] = evennessLoess
+
+        data[["Diatom"]][[DiatomNames[z]]][[Exportname]] = evennessMatrixLoess
 
       }
     }
 
-      data[["Diatom"]][[DiatomNames[z]]][["evenness"]] = evennessMatrix
+    #Printer
+    cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        z,"/",length(ls(data[["Diatom"]]))," calculating ",Exportname,sep="")
 
-      #Printer
-      cat("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-          z,"/",length(ls(data[["Diatom"]]))," calculating evenness",sep="")
 
-    }
   }
 
   return(data)

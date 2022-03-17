@@ -7,8 +7,10 @@
 TOC(
   data,
   intervallBy = 100,
-  allLoessSpans = 0.8,
-  minimumRowsAfterInterpolating = 0
+  NonNegative = TRUE,
+  Importname1 = "",
+  Importname2 = "",
+  Exportname = ""
 )
 }
 \arguments{
@@ -16,9 +18,13 @@ TOC(
 
 \item{intervallBy}{Intervals by to interpolate to.}
 
-\item{allLoessSpans}{span value for all Loess calculations made by Multivar.}
+\item{NonNegative}{Creates Positive Values after Loess calculation.}
 
-\item{minimumRowsAfterInterpolating}{Value for the minimum rows after filtering.}
+\item{Importname1}{importname 1.}
+
+\item{Importname2}{importname 2.}
+
+\item{Exportname}{data$Diatom$DiatomNames$}
 }
 \value{
 Returns the same List but with new added parameters.

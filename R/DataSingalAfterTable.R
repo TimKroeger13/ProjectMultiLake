@@ -4,12 +4,13 @@
 #'@param DataAllInOneTabel Tabel of all data where Rows are the Time and columns are the variabels.
 #'@param BasicAsyncTable An AsyncTable based on the mean value.
 #'@param ValueCantBeSamlerThanZero If true, values smaller than 0 become 0.
+#'@param UntransformedTable Tabel of all data where Rows are the Time and columns are the variabels, which is not transformed.
 #'@export
 #'@return nothing.
 #'@author Tim Kroeger
 #'@note This function has only been developed for the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research and should therefore only be used in combination with their database.
 
-DataSignalAfterTable = function(DataAllInOneTabel, BasicAsyncTable, ValueCantBeSamlerThanZero = FALSE){
+DataSignalAfterTable = function(DataAllInOneTabel, BasicAsyncTable, ValueCantBeSamlerThanZero = FALSE, UntransformedTable){
 
   VectorAllInOneTabel = DataAllInOneTabel
   VectorAllInOneTabel[] = NA
@@ -75,7 +76,7 @@ DataSignalAfterTable = function(DataAllInOneTabel, BasicAsyncTable, ValueCantBeS
 
   for (i in 1:dim(AdjustedDirectionVectorTable)[1]){
 
-    Resudials = c(Resudials,as.numeric(na.omit(DataAllInOneTabel[i,])) - DirectionVectorTable[i,2])
+    Resudials = c(Resudials,as.numeric(na.omit(UntransformedTable[i,])) - DirectionVectorTable[i,2])
 
   }
 
