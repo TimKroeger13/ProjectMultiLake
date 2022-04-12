@@ -2687,7 +2687,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
       Xmin=Inf
       Ymin=Inf
 
-      pdf(paste(IV,"_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+      pdf(paste(IV,"_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
       for (i in 1:length(data$Diatom)){
 
@@ -2730,7 +2730,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
            xlim=c(Ymax,Ymin),
            ylab="Value",
            xlab="Age",
-           main=paste(IV," | ",VariantsLoess, " | ",VariantsTransform,sep="")
+           main=paste(IV," | ",VariantsTransform,sep="")
       )
 
       for (i in 1:length(data$Diatom)){
@@ -2827,7 +2827,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
       Xmin=Inf
       Ymin=Inf
 
-      pdf(paste(IV,"_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+      pdf(paste(IV,"_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
       for (i in 1:length(data$Diatom)){
 
@@ -2870,7 +2870,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
            xlim=c(Ymax,Ymin),
            ylab="Value",
            xlab="Age",
-           main=paste(IV," | ",VariantsLoess, " | ",VariantsTransform,sep="")
+           main=paste(IV," | ",VariantsTransform,sep="")
       )
 
       for (i in 1:length(data$Diatom)){
@@ -2966,7 +2966,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
       Xmin=Inf
       Ymin=Inf
 
-      pdf(paste(IV,"_",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+      pdf(paste(IV,"_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
       for (i in 1:length(data$Diatom)){
 
@@ -3009,7 +3009,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
            xlim=c(Ymax,Ymin),
            ylab="Value",
            xlab="Age",
-           main=paste(IV," | ",VariantsLoess, " | ",VariantsTransform,sep="")
+           main=paste(IV," | ",VariantsTransform,sep="")
       )
 
       for (i in 1:length(data$Diatom)){
@@ -3102,7 +3102,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
     Xmin=Inf
     Ymin=Inf
 
-    pdf(paste("TOC__",VariantsLoess, "_",VariantsTransform,".pdf",sep=""),width=15,height=10)
+    pdf(paste("TOC_",VariantsTransform,".pdf",sep=""),width=15,height=10)
 
     for (i in 1:length(data$Carbon)){
 
@@ -3145,7 +3145,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
          xlim=c(Ymax,Ymin),
          ylab="Value",
          xlab="Age",
-         main=paste("TOC | ",VariantsLoess, " | ",VariantsTransform,sep="")
+         main=paste("TOC | ",VariantsTransform,sep="")
     )
 
     for (i in 1:length(data$Carbon)){
@@ -3172,7 +3172,7 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
 
             lines(Values[,1],Values[,2],col=Allcolor[RID], lwd=1)
 
-            points(as.numeric(data$Carbon[[CarbonsNames]]$rawData$depth),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
+            #points(as.numeric(data$Carbon[[CarbonsNames]]$rawData$depth),PointValues,col=Allcolor[RID], lwd=1, cex= 0.8)
 
           }
         }
@@ -3221,7 +3221,6 @@ Ordination = function(data, minimumRowsAfterCutOutMaxAge = 12, allspan = 1, MaxA
     }
 
     dev.off()
-
   }
 
   ##############################################################################
