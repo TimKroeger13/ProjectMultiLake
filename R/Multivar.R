@@ -298,7 +298,6 @@ Multivar = function(data,method="bray",standardize=c("","sqrt"),percentFilterWei
 
         MDSrotation = MDSrotate(monoMDSData, vec = ExternalCalibrator$y)
 
-
         #MDSrotation=monoMDSData #<--------------------------------------------------- Just for Testing delete later!
 
         MDS1=MDSrotation$points[, 1]

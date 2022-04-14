@@ -182,7 +182,8 @@ MultiExcelLoader = function(){
                                    "TC_available",
                                    "TOC_available",
                                    "LOI_availible",
-                                   "Br_availiable")
+                                   "Br_availiable",
+                                   "CarbonFromLOI")
 
       DatasetDescriptionFile = matrix(0, nrow = dim(DatasetDescription_matrix)[1]+length(DatasetDescriptionElemts),ncol =2)
 
@@ -324,6 +325,20 @@ MultiExcelLoader = function(){
 
         #Sort to correct false ordert cores
         Carbon = Carbon[order(Carbon[,1]),]
+
+        #Calculate TOC from LOI when TOC is not given
+
+        if((sum(!is.na(Carbon$TOC))==0) && (!sum(!is.na(Carbon$LOI))==0)){
+
+          Carbon$TOC = Carbon$LOI * 0.55
+
+          Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="CarbonFromLOI"),2]=TRUE
+
+        }else{
+
+          Folder[["Description"]][[FilenameKey]][which(Folder[["Description"]][[FilenameKey]]=="CarbonFromLOI"),2]=FALSE
+
+        }
 
         Folder[["Carbon"]][[FilenameKey]][["rawData"]]=Carbon
 
